@@ -1,0 +1,759 @@
+<title>Lived</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+/* Single deliberate light look: the Lived palette on white, stage 390×844 scaled to the phone */
+:root{--bg:#fff;--fg:#000;color-scheme:light}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);overflow:hidden;overscroll-behavior:none;touch-action:manipulation}
+#stage{position:fixed;inset:0}
+html.still .quad{transition:none !important}
+/* jelly on touch: uses the separate `scale` property so it never fights tilt or movement */
+@keyframes jelly{0%{scale:1 1}18%{scale:1.13 .87}36%{scale:.9 1.1}54%{scale:1.06 .94}72%{scale:.97 1.03}86%{scale:1.01 .99}100%{scale:1 1}}
+.quad.jig{animation:jelly .75s cubic-bezier(.33,0,.2,1) both}
+
+button:focus-visible{outline:3px solid #000;outline-offset:3px}
+
+.app{font-family:"Helvetica Neue",Helvetica,Inter,Arial,sans-serif;color:#000;background:#fff}
+a{color:#000}a:hover{color:#333}
+button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app{width:100%;height:100%;position:relative;overflow:hidden;background:#fff}
+.k-pain{--c:#3F5BD3;--ink:#fff}
+.k-heart{--c:#E0141E;--ink:#fff}
+.k-mind{--c:#D7EE6B;--ink:#000}
+.k-body{--c:#AB98EE;--ink:#000}
+
+/* ── the four squares: one object, from logo to week ── */
+.quad{position:absolute;box-sizing:border-box;border:none;padding:0;margin:0;background:var(--c);color:var(--ink);overflow:hidden;
+  transition:left 1s cubic-bezier(.65,0,.35,1),top 1s cubic-bezier(.65,0,.35,1),width 1s cubic-bezier(.65,0,.35,1),height 1s cubic-bezier(.65,0,.35,1),border-radius 1s cubic-bezier(.65,0,.35,1),transform 1s cubic-bezier(.65,0,.35,1);z-index:1;text-align:left;will-change:left,top,width,height,transform;contain:layout paint;backface-visibility:hidden}
+.quad:nth-child(2){transition-delay:.05s}.quad:nth-child(3){transition-delay:.1s}.quad:nth-child(4){transition-delay:.15s}
+.quad:active{transform:scale(.98)}
+.letter{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;color:#000;transition:opacity .5s cubic-bezier(.65,0,.35,1)}
+.quad:not(.s-splash) .letter{opacity:0}
+.cells{position:absolute;inset:0;display:grid;gap:3px;background:#fff;grid-auto-rows:minmax(0,1fr);transition:opacity .35s ease .35s, gap .5s}
+.cols1{grid-template-columns:1fr}.cols2{grid-template-columns:1fr 1fr}.cols3{grid-template-columns:1fr 1fr 1fr}
+.cell{background:var(--c);color:var(--ink);padding:10px;font-size:14px;line-height:1.15;display:flex;flex-direction:column;justify-content:space-between;animation:split .7s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+.cell small{font-size:11px;opacity:.8}
+.cell.first{font-size:17px}
+.cell .plus{font-size:28px;line-height:1;font-weight:300}
+@keyframes split{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.s-splash .cells,.s-intro .cells,.s-full .cells,.s-mini .cells{opacity:0;transition-delay:0s}
+.s-day .cells{gap:2px}.s-day .cell{font-size:10px;padding:5px}.s-day .cell small,.s-day .cell .plus{display:none}
+.s-week .cells{gap:1px}.s-week .cell{font-size:0;padding:0}.s-week .cell *{display:none}
+
+/* positions per state (index = L I V E) */
+.s-splash{width:78px;height:78px;border-radius:6px}
+.s-intro{border-radius:10px}
+.s-intro.i1{transform:rotate(8deg)}
+.s-intro.i1:active{transform:rotate(8deg) scale(.98)}
+.s-splash.i0{left:113px;top:300px}.s-splash.i1{left:199px;top:300px}.s-splash.i2{left:113px;top:386px}.s-splash.i3{left:199px;top:386px}
+.s-home{width:161px;height:256px;border-radius:10px}
+.s-home.i0{left:30px;top:176px}.s-home.i1{left:199px;top:176px}.s-home.i2{left:30px;top:440px}.s-home.i3{left:199px;top:440px}
+.s-full{left:0;top:0;width:390px;height:844px;border-radius:0;z-index:1}
+.s-full:active{transform:none}
+.s-mini{width:18px;height:18px;border-radius:3px;z-index:3}
+.s-mini.i0{left:320px;top:69px}.s-mini.i1{left:342px;top:69px}.s-mini.i2{left:320px;top:91px}.s-mini.i3{left:342px;top:91px}
+.s-day{width:139px;height:139px;border-radius:4px}
+.s-day.i0{left:55px;top:214px}.s-day.i1{left:197px;top:214px}.s-day.i2{left:55px;top:356px}.s-day.i3{left:197px;top:356px}
+.s-week{width:19px;height:19px;border-radius:2px}
+.s-week.i0{left:320px;top:330px}.s-week.i1{left:341px;top:330px}.s-week.i2{left:320px;top:351px}.s-week.i3{left:341px;top:351px}
+
+.dot{position:absolute;left:166px;top:353px;width:58px;height:58px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;z-index:2;transition:transform .7s cubic-bezier(.65,0,.35,1),opacity .5s cubic-bezier(.65,0,.35,1);animation:dpop .8s cubic-bezier(.22,1,.36,1) 1.1s both}
+.dot.gone{animation:none;transform:scale(.6);opacity:0;pointer-events:none}
+@keyframes dpop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.boot .quad{animation:drop .9s cubic-bezier(.22,1,.36,1) both}
+@keyframes drop{from{opacity:0;transform:translateY(18px) scale(.92)}to{opacity:1;transform:none}}
+
+/* ── text layers ── */
+.layer{position:absolute;inset:0;padding:56px 30px 40px;box-sizing:border-box;display:flex;flex-direction:column;pointer-events:none;z-index:2}
+.layer button,.layer .opt,.layer [data-tank]{pointer-events:auto}
+.in{animation:in .8s cubic-bezier(.22,1,.36,1) both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.h{font-weight:400;font-size:32px;line-height:1.1;letter-spacing:-0.02em;margin:0}
+.date{font-size:14px;color:#444;margin:6px 0 0}
+.hint{font-size:15px;color:#444;margin:0 0 14px;text-align:center}
+.bottom{margin-top:auto;display:flex;flex-direction:column;gap:6px}
+.pill{min-height:56px;border-radius:999px;border:none;background:#000;color:#fff;font-size:17px;width:100%;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.pill:active{transform:scale(.96)}
+.pill.inv{background:var(--ink);color:var(--c)}
+.tagline{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:18px;color:#444;margin:0}
+
+/* zoomed panel */
+.panel{color:var(--ink)}
+.top{display:flex;align-items:center;min-height:44px}
+.bk{display:flex;align-items:center;gap:10px;border:none;background:none;padding:0;min-height:44px;font-size:15px;color:var(--ink)}
+.bk i{width:30px;height:30px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center}
+.bk i{color:var(--c)}
+.pbar{position:relative;flex:1;height:6px;border-radius:3px;overflow:hidden;margin-left:12px}
+.pbar::before{content:"";position:absolute;inset:0;background:var(--ink);opacity:.25}
+.pbar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink);border-radius:3px;transition:width .8s cubic-bezier(.65,0,.35,1)}
+.pbar .p0{width:6%}.pbar .p1{width:25%}.pbar .p2{width:50%}.pbar .p3{width:75%}.pbar .p4{width:100%}
+.mapgap{width:58px;flex:none}
+
+.opts{display:grid;gap:8px;margin-top:24px}
+.opts.sq3{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:calc(.75 * (100vh - 384px) + 16px);margin-left:auto;margin-right:auto}
+.opts.sq3 .opt{height:auto;min-height:0 !important;aspect-ratio:1;min-width:0;font-size:15px;padding:8px;overflow-wrap:anywhere}
+.pgrid{position:relative}
+.owngrid{margin-top:8px}.owngrid:empty{display:none}
+.opts.sq4{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.opts.sq4 .opt{height:auto;min-height:0 !important;aspect-ratio:1;min-width:0;font-size:13px;padding:6px;overflow-wrap:anywhere}
+.opts.sq4 .opt .ck{top:5px;right:5px;width:18px;height:18px}
+.own{position:absolute;left:calc(33.333% - 1.333px);top:50%;translate:-50% -50%;width:84px;height:84px;box-sizing:border-box;border-radius:50%;border:5px solid var(--c);background:#fff;color:#000;font-size:12px;line-height:1.15;padding:6px;z-index:2;animation:rise .6s cubic-bezier(.22,1,.36,1) .9s both;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.own:active{scale:.94}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);pointer-events:auto;animation:fadein .3s ease both;z-index:5}
+.sheet{position:fixed;left:50%;transform:translateX(-50%);width:min(100%,520px);box-sizing:border-box;bottom:0;padding-bottom:calc(34px + env(safe-area-inset-bottom,0px));background:#fff;color:#000;border-radius:22px 22px 0 0;padding:24px 24px 34px;display:flex;flex-direction:column;gap:12px;pointer-events:auto;z-index:6;animation:sheetup .45s cubic-bezier(.22,1,.36,1) both}
+.sheet label{font-size:22px;line-height:1.2}
+.sheet input{font:inherit;font-size:19px;min-height:56px;border:1.5px solid #000;border-radius:12px;padding:0 16px;outline:none;color:#000;background:#fff}
+.sheet input:focus-visible{box-shadow:0 0 0 3px rgba(0,0,0,.2)}
+.sheet-row{display:flex;gap:10px;align-items:center}
+.sheet-row .pill{flex:1;background:#000;color:#fff}
+.sheet-cancel{min-height:56px;padding:0 18px;border:none;background:none;font-size:16px;text-decoration:underline;color:#000}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes sheetup{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+.opts.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.opts.c2{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{position:relative;height:84px;border-radius:8px;border:none;font-size:15px;line-height:1.2;padding:8px;color:var(--ink);background:rgba(255,255,255,.18);transition:background-color .25s,color .25s,transform .2s cubic-bezier(.2,.8,.2,1);animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.k-mind .opt,.k-body .opt{background:rgba(255,255,255,.5)}
+.opts.c2 .opt{height:112px;font-size:17px}
+.opt.wide{grid-column:1 / -1;height:64px !important}
+.opt:active{transform:scale(.95)}
+.opt.on{background:var(--ink);color:var(--c)}
+.opt.on::after{content:"";position:absolute;inset:0;border-radius:8px;animation:ring .6s ease-out}
+@keyframes ring{from{box-shadow:0 0 0 0 var(--ink)}to{box-shadow:0 0 0 14px transparent}}
+.opt .ck{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--c);display:none;align-items:center;justify-content:center}
+.opt.on .ck{display:flex;animation:ckin .35s cubic-bezier(.22,1,.36,1) both}
+.opt .ck{color:var(--ink)}
+@keyframes ckin{from{transform:scale(.4);opacity:0}to{transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
+.opt:nth-child(1){animation-delay:.42s}.opt:nth-child(2){animation-delay:.46s}.opt:nth-child(3){animation-delay:.5s}.opt:nth-child(4){animation-delay:.54s}.opt:nth-child(5){animation-delay:.58s}.opt:nth-child(6){animation-delay:.62s}.opt:nth-child(7){animation-delay:.66s}.opt:nth-child(8){animation-delay:.7s}.opt:nth-child(9){animation-delay:.74s}.opt:nth-child(10){animation-delay:.78s}.opt:nth-child(11){animation-delay:.82s}.opt:nth-child(12){animation-delay:.86s}
+.mindwrap{flex:1;display:flex;flex-direction:column;min-height:0}
+.dgrid{flex:1;min-height:0;margin:20px 0 14px;display:flex;flex-direction:column;gap:6px;touch-action:none;cursor:crosshair;outline:none;pointer-events:auto}
+.dgrid:focus-visible{box-shadow:0 0 0 3px var(--ink);border-radius:8px}
+.drow{flex:1;min-height:0;display:grid;grid-template-columns:76px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch;border-radius:8px}
+.drow.kf{box-shadow:0 0 0 2px var(--ink)}
+.dlab{align-self:center;font-size:13px;color:var(--ink)}
+.dc{border-radius:7px;background:rgba(255,255,255,.5);transition:background-color .2s}
+.dc.on{animation:fillpop .4s cubic-bezier(.33,0,.2,1)}
+.dc.on.solid{background:var(--ink)}
+.dc.on.flicker,.sw.flicker{background:radial-gradient(var(--ink) 2.2px,transparent 2.7px) 0 0/9px 9px,rgba(255,255,255,.5)}
+.dc.on.flicker{animation:fillpop .4s cubic-bezier(.33,0,.2,1),flick 1.8s ease-in-out .4s infinite alternate}
+@keyframes flick{0%,40%{opacity:1}55%{opacity:.45}70%{opacity:.9}100%{opacity:.6}}
+.dc.on.heavy,.sw.heavy{background:repeating-linear-gradient(135deg,var(--ink) 0 4px,rgba(255,255,255,.5) 4px 9px)}
+.sw.solid{background:var(--ink)}
+.brushes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.brush{min-height:48px;border-radius:999px;border:1.5px solid transparent;background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;color:var(--ink);transition:border-color .2s,background-color .2s}
+.brush.on{border-color:var(--ink);background:rgba(255,255,255,.85)}
+.brush .sw{width:18px;height:18px;border-radius:4px;display:block;flex:none}
+.readout{font-size:15px;line-height:1.35;color:var(--ink);margin:12px 0 12px;height:5.4em;overflow:hidden}
+.readout:empty::before{content:"Drag down the grid to draw your day";opacity:.7}
+.tank{flex:1;min-height:0;margin:24px 0 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:6px;touch-action:none;cursor:pointer;outline:none;border-radius:10px}
+.tank:focus-visible{box-shadow:0 0 0 3px var(--ink)}
+.tb{flex:1;border-radius:8px;background:rgba(255,255,255,.5);transition:background-color .25s cubic-bezier(.65,0,.35,1)}
+.tb.on{background:var(--ink);animation:fillpop .45s cubic-bezier(.33,0,.2,1)}
+@keyframes fillpop{0%{scale:.7 .7}45%{scale:1.04 1.08}75%{scale:.99 .98}100%{scale:1 1}}
+.tank.full .tb{animation:wave .7s cubic-bezier(.33,0,.2,1) both}
+.tank.full .tb:nth-child(2){animation-delay:0.00s}.tank.full .tb:nth-child(3){animation-delay:0.00s}.tank.full .tb:nth-child(4){animation-delay:0.00s}.tank.full .tb:nth-child(5){animation-delay:0.06s}.tank.full .tb:nth-child(6){animation-delay:0.06s}.tank.full .tb:nth-child(7){animation-delay:0.06s}.tank.full .tb:nth-child(8){animation-delay:0.06s}.tank.full .tb:nth-child(9){animation-delay:0.12s}.tank.full .tb:nth-child(10){animation-delay:0.12s}.tank.full .tb:nth-child(11){animation-delay:0.12s}.tank.full .tb:nth-child(12){animation-delay:0.12s}.tank.full .tb:nth-child(13){animation-delay:0.18s}.tank.full .tb:nth-child(14){animation-delay:0.18s}.tank.full .tb:nth-child(15){animation-delay:0.18s}.tank.full .tb:nth-child(16){animation-delay:0.18s}.tank.full .tb:nth-child(17){animation-delay:0.24s}.tank.full .tb:nth-child(18){animation-delay:0.24s}.tank.full .tb:nth-child(19){animation-delay:0.24s}.tank.full .tb:nth-child(20){animation-delay:0.24s}
+@keyframes wave{0%{scale:1 1}30%{scale:1.06 .9}60%{scale:.97 1.04}100%{scale:1 1}}
+.tread{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:4px;margin-bottom:16px;color:var(--ink)}
+.tread .big{font-size:34px;line-height:1.05;letter-spacing:-0.02em;min-height:36px;white-space:nowrap}
+.tread .hint{font-size:15px;opacity:.75}
+.lvs .opt{height:58px;display:flex;align-items:center;gap:14px;padding:0 16px;font-size:17px;text-align:left}
+.bars{display:flex;gap:4px}.bars b{width:8px;height:22px;border-radius:2px;background:currentColor;opacity:.25;display:block}.bars b.f{opacity:1}
+.also{font-size:14px;margin:20px 0 0;opacity:.85}
+.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.chips .opt{height:58px}
+
+/* day + week */
+.poster-cap{position:absolute;left:55px;right:55px;top:506px;display:flex;justify-content:space-between;font-size:13px;color:#444}
+.weekrow{position:absolute;left:30px;right:30px;top:330px;display:grid;grid-template-columns:repeat(7,40px);justify-content:space-between}
+.mini{width:40px;height:40px;display:grid;grid-template-columns:1fr 1fr;gap:2px;animation:in .5s ease both}
+.mini b{display:block;border-radius:2px;background:var(--c)}
+.mini b.split{background:linear-gradient(var(--c),var(--c)) 0 0/100% 45% no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/100% 45% no-repeat}
+.mini b.off{background:#EDEDED}
+.wk{position:absolute;left:30px;right:30px;top:378px;display:grid;grid-template-columns:repeat(7,40px);justify-content:space-between;font-size:12px;color:#666;text-align:center}
+.notice{position:absolute;left:30px;right:30px;top:430px;border-top:1px solid #000;padding-top:14px;font-size:16px;line-height:1.4}
+.notice small{display:block;font-size:12px;color:#666;margin-bottom:4px}
+.toast{align-self:center;background:#000;color:#fff;border-radius:999px;padding:10px 18px;font-size:14px;margin-bottom:10px;animation:in .4s ease both}
+
+
+/* ── colour screens: white page, colour only on what you pick (from Figma) ── */
+.k-pain,.k-heart{--on:#fff}.k-mind,.k-body{--on:#000}
+.quad.s-full{background-color:#fff;transition:left 1s cubic-bezier(.65,0,.35,1),top 1s cubic-bezier(.65,0,.35,1),width 1s cubic-bezier(.65,0,.35,1),height 1s cubic-bezier(.65,0,.35,1),border-radius 1s cubic-bezier(.65,0,.35,1),background-color .5s ease .75s}
+.layer.panel{--ink:#000;color:#000}
+.layer.panel .bk i{background:#000;color:#fff}
+.layer.panel .pbar::before{background:#DCDCDC;opacity:1}
+.layer.panel .pbar i{background:var(--c)}
+.layer.panel .pill.inv{background:#000;color:#fff}
+.layer.panel .opt{background:#F1F2F4;color:#000}
+.layer.panel .opt.on{background:var(--c);color:var(--on)}
+.layer.panel.k-mind .opt.on,.layer.panel.k-body .opt.on{box-shadow:inset 0 0 0 1.5px #000}
+.layer.panel .opt.on::after{animation:ringc .6s ease-out}
+@keyframes ringc{from{box-shadow:0 0 0 0 var(--c)}to{box-shadow:0 0 0 14px transparent}}
+.layer.panel .opt .ck{background:var(--on);color:var(--c)}
+.layer.panel.k-mind .opt .ck,.layer.panel.k-body .opt .ck{background:#000;color:#fff}
+.layer.panel .tb{background:#F1F2F4}
+.layer.panel{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px)) !important}
+.layer.panel .tank{margin:20px 0 14px}
+.layer.panel .tread{margin-bottom:0}
+.donebar{margin-top:auto;padding-top:16px;flex:none}
+.layer.panel .tb.on{background:var(--c);box-shadow:inset 0 0 0 1.5px #000}
+.layer.panel .opts.sq3{gap:10px;max-width:none;width:100%}
+.layer.panel [data-k="zBody"],.layer.panel [data-k="zHeart"],.layer.panel [data-k="zPain"]{flex:1;min-height:0;display:flex;flex-direction:column}
+.layer.panel .pgrid{flex:1 1 auto;min-height:0;grid-template-rows:repeat(4,minmax(0,1fr))}
+.layer.panel .pgrid.g3{grid-template-rows:repeat(3,minmax(0,1fr))}
+.layer.panel .pgrid .opt{aspect-ratio:auto;height:auto}
+.layer.panel .pgrid .own{aspect-ratio:1;height:100%;width:auto;max-width:100%;justify-self:center;align-self:center}
+.layer.panel .opts.sq3 .opt{font-size:14px;line-height:1.2;padding:6px;overflow-wrap:normal;word-break:normal;hyphens:manual}
+.own{position:relative;left:auto;top:auto;translate:none;width:auto;height:auto;aspect-ratio:1;min-width:0;border:none;border-radius:50%;background:var(--c);color:var(--on);font-size:15px;padding:8px;z-index:1}
+.own{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}
+.own small{font-size:11px;opacity:.85;display:none}
+.own.has small{display:none}
+.own.has .ownt{font-size:15px;line-height:1.15;max-width:86%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.own .ck{position:absolute;top:6%;right:6%;width:20px;height:20px;border-radius:50%;background:#fff;color:var(--c);display:none;align-items:center;justify-content:center}
+.own.has .ck{display:flex;animation:ckin .35s cubic-bezier(.22,1,.36,1) both}
+.own.has{box-shadow:0 0 0 3px #fff,0 0 0 4.5px var(--c);animation:jelly .7s cubic-bezier(.33,0,.2,1)}
+.ownchips{display:flex;flex-wrap:wrap;gap:8px}
+.ownchip{min-height:44px;padding:0 14px;border-radius:999px;border:none;background:var(--c,#3F5BD3);color:#fff;font-size:16px;display:flex;align-items:center;gap:8px}
+.ownchip span{font-size:20px;line-height:1;opacity:.9}
+.cells.egrid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:3px}
+.cells.egrid .cell{border-radius:3px}
+.cells.egrid .cell.off{background:#F6F8EC;box-shadow:none}
+.s-week .cells.egrid .cell{box-shadow:none;border-radius:0}
+.s-week .cells.egrid{gap:0}
+.cells.patch{display:block;background:#fff}
+.cells.patch .cell{position:absolute;padding:0}
+.s-day .cells.patch .cell,.s-week .cells.patch .cell{padding:0}
+
+/* option layout */
+.opt{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.osub{font-size:11px;line-height:1.1;opacity:.9}.osub:empty{display:none}
+.hint2{font-size:13px;color:#555;margin:8px 0 0}.hint2:empty{display:none}
+.layer.panel .opt .onm,.layer.panel .opt .osub{position:relative;z-index:1}
+
+/* feelings: tile fills from the bottom with intensity */
+.layer.panel .opt.feel{overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.layer.panel .opt.feel::before{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--f,0%);background:var(--c);transition:height .35s cubic-bezier(.22,1,.36,1);z-index:0}
+.layer.panel .opt.feel.on{background:#FADCDD;color:#000}
+.layer.panel .opt.feel.on.hi{color:#fff}
+.layer.panel.k-body .opt.feel.on{background:#ECE6FC}
+.layer.panel.k-body .opt.feel.on.hi{color:#000}
+.layer.panel.k-body .opt.feel.on{box-shadow:none}
+.layer.panel .opt.feel .onm,.layer.panel .opt.feel .osub{position:relative;z-index:1}
+.layer.panel .opt.feel .osub{font-size:12px;font-variant-numeric:tabular-nums}
+.layer.panel .opt.feel .ck,.layer.panel .opt.feel .osub{display:none !important}
+
+/* body: groups first, then the symptoms inside */
+.catgrid{position:relative;flex:1 1 auto;min-height:0;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+.cat{position:relative;border:none;border-radius:10px;background:#F1F2F4;color:#000;text-align:left;padding:12px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px;overflow:hidden;animation:rise .6s cubic-bezier(.22,1,.36,1) both;transition:background-color .25s,transform .2s}
+.cat:nth-child(2){animation-delay:0.05s}.cat:nth-child(3){animation-delay:0.10s}.cat:nth-child(4){animation-delay:0.15s}.cat:nth-child(5){animation-delay:0.20s}.cat:nth-child(6){animation-delay:0.25s}.cat:nth-child(7){animation-delay:0.30s}
+.cat:active{transform:scale(.97)}
+.cat .cname{font-size:17px;line-height:1.15;position:relative;z-index:1}
+.cat .csub{font-size:12px;line-height:1.3;color:#444;position:relative;z-index:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cat.has{background:#ECE6FC}
+.cat .cmarks{position:absolute;left:12px;right:12px;bottom:10px;height:28%;display:flex;gap:4px;align-items:flex-end}
+.cat .cmarks i{flex:1;max-width:26px;background:var(--c);border-radius:3px;display:block}
+.cat:nth-child(7){grid-column:1 / -1}
+.catgrid .own{position:relative;left:auto;top:auto;translate:none;width:auto;height:100%;max-width:100%;aspect-ratio:1;justify-self:center;align-self:center;border:none;box-sizing:border-box}
+.catwrap{display:flex;flex-direction:column;flex:1;min-height:0;animation:in .5s cubic-bezier(.22,1,.36,1) both}
+.catback{align-self:flex-start;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;margin-top:14px;border:none;border-radius:999px;background:#F1F2F4;font-size:15px;color:#000}
+.subgrid{margin-top:12px}
+
+/* body groups: 3 on top, 1 · circle · 1, then 2 centred */
+.layer.panel .cat7{grid-template-columns:repeat(6,minmax(0,1fr))}
+.layer.panel .cat7 > *{grid-column:span 2}
+.layer.panel .cat7 > :nth-child(7){grid-column:2 / span 2}
+.layer.panel .cat7 .opt{animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+
+/* body groups: interlocking rows that taper to the circle (2 · 3 · 2 · 1) */
+.layer.panel .brick{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:10px;row-gap:10px;margin-top:20px;width:100%;margin-left:auto;margin-right:auto}
+.layer.panel .brick > *{grid-column:span 2;aspect-ratio:1;height:auto;min-height:0 !important;min-width:0}
+.layer.panel .brick > :nth-child(1){grid-row:1;grid-column:2 / span 2}
+.layer.panel .brick > :nth-child(2){grid-row:1;grid-column:4 / span 2}
+.layer.panel .brick > :nth-child(3){grid-row:2;grid-column:1 / span 2}
+.layer.panel .brick > :nth-child(4){grid-row:2;grid-column:3 / span 2}
+.layer.panel .brick > :nth-child(6){grid-row:2;grid-column:5 / span 2}
+.layer.panel .brick > :nth-child(7){grid-row:3;grid-column:2 / span 2}
+.layer.panel .brick > :nth-child(8){grid-row:3;grid-column:4 / span 2}
+.layer.panel .brick > :nth-child(5){grid-row:4;grid-column:3 / span 2}
+.layer.panel .brick .opt{font-size:14px;line-height:1.15;padding:6px;animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.layer.panel .brick .own{position:relative;left:auto;top:auto;translate:none;width:100%;height:auto;font-size:14px;animation:rise .6s cubic-bezier(.22,1,.36,1) .3s both}
+.layer.panel .brick > :nth-child(6){animation-delay:.12s}.layer.panel .brick > :nth-child(7){animation-delay:.16s}.layer.panel .brick > :nth-child(8){animation-delay:.2s}
+@media (prefers-reduced-motion: reduce){*{animation-duration:1ms !important;animation-delay:0ms !important;transition-duration:1ms !important;transition-delay:0ms !important}}
+
+</style>
+<style id="dyn"></style>
+<div id="stage"></div>
+<template id="tpl">
+<div class="{{appCls}}" id="appEl">
+
+  <sc-for list="{{quads}}" as="q" hint-placeholder-count="4">
+    <button class="{{q.cls}}" onClick="{{q.tap}}" aria-label="{{q.aria}}">
+      <span class="letter">{{q.letter}}</span>
+      <span class="{{q.cellsCls}}">
+        <sc-for list="{{q.cells}}" as="c" hint-placeholder-count="2">
+          <span class="{{c.cls}}" style="{{c.style}}"><small>{{c.sys}}</small><span>{{c.name}}</span></span>
+        </sc-for>
+      </span>
+    </button>
+  </sc-for>
+  <div class="{{dotCls}}" aria-hidden="true">D</div>
+
+  <!-- splash -->
+  <sc-if value="{{isSplash}}" hint-placeholder-val="{{ false }}">
+    <div class="layer" data-k="splash" style="pointer-events: auto" onClick="{{goIntro}}" aria-label="Lived. Tap to continue"></div>
+  </sc-if>
+
+  <!-- intro: the logo squares scatter into place -->
+  <sc-if value="{{isIntro}}" hint-placeholder-val="{{ false }}">
+    <div class="layer" data-k="intro">
+      <h1 class="h in" style="animation-delay: .5s">For adults with hEDS to understand their medical condition.</h1>
+      <div class="bottom in" style="animation-delay: 1s"><button class="pill" onClick="{{goHome}}">Start now</button></div>
+    </div>
+  </sc-if>
+
+  <!-- home -->
+  <sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+    <div class="layer" data-k="home">
+      <div class="top in" style="animation-delay: .3s; --ink: #000; --c: #fff">
+        <button class="bk" onClick="{{goIntro}}" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+      </div>
+      <h1 class="h in" style="animation-delay: .4s; margin-top: 12px">Today:<br>{{homeSub}}</h1>
+      <div class="bottom in" style="animation-delay: .6s">
+        <sc-if value="{{toast}}" hint-placeholder-val="{{ false }}"><span class="toast">Saved to your week</span></sc-if>
+        <sc-if value="{{hasItems}}" hint-placeholder-val="{{ false }}"><button class="pill" onClick="{{goDay}}">This is my day</button></sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- zoomed into one colour -->
+  <sc-if value="{{isZoom}}" hint-placeholder-val="{{ false }}">
+    <div class="{{panelCls}}" data-k="{{panelCls}}">
+      <div class="top in" style="animation-delay: .35s">
+        <button class="bk" onClick="{{goHome}}" aria-label="Back to today"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+        <div class="pbar" role="progressbar" aria-label="{{pLabel}}"><i class="{{pCls}}"></i></div>
+        <span class="mapgap"></span>
+      </div>
+
+      <sc-if value="{{zPain}}" hint-placeholder-val="{{ false }}">
+        <div data-k="zPain">
+          <h1 class="h in" style="animation-delay: .4s; margin-top: 12px">Today:<br>Tap where you feel pain</h1>
+          <div class="opts sq3 pgrid">
+            <sc-for list="{{painOptsA}}" as="o" hint-placeholder-count="7">
+              <button class="{{o.cls}}" onClick="{{o.tap}}" aria-pressed="{{o.on}}" aria-label="{{o.aria}}" data-key="{{o.key}}" data-name="{{o.name}}"><span class="onm">{{o.name}}</span><span class="osub">{{o.sub}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            </sc-for>
+            <button class="{{ownCls}}" onClick="{{openOwn}}" aria-label="{{ownAria}}"><small>{{ownCap}}</small><span class="ownt">{{ownText}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            <sc-for list="{{painOptsB}}" as="o" hint-placeholder-count="4">
+              <button class="{{o.cls}}" onClick="{{o.tap}}" aria-pressed="{{o.on}}" aria-label="{{o.aria}}" data-key="{{o.key}}" data-name="{{o.name}}"><span class="onm">{{o.name}}</span><span class="osub">{{o.sub}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{zHeart}}" hint-placeholder-val="{{ false }}">
+        <div data-k="zHeart">
+          <h1 class="h in" style="animation-delay: .4s; margin-top: 12px">Today:<br>Tap what you feel</h1>
+          <p class="hint2 in" style="animation-delay: .45s">Then slide up on it to show how strong</p>
+          <div class="opts sq3 pgrid g3">
+            <sc-for list="{{feelA}}" as="o" hint-placeholder-count="4">
+              <button class="{{o.cls}}" style="{{o.style}}" onClick="{{o.tap}}" aria-pressed="{{o.on}}" aria-label="{{o.aria}}" data-feel="{{o.name}}" data-fkey="{{o.key}}"><span class="onm">{{o.name}}</span><span class="osub">{{o.sub}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            </sc-for>
+            <button class="{{ownCls}}" onClick="{{openOwn}}" aria-label="{{ownAria}}"><small>{{ownCap}}</small><span class="ownt">{{ownText}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            <sc-for list="{{feelB}}" as="o" hint-placeholder-count="4">
+              <button class="{{o.cls}}" style="{{o.style}}" onClick="{{o.tap}}" aria-pressed="{{o.on}}" aria-label="{{o.aria}}" data-feel="{{o.name}}" data-fkey="{{o.key}}"><span class="onm">{{o.name}}</span><span class="osub">{{o.sub}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{zMind}}" hint-placeholder-val="{{ false }}">
+        <div data-k="zMind" class="mindwrap">
+          <h1 class="h in" style="animation-delay: .4s; margin-top: 12px">Today:<br>Fill your energy level</h1>
+          <div class="{{tankCls}}" data-tank="1" role="slider" tabindex="0" aria-label="Energy level, fill the squares" aria-valuemin="0" aria-valuemax="20" aria-valuenow="{{enNum}}" aria-valuetext="{{lvName}}">
+            <sc-for list="{{tank}}" as="t" hint-placeholder-count="20"><span class="{{t.cls}}"></span></sc-for>
+          </div>
+          <div class="tread in" style="animation-delay: .6s"><span class="big">{{lvName}}</span><span class="hint">{{lvHint}}</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{zBody}}" hint-placeholder-val="{{ false }}">
+        <div data-k="zBody">
+          <sc-if value="{{bodyCats}}" hint-placeholder-val="{{ true }}"><h1 class="h in" style="animation-delay: .4s; margin-top: 12px">Today:<br>Tap any body reactions</h1></sc-if>
+          <sc-if value="{{bodyIn}}" hint-placeholder-val="{{ false }}"><h1 class="h in" style="animation-delay: .1s; margin-top: 12px">{{bodyHead}}</h1></sc-if>
+          <p class="hint2 in" style="animation-delay: .45s">{{bodyHint}}</p>
+          <sc-if value="{{bodyCats}}" hint-placeholder-val="{{ true }}">
+            <div class="opts brick" data-k="cats">
+              <sc-for list="{{catsA}}" as="c" hint-placeholder-count="4">
+                <button class="{{c.cls}}" onClick="{{c.tap}}" aria-label="{{c.aria}}"><span class="onm">{{c.name}}</span><span class="osub">{{c.sub}}</span></button>
+              </sc-for>
+              <button class="{{ownCls}}" onClick="{{openOwn}}" aria-label="{{ownAria}}"><small>{{ownCap}}</small><span class="ownt">{{ownText}}</span><span class="ck"></span></button>
+              <sc-for list="{{catsB}}" as="c" hint-placeholder-count="3">
+                <button class="{{c.cls}}" onClick="{{c.tap}}" aria-label="{{c.aria}}"><span class="onm">{{c.name}}</span><span class="osub">{{c.sub}}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{bodyIn}}" hint-placeholder-val="{{ false }}">
+            <div data-k="{{catKey}}" class="catwrap">
+              <button class="catback" onClick="{{catBack}}" aria-label="Back to groups"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg>All groups</button>
+              <div class="opts sq3 subgrid">
+                <sc-for list="{{bodySub}}" as="o" hint-placeholder-count="6">
+                  <button class="{{o.cls}}" onClick="{{o.tap}}" aria-pressed="{{o.on}}" aria-label="{{o.aria}}"><span class="onm">{{o.name}}</span><span class="ck"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></span></button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ownOpen}}" hint-placeholder-val="{{ false }}">
+        <div class="sheet-bg" onClick="{{closeOwn}}"></div>
+        <div class="sheet" role="dialog" aria-label="{{ownQ}}">
+          <label for="own-in">{{ownQ}}</label>
+          <sc-if value="{{hasOwn}}" hint-placeholder-val="{{ false }}">
+            <div class="ownchips"><sc-for list="{{ownChips}}" as="c" hint-placeholder-count="1"><button class="ownchip" onClick="{{c.remove}}" aria-label="{{c.aria}}">{{c.name}}<span aria-hidden="true">×</span></button></sc-for></div>
+          </sc-if>
+          <input id="own-in" type="text" maxlength="24" placeholder="{{ownPh}}" autocomplete="off">
+          <div class="sheet-row"><button class="sheet-cancel" onClick="{{closeOwn}}">Cancel</button><button class="pill" onClick="{{addOwn}}">Add</button></div>
+        </div>
+      </sc-if>
+      <div class="bottom donebar in" style="animation-delay: .7s"><button class="pill inv" onClick="{{goHome}}">Done</button></div>
+    </div>
+  </sc-if>
+
+  <!-- the day, as one patchwork -->
+  <sc-if value="{{isDay}}" hint-placeholder-val="{{ false }}">
+    <div class="layer" data-k="day">
+      <div class="in" style="animation-delay: .4s">
+        <h1 class="h">This is your day.</h1>
+        <p class="date">Sunday 23 November · {{count}} things</p>
+      </div>
+      <div class="poster-cap in" style="animation-delay: .8s"><span>Lived · 23.11</span><span>{{count}} cells</span></div>
+      <div class="bottom in" style="animation-delay: .7s">
+        <button class="pill" onClick="{{goWeek}}">Save my day</button>
+        <button class="pill" style="background: none; color: #000; text-decoration: underline; min-height: 44px" onClick="{{goHome}}">Change something</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- the week -->
+  <sc-if value="{{isWeek}}" hint-placeholder-val="{{ false }}">
+    <div class="layer" data-k="week">
+      <div class="in" style="animation-delay: .3s">
+        <h1 class="h">Your week</h1>
+        <p class="date">Every day becomes one tile.</p>
+      </div>
+      <div class="weekrow">
+        <div class="mini" style="animation-delay: .5s"><b class="k-mind"></b><b class="k-heart split"></b><b class="k-pain"></b><b class="off"></b></div>
+        <div class="mini" style="animation-delay: .56s"><b class="k-mind split"></b><b class="off"></b><b class="off"></b><b class="off"></b></div>
+        <div class="mini" style="animation-delay: .62s"><b class="k-mind split"></b><b class="k-heart split"></b><b class="k-pain split"></b><b class="k-body"></b></div>
+        <div class="mini" style="animation-delay: .68s"><b class="off"></b><b class="off"></b><b class="k-pain"></b><b class="k-body"></b></div>
+        <div class="mini" style="animation-delay: .74s"><b class="k-mind"></b><b class="off"></b><b class="k-pain split"></b><b class="off"></b></div>
+        <div class="mini" style="animation-delay: .8s"><b class="k-mind"></b><b class="k-heart split"></b><b class="off"></b><b class="k-body"></b></div>
+        <div></div>
+      </div>
+      <div class="wk in" style="animation-delay: .6s"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span><u>S</u></span></div>
+      <div class="notice in" style="animation-delay: 1.1s"><small>You noticed</small>Dizziness showed up on 4 of 7 days. On 3 of them, you were also running low.</div>
+      <div class="bottom in" style="animation-delay: .9s"><button class="pill" onClick="{{goHomeSaved}}">Back to today</button></div>
+    </div>
+  </sc-if>
+
+</div>
+</template>
+<script>
+const SVGNS="http://www.w3.org/2000/svg";
+class DCLogic{constructor(p){this.props=p;this.state=null}setState(x){this.state=Object.assign({},this.state||{},x);schedule()}}
+function ev(scope,expr){try{return Function(...Object.keys(scope),'return ('+expr.trim()+')')(...Object.values(scope))}catch(e){return undefined}}
+function strip(v){return v.replace(/^\s*\{\{|\}\}\s*$/g,'')}
+function bindText(str,scope){return str.replace(/\{\{(.*?)\}\}/g,(m,e)=>{const v=ev(scope,e);return v==null?'':v})}
+function build(tpl,scope,parent,svg){
+ for(const n of [...tpl.childNodes]){
+  if(n.nodeType===3){parent.appendChild(document.createTextNode(bindText(n.textContent,scope)));continue}
+  if(n.nodeType!==1)continue;
+  const tag=n.tagName.toLowerCase();
+  if(tag==='sc-if'){if(ev(scope,strip(n.getAttribute('value')))){const k=document.createComment('if');build(n,scope,parent,svg)}continue}
+  if(tag==='sc-for'){const list=ev(scope,strip(n.getAttribute('list')))||[];const as=n.getAttribute('as');list.forEach(it=>build(n,Object.assign({},scope,{[as]:it}),parent,svg));continue}
+  const isSvg=svg||tag==='svg';
+  const el=isSvg?document.createElementNS(SVGNS,tag):document.createElement(tag);
+  for(const a of n.attributes){
+   if(a.name.toLowerCase()==='onclick'){el.__click=ev(scope,strip(a.value));continue}
+   el.setAttribute(a.name,bindText(a.value,scope))}
+  build(n,scope,el,isSvg);parent.appendChild(el)}
+}
+function sameNode(a,b){if(a.nodeType!==b.nodeType)return false;if(a.nodeType===3)return true;if(a.nodeName!==b.nodeName)return false;
+ const ka=a.getAttribute('data-k'),kb=b.getAttribute('data-k');if(ka!==kb)return false;
+ const la=(a.getAttribute('class')||'').split(' ')[0],lb=(b.getAttribute('class')||'').split(' ')[0];return la===lb}
+function morph(oldP,newP){
+ const o=[...oldP.childNodes],n=[...newP.childNodes];
+ for(let i=0;i<n.length;i++){
+  const nn=n[i],on=o[i];
+  if(!on){oldP.appendChild(nn);continue}
+  if(!sameNode(on,nn)){oldP.replaceChild(nn,on);continue}
+  if(on.nodeType===3){if(on.nodeValue!==nn.nodeValue)on.nodeValue=nn.nodeValue;continue}
+  for(const a of [...on.attributes])if(!nn.hasAttribute(a.name))on.removeAttribute(a.name);
+  for(const a of [...nn.attributes])if(on.getAttribute(a.name)!==a.value)on.setAttribute(a.name,a.value);
+  on.__click=nn.__click;
+  morph(on,nn)}
+ for(let i=o.length-1;i>=n.length;i--)oldP.removeChild(o[i]);
+}
+
+
+let fd=null,feelSlid=false;
+function feelLevel(b,y){const r=b.getBoundingClientRect();return Math.max(1,Math.min(5,Math.ceil((r.bottom-y)/r.height*5)))}
+function setFeel(n,v,k){k=k||'heart';const st=C.__st||{};const cur=(st.inten||{})[n];const on=(st[k]||[]).indexOf(n)>=0;if(on&&cur===v)return;const p={inten:Object.assign({},st.inten||{},{[n]:v})};if(!on)p[k]=(st[k]||[]).concat([n]);C.setState(p);try{navigator.vibrate&&navigator.vibrate(5)}catch(_){}}
+document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('[data-feel]');if(!b)return;fd={b,n:b.getAttribute('data-feel'),k:b.getAttribute('data-fkey'),y0:e.clientY,moved:false};try{b.setPointerCapture(e.pointerId)}catch(_){}});
+document.addEventListener('pointermove',e=>{if(!fd)return;if(!fd.moved&&Math.abs(e.clientY-fd.y0)<8)return;fd.moved=true;setFeel(fd.n,feelLevel(fd.b,e.clientY),fd.k)});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{if(fd&&fd.moved){feelSlid=true;setTimeout(()=>{feelSlid=false},350)}fd=null}));
+document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('[data-feel]');if(!b)return;const n=b.getAttribute('data-feel');const v=((C.__st||{}).inten||{})[n]||1;const k=b.getAttribute('data-fkey');if(e.key==='ArrowUp'){setFeel(n,Math.min(5,v+1),k);e.preventDefault()}if(e.key==='ArrowDown'){setFeel(n,Math.max(1,v-1),k);e.preventDefault()}});
+document.addEventListener('click',e=>{if(feelSlid){feelSlid=false;e.preventDefault();return}let t=e.target;while(t&&t!==document){if(t.__click){t.__click(e);return}t=t.parentNode}});
+
+document.addEventListener('pointerdown',e=>{const q=e.target.closest&&e.target.closest('.quad');if(!q||q.classList.contains('s-full'))return;q.classList.remove('jig');void q.offsetWidth;q.classList.add('jig');try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}});
+document.addEventListener('animationend',e=>{if(e.animationName==='jelly')e.target.classList.remove('jig')});
+
+function tankCount(t,x,y){const r=t.getBoundingClientRect();if(y>r.bottom+8)return 0;const col=Math.max(0,Math.min(3,Math.floor((x-r.left)/r.width*4))),row=Math.max(0,Math.min(4,Math.floor((y-r.top)/r.height*5)));return (4-row)*4+col+1}
+function bucket(n){return n===0?0:Math.min(5,Math.ceil(n/4))}
+function setEnergy(n){const cur=(C.state&&C.state.energy!==undefined)?C.state.energy:C.renderVals().enNum;if(cur===n)return;C.setState({energy:n,level:bucket(n)});try{navigator.vibrate&&navigator.vibrate(n===20?[10,40,10]:6)}catch(_){}}
+let tankDrag=null;
+document.addEventListener('pointerdown',e=>{const t=e.target.closest&&e.target.closest('[data-tank]');if(!t)return;tankDrag=t;try{t.setPointerCapture(e.pointerId)}catch(_){}let n=tankCount(t,e.clientX,e.clientY);const cur=(C.state&&C.state.energy)||0;if(n===cur)n=n-1;setEnergy(n);e.preventDefault()});
+document.addEventListener('pointermove',e=>{if(tankDrag)setEnergy(tankCount(tankDrag,e.clientX,e.clientY))});
+['pointerup','pointercancel'].forEach(n=>document.addEventListener(n,()=>{tankDrag=null}));
+document.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.closest('[data-tank]');if(!t)return;const cur=(C.state&&C.state.energy)||0;if(e.key==='ArrowUp'||e.key==='ArrowRight'){setEnergy(Math.min(20,cur+1));e.preventDefault()}if(e.key==='ArrowDown'||e.key==='ArrowLeft'){setEnergy(Math.max(0,cur-1));e.preventDefault()}});
+document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='own-in'&&e.key==='Enter'){const b=[...document.querySelectorAll('.sheet .pill')][0];b&&b.click();e.preventDefault()}if(e.key==='Escape'){const c=document.querySelector('.sheet-cancel');c&&c.click()}});
+let pending=false;function schedule(){if(pending)return;pending=true;queueMicrotask(()=>{pending=false;paint()})}
+
+class Component extends DCLogic {
+  renderVals() {
+    const start = this.props.start || 'splash';
+    const lea = { pain: ['Knees', 'Hands'], heart: ['Dizziness', 'Racing heart'], inten: { Dizziness: 4, 'Racing heart': 2, Nausea: 3 }, level: 2, energy: 7, draw: [{n:4,t:'solid'},{n:3,t:'solid'},{n:1,t:'heavy'},{n:1,t:'heavy'},{n:2,t:'flicker'}], brush: 'solid', mind: [], body: ['Nausea'] };
+    const none = { pain: [], heart: [], level: null, energy: null, draw: [null, null, null, null, null], brush: 'solid', mind: [], body: [] };
+    const sysOf = { mind: 0, heart: 1, pain: 2, body: 3 };
+    let defaults;
+    if (start in sysOf) defaults = Object.assign({ screen: 'zoom', z: sysOf[start] }, start === 'mind' ? none : Object.assign({}, lea, { [start]: [] }));
+    else if (start === 'home-filled' || start === 'day' || start === 'week') defaults = Object.assign({ screen: start === 'home-filled' ? 'home' : start, z: null }, lea);
+    else defaults = Object.assign({ screen: start, z: null }, none);
+    defaults.toast = false;
+    const st = Object.assign(defaults, this.state || {});
+    this.__lastDraw = st.draw;
+    this.__st = st;
+    const set = (p) => this.setState(p);
+    if (st.screen === 'splash' && !this._auto) { this._auto = setTimeout(() => { if ((this.state || {}).screen === undefined || this.state.screen === 'splash') this.setState({ screen: 'intro' }); }, 3600); }
+
+    const systems = [
+      { key: 'mind', k: 'k-mind', letter: 'L', name: 'Energy & mind', short: 'Energy' },
+      { key: 'heart', k: 'k-heart', letter: 'I', name: 'Dizziness & heart', short: 'Heart' },
+      { key: 'pain', k: 'k-pain', letter: 'V', name: 'Pain', short: 'Pain' },
+      { key: 'body', k: 'k-body', letter: 'E', name: 'Body reactions', short: 'Body' }
+    ];
+    const levelNames = ['Nothing left', 'Running on fumes', 'Running low', 'Getting by', 'Steady', 'A good day'];
+    const times = ['Morning', 'Midday', 'Afternoon', 'Evening', 'Night'];
+    const timeAt = ['in the morning', 'at midday', 'in the afternoon', 'in the evening', 'at night'];
+    const timeFrom = ['morning', 'midday', 'afternoon', 'evening', 'night'];
+    const amt = ['none', 'low', 'some', 'good', 'full'];
+    const texWord = { solid: 'steady', flicker: 'flickering', heavy: 'heavy' };
+    const segs = (d) => { const out = []; d.forEach((r, i) => { if (!r) return; const last = out[out.length - 1]; if (last && last.end === i - 1 && last.n === r.n && last.t === r.t) last.end = i; else out.push({ start: i, end: i, n: r.n, t: r.t }); }); return out; };
+    const segText = (g) => { const a = amt[g.n]; const q = g.n === 0 ? '' : ' and ' + texWord[g.t]; const when = g.start === g.end ? timeAt[g.start] : 'from ' + timeFrom[g.start] + ' to ' + timeFrom[g.end]; return a + q + ' ' + when; };
+    const drawSentence = (d) => { const g = segs(d); if (!g.length) return ''; const t = g.map(segText).join(' → '); return t.charAt(0).toUpperCase() + t.slice(1) + '.'; };
+    const drawShort = (d) => { const rows = d.filter((r) => r); if (!rows.length) return ''; const first = rows[0], lastR = rows[rows.length - 1]; if (lastR.n < first.n - 1) return 'Dropped later'; if (lastR.n > first.n + 1) return 'Rose later'; if (rows.some((r) => r.t === 'flicker')) return 'Flickering'; if (rows.some((r) => r.t === 'heavy')) return 'Heavy'; return amt[Math.round(rows.reduce((a, r) => a + r.n, 0) / rows.length)].replace(/^./, (c) => c.toUpperCase()); };
+
+    const itemsOf = (s) => {
+      if (s.key === 'mind') {
+        const out = [];
+        if (st.level !== null) out.push({ sys: 'Energy', name: levelNames[st.level] });
+        st.mind.forEach((n) => out.push({ sys: 'Mind', name: n }));
+        return out;
+      }
+      return st[s.key].map((n) => ({ sys: s.short, name: n }));
+    };
+    const scr = st.screen;
+    const count = systems.reduce((a, s) => a + itemsOf(s).length, 0);
+
+    const patch = (n, tall) => {
+      const out = [];
+      const go = (x, y, w, h, k, vert) => {
+        if (k === 1) { out.push({ x, y, w, h }); return; }
+        const a = Math.ceil(k / 2), f = a / k;
+        if (vert) { go(x, y, w, h * f, a, !vert); go(x, y + h * f, w, h * (1 - f), k - a, !vert); }
+        else { go(x, y, w * f, h, a, !vert); go(x + w * f, y, w * (1 - f), h, k - a, !vert); }
+      };
+      go(0, 0, 100, 100, n, tall);
+      const g = 1.5, e = 0.01;
+      return out.map((r) => {
+        const l = r.x < e ? 0 : g, t = r.y < e ? 0 : g, rr = r.x + r.w > 100 - e ? 0 : g, b = r.y + r.h > 100 - e ? 0 : g;
+        return 'left:calc(' + r.x.toFixed(3) + '% + ' + l + 'px);top:calc(' + r.y.toFixed(3) + '% + ' + t + 'px);width:calc(' + r.w.toFixed(3) + '% - ' + (l + rr) + 'px);height:calc(' + r.h.toFixed(3) + '% - ' + (t + b) + 'px)';
+      });
+    };
+    const quads = systems.map((s, i) => {
+      const items = itemsOf(s);
+      let pos = scr === 'splash' ? 's-splash' : scr === 'intro' ? 's-intro' : scr === 'home' ? 's-home' : scr === 'day' ? 's-day' : scr === 'week' ? 's-week' : (st.z === i ? 's-full' : 's-mini');
+      const n = items.length;
+      const cols = n <= 2 ? 1 : n <= 6 ? 2 : 3;
+      const energyGrid = s.key === 'mind' && st.energy !== null && st.energy !== undefined;
+      const cells = energyGrid
+        ? Array.from({ length: 20 }, (_, k) => { const r = Math.floor(k / 4), c = k % 4, order = (4 - r) * 4 + c + 1; return { cls: 'cell' + (order <= st.energy ? '' : ' off'), sys: '', name: '' }; })
+        : n === 0
+        ? [{ cls: 'cell first', sys: '', name: '' }]
+        : n === 1 && s.key !== 'mind'
+        ? [{ cls: 'cell', sys: '', name: '', style: (s.key === 'heart' && (st.inten || {})[items[0].name] ? 'background:linear-gradient(to top,var(--c) ' + st.inten[items[0].name] * 20 + '%,' + (s.key === 'heart' ? '#F6C4C6' : '#E2DAFB') + ' ' + st.inten[items[0].name] * 20 + '%)' : '') }]
+        : (() => { const st2 = patch(n, true), lvm = st.lv || {}, tlm = st.tilt || {}; const inm = st.inten || {}; return items.map((it, k) => ({ cls: 'cell', sys: '', name: '', style: st2[k] + (s.key === 'heart' && inm[it.name] ? ';background:linear-gradient(to top,var(--c) ' + inm[it.name] * 20 + '%,' + (s.key === 'heart' ? '#F6C4C6' : '#E2DAFB') + ' ' + inm[it.name] * 20 + '%)' : '') })); })();
+      return {
+        cls: 'quad ' + s.k + ' ' + pos + ' i' + i,
+        letter: s.letter,
+        cellsCls: energyGrid ? 'cells egrid' : n > 1 ? 'cells patch' : 'cells cols1',
+        cells,
+        aria: s.name + (n ? ': ' + items.map((it) => it.name).join(', ') : ', nothing yet'),
+        tap: () => {
+          if (scr === 'home' || (scr === 'zoom' && st.z !== i)) set({ screen: 'zoom', z: i, toast: false });
+        }
+      };
+    });
+
+    const toggle = (key, name) => {
+      const arr = st[key];
+      set({ [key]: arr.indexOf(name) >= 0 ? arr.filter((x) => x !== name) : arr.concat([name]) });
+    };
+    const LV = st.lv || {}, TL = st.tilt || {};
+    const strengthWord = ['', 'Mild', 'Medium', 'Strong'];
+    const without = (o, k) => { const c = Object.assign({}, o); delete c[k]; return c; };
+    const opts = (key, names, wideLast) => names.map((n, i) => {
+      const on = st[key].indexOf(n) >= 0, lv = LV[n] || 1, tl = !!TL[n];
+      const plain = n.replace(/\u00AD/g, '');
+      return {
+        name: n, key, on,
+        cls: 'opt' + (on ? ' on' : '') + (wideLast && i === names.length - 1 ? ' wide' : ''),
+        sub: '',
+        aria: plain + (on ? ', selected' : ''),
+        tap: () => toggle(key, n)
+      };
+    });
+    const IN = st.inten || {};
+    const BODY = [
+      { name: 'Digestive', items: ['Bloating', 'Nausea', 'Reflux', 'Constipation', 'Diarrhoea', 'Abdominal pain'] },
+      { name: 'Musculoskeletal', short: 'Musculo\u00ADskeletal', items: ['Joint pain', 'Muscle pain', 'Stiffness', 'Subluxations', 'Dislocations'] },
+      { name: 'Neurological', items: ['Brain fog', 'Headaches', 'Dizziness', 'Vertigo', 'Tingling'] },
+      { name: 'Cardiovascular / autonomic', short: 'Cardio\u00ADvascular / autonomic', items: ['Palpitations', 'Light\u00ADheadedness', 'Faintness', 'Temperature intolerance'] },
+      { name: 'Fatigue', items: ['Exhaustion', 'Unrefreshing sleep', 'Weakness', 'Post-exertional fatigue'] },
+      { name: 'Skin', items: ['Easy bruising', 'Itching', 'Skin sensitivity'] },
+      { name: 'Bladder / pelvic', items: ['Urinary urgency', 'Pelvic pain', 'Bladder discomfort'] }
+    ];
+    const feelOpts = (names, key) => names.map((n) => {
+      key = key || 'heart';
+      const on = st[key].indexOf(n) >= 0, v = IN[n] || 1;
+      return {
+        name: n, on, key,
+        cls: 'opt feel' + (on ? ' on' + (v >= 4 ? ' hi' : '') : ''),
+        style: '--f:' + (on ? v * 20 : 0) + '%',
+        sub: on ? v + ' / 5' : '',
+        aria: n.replace(/\u00AD/g, '') + (on ? ', intensity ' + v + ' of 5. Slide up or down to change' : ''),
+        tap: () => { if (on) { const c = Object.assign({}, IN); delete c[n]; set({ [key]: st[key].filter((x) => x !== n), inten: c }); } else set({ [key]: st[key].concat([n]), inten: Object.assign({}, IN, { [n]: 1 }) }); }
+      };
+    });
+    const levels = levelNames.map((n, i) => ({
+      name: n, on: st.level === i, cls: 'opt' + (st.level === i ? ' on' : ''),
+      bars: [0, 1, 2, 3].map((d) => (d <= i ? 'f' : '')),
+      tap: () => set({ level: st.level === i ? null : i })
+    }));
+    const zs = st.z !== null ? systems[st.z] : systems[0];
+    const zCount = itemsOf(zs).length;
+    const ownKey = zs.key + 'Own', ownList = st[ownKey] || [];
+    const filledSys = systems.filter((x) => itemsOf(x).length > 0).length;
+
+    const CATS = BODY.map((g, gi) => { const chosen = g.items.filter((x) => st.body.indexOf(x) >= 0); return { name: g.short || g.name, cls: 'opt', sub: '', marks: chosen.map((x) => 'height:' + ((IN[x] || 1) * 20) + '%'), aria: g.name + (chosen.length ? ': ' + chosen.map((x) => x.replace(/\u00AD/g, '')).join(', ') : ', nothing chosen') + '. Open', tap: () => set({ bodyCat: gi }) }; });
+    return {
+      appCls: 'app' + (scr === 'splash' ? ' boot' : ''),
+      quads,
+      dotCls: scr === 'splash' ? 'dot' : 'dot gone',
+      isSplash: scr === 'splash', isIntro: scr === 'intro',
+      goIntro: () => set({ screen: 'intro' }), isHome: scr === 'home', isZoom: scr === 'zoom', isDay: scr === 'day', isWeek: scr === 'week',
+      zPain: zs.key === 'pain', zHeart: zs.key === 'heart', zMind: zs.key === 'mind', zBody: zs.key === 'body',
+      panelCls: 'layer panel ' + zs.k,
+      drows: times.map((label, i) => { const r = st.draw[i]; return { label, cells: [1, 2, 3, 4].map((k) => 'dc' + (r && r.n >= k ? ' on ' + r.t : '')) }; }),
+      brushes: [['solid', 'Steady'], ['flicker', 'Flickering'], ['heavy', 'Heavy']].map(([k, name]) => ({ name, on: st.brush === k, cls: 'brush' + (st.brush === k ? ' on' : ''), sw: 'sw ' + k, tap: () => set({ brush: k }) })),
+      readout: drawSentence(st.draw),
+      drawAria: 'Draw your energy. Rows are times of day, fill means how much, texture means how it felt. ' + (drawSentence(st.draw) || 'Nothing drawn yet.'),
+      tank: Array.from({ length: 20 }, (_, i) => { const r = Math.floor(i / 4), c = i % 4, order = (4 - r) * 4 + c + 1; return { cls: 'tb' + (st.energy && order <= st.energy ? ' on' : '') }; }),
+      tankCls: 'tank in' + (st.energy === 20 ? ' full' : ''),
+      enNum: st.energy || 0,
+      lvName: st.level === null ? '' : levelNames[st.level],
+      lvHint: st.energy === null ? 'Drag to fill the squares' : st.energy + ' of 20',
+      pCls: 'p' + filledSys, pLabel: filledSys + ' of 4 colours filled',
+      painOptsA: opts('pain', ['Shoulders', 'Knees', 'Hips & pelvis', 'Neck', 'Upper back', 'Hands', 'Fingers'], false),
+      painOptsB: opts('pain', ['Arms and wrists', 'Ribs and chest wall', 'Abdomen', 'Head'], false),
+      ownCls: 'own' + (ownList.length ? ' has' : ''),
+      ownCap: 'Others',
+      ownText: ownList.length ? ownList.join(', ') : 'Others',
+      ownAria: ownList.length ? 'Others: ' + ownList.join(', ') + '. Tap to change' : 'Others, write your own',
+      ownQ: zs.key === 'pain' ? 'Where else do you feel pain?' : zs.key === 'heart' ? 'What else do you feel?' : 'What else do you notice?',
+      ownPh: zs.key === 'pain' ? 'Jaw' : zs.key === 'heart' ? 'Cold hands' : 'Night sweats',
+      hasOwn: ownList.length > 0,
+      ownChips: ownList.map((n) => ({ name: n, aria: 'Remove ' + n, remove: () => set({ [ownKey]: ownList.filter((x) => x !== n), [zs.key]: st[zs.key].filter((x) => x !== n) }) })),
+      ownOpen: !!st.ownOpen,
+      openOwn: () => { set({ ownOpen: true }); setTimeout(() => { const i = document.getElementById('own-in'); if (i) i.focus(); }, 60); },
+      closeOwn: () => set({ ownOpen: false }),
+      addOwn: () => { const i = document.getElementById('own-in'); const v = (i && i.value || '').trim(); if (!v) { if (i) i.focus(); return; } const name = v.charAt(0).toUpperCase() + v.slice(1); const own = ownList.filter((x) => x.toLowerCase() !== name.toLowerCase()).concat([name]); set({ [ownKey]: own, [zs.key]: st[zs.key].filter((x) => x !== name).concat([name]), ownOpen: false }); },
+      bodyCats: st.bodyCat === null || st.bodyCat === undefined,
+      bodyIn: st.bodyCat !== null && st.bodyCat !== undefined,
+      catKey: 'cat' + (st.bodyCat || 0),
+      bodyHead: st.bodyCat !== null && st.bodyCat !== undefined ? BODY[st.bodyCat].name : 'Tap any body reactions',
+      bodyHint: st.bodyCat !== null && st.bodyCat !== undefined ? 'Tap what you notice' : '',
+      catsA: CATS.slice(0, 4), catsB: CATS.slice(4),
+      bodySub: st.bodyCat !== null && st.bodyCat !== undefined ? opts('body', BODY[st.bodyCat].items, false) : [],
+      catBack: () => set({ bodyCat: null }),
+      feelA: feelOpts(['Dizziness', 'Racing heart', 'Light\u00ADheaded', 'Breathless']),
+      feelB: feelOpts(['Near fainting', 'Blurred vision', 'Pounding heart', 'Chest tightness']),
+      heartOptsA: opts('heart', ['Dizziness', 'Racing heart', 'Light\u00ADheaded', 'Breathless'], false),
+      heartOptsB: opts('heart', ['Near fainting', 'Blurred vision', 'Pounding heart', 'Chest tightness'], false),
+      heartOpts: opts('heart', ['Dizziness', 'Racing heart', 'Near fainting', 'Breathless', 'Something else'], true),
+      mindOpts: opts('mind', ['Brain fog', 'Headache', 'Low mood'], false),
+      bodyOpts: opts('body', ['Bloating', 'Nausea', 'Flushing', 'Itching', 'Something else'], true),
+      levels,
+      doneLabel: zCount ? 'Done · ' + zCount + ' added' : 'Nothing here today',
+      homeSub: count ? count + (count === 1 ? ' thing so far' : ' things so far') : 'Tap a colour to begin',
+      count, toast: st.toast,
+      noItems: count === 0, hasItems: count > 0,
+      goHome: () => set({ screen: 'home', z: null, bodyCat: null }),
+      goHomeSaved: () => set({ screen: 'home', z: null, toast: true }),
+      goDay: () => set({ screen: 'day' }),
+      goWeek: () => set({ screen: 'week' })
+    };
+  }
+}
+
+
+const tpl=document.getElementById('tpl').content;
+const params=(location.hash||'').slice(1);
+const C=new Component({start:params||'splash'});
+const root=document.getElementById('stage');
+function paint(){const f=document.createElement('div');build(tpl,C.renderVals(),f,false);if(!root.firstChild){while(f.firstChild)root.appendChild(f.firstChild)}else morph(root,f)}
+function layout(){
+ const W=window.innerWidth,H=window.innerHeight,cw=Math.min(W,520),cx=(W-cw)/2,pad=cw<360?20:30,top=H<700?36:56,gw=cw-2*pad,gx=cx+pad;
+ const r=[];const at=(sel,x,y,w,h)=>r.push(sel+'{left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px}');
+ // splash logo, centred
+ const lx=W/2-82,ly=H/2-82;
+ [[0,0],[86,0],[0,86],[86,86]].forEach((o,i)=>at('.s-splash.i'+i,lx+o[0],ly+o[1],78,78));
+ r.push('.dot{left:'+(W/2-29)+'px;top:'+(ly+53)+'px}.tagline{top:'+(ly+200)+'px}');
+ // intro: a tight cluster of big squares, centred between heading and button
+ const iy0=top+150,iy1=H-126,avail=iy1-iy0,k=Math.min(1,avail/(1.04*gw)),cw2=gw*k,sz=0.42*cw2,ox=gx+(gw-cw2)/2,oy=iy0+(avail-1.02*cw2)/2;
+ [[0,0],[0.54,0.07],[0.1,0.52],[0.58,0.6]].forEach((o,i)=>at('.s-intro.i'+i,ox+o[0]*cw2,oy+o[1]*cw2,sz,sz));
+ // home: 2x2 grid filling the space between title and button
+ const headB=top+126,pillT=H-96,g=24,hy=headB+g,th=Math.max(110,(pillT-g-hy-8)/2),tw=(gw-8)/2; // equal gap above and below the grid
+ [[0,0],[tw+8,0],[0,th+8],[tw+8,th+8]].forEach((o,i)=>at('.s-home.i'+i,gx+o[0],hy+o[1],tw,th));
+ // zoom: chosen colour fills the screen, others become the mini map
+ r.push('.s-full{left:0;top:0;width:'+W+'px;height:'+H+'px}');
+ const mx=cx+cw-pad-40,my=top+2;
+ [[0,0],[22,0],[0,22],[22,22]].forEach((o,i)=>at('.s-mini.i'+i,mx+o[0],my+o[1],18,18));
+ // day poster
+ const S=Math.max(180,Math.min(gw-50,H-top-330,360)),px=(W-S)/2,py=top+158,q=(S-3)/2;
+ [[0,0],[q+3,0],[0,q+3],[q+3,q+3]].forEach((o,i)=>at('.s-day.i'+i,px+o[0],py+o[1],q,q));
+ r.push('.poster-cap{left:'+(px-cx)+'px;right:auto;width:'+S+'px;top:'+(py+S+12)+'px}');
+ // week: today's tile lands in the last slot
+ const wy=top+274,wx=gx+gw-40;
+ [[0,0],[21,0],[0,21],[21,21]].forEach((o,i)=>at('.s-week.i'+i,wx+o[0],wy+o[1],19,19));
+ r.push('.weekrow{left:'+pad+'px;right:auto;width:'+gw+'px;top:'+wy+'px}.wk{left:'+pad+'px;right:auto;width:'+gw+'px;top:'+(wy+48)+'px}.notice{left:'+pad+'px;right:auto;width:'+gw+'px;top:'+(wy+100)+'px}');
+ r.push('.layer.panel .brick{max-width:'+Math.round(Math.max(220,Math.min(gw,((H-top-290)-30)/4*3+20)))+'px}');
+ r.push('.layer.panel .pgrid{max-height:'+Math.round((gw-20)/3*4+30)+'px}.layer.panel .pgrid.g3{max-height:'+Math.round((gw-20)+20)+'px}');
+ // text layers sit in the centred column
+ r.push('.layer{left:'+cx+'px;right:auto;width:'+cw+'px;padding:'+top+'px '+pad+'px 40px}');
+ r.push('.opt{height:auto;min-height:'+(H<700?64:84)+'px}.opts.c2 .opt{min-height:'+(H<700?84:112)+'px}');
+ document.getElementById('dyn').textContent=r.join('\n');
+}
+window.addEventListener('hashchange',()=>{C.props={start:(location.hash||'').slice(1)||'splash'};clearTimeout(C._auto);C._auto=null;C.state=null;root.innerHTML='';paint()});
+let rt;function relayout(){document.documentElement.classList.add('still');layout();clearTimeout(rt);rt=setTimeout(()=>document.documentElement.classList.remove('still'),120)}
+window.addEventListener('resize',relayout);if(window.visualViewport)visualViewport.addEventListener('resize',relayout);
+document.documentElement.classList.add('still');layout();paint();requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('still')));
+</script>
