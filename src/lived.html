@@ -61,7 +61,7 @@ html.still .q,html.still .cell{transition:none !important}
 .scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .grid{position:relative;transition:height .55s var(--elastic)}
 .threads{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
-.cell{position:absolute;left:0;top:0;box-sizing:border-box;border:none;border-radius:9px;background:var(--off);color:#000;padding:8px;font-size:13px;line-height:1.15;text-align:left;display:flex;align-items:flex-end;overflow:hidden;overflow-wrap:break-word;hyphens:manual;
+.cell{position:absolute;left:0;top:0;box-sizing:border-box;border:none;border-radius:9px;background:var(--off);color:#000;padding:9px 6px 9px 7px;font-size:14px;line-height:1.15;letter-spacing:-0.01em;text-align:left;display:flex;align-items:flex-end;overflow:hidden;overflow-wrap:normal;word-break:normal;hyphens:none;
   transition:transform .65s var(--elastic),opacity .35s var(--smooth),background-color .3s,color .3s,outline-color .2s,box-shadow .2s;
   outline:2px dashed transparent;outline-offset:-4px;z-index:1}
 .cell .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;transition:opacity .3s}
@@ -84,6 +84,13 @@ html.still .q,html.still .cell{transition:none !important}
   padding:20px 22px calc(18px + env(safe-area-inset-bottom,0px));max-height:62%;overflow-y:auto;-webkit-overflow-scrolling:touch;
   transform:translateY(105%);transition:transform .45s var(--out);visibility:hidden}
 .sheet.on{transform:none;visibility:visible}
+.sheet.card{max-height:50%}
+.sheet .wlab{font-size:14px;color:#333;margin:4px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.chips button{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px;border:1.5px solid var(--c);background:#fff;color:#000}
+.chips button.k-mind{border-color:#A9C23A}
+.chips button.have{background:var(--c);color:var(--on)}
+.chips button.yours{border-width:3px}
 .sheet .grp{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .sheet .grp i{width:10px;height:10px;border-radius:3px;display:block}
 .sheet .nm{font-size:20px;line-height:1.2;margin:4px 0 10px}
@@ -101,6 +108,7 @@ html.still .q,html.still .cell{transition:none !important}
 .sw button{width:44px;height:44px;border:none;border-radius:10px;padding:0}
 .sw button[aria-pressed="true"]{box-shadow:0 0 0 3px #fff,0 0 0 5px #000}
 .sw span{font-size:14px;color:var(--muted);margin-right:2px}
+.swn{font-size:13px;color:#333;margin:2px 0 6px}
 .row2{display:flex;align-items:center;gap:14px;margin-top:14px}
 .row2 .pill{flex:1}
 .sheet.bar{padding-top:14px}
@@ -132,6 +140,7 @@ html.still .q,html.still .cell{transition:none !important}
 .htop{display:flex;align-items:center;justify-content:space-between;min-height:44px}
 .brand{font-size:17px;letter-spacing:-0.01em}
 .chip{border:none;background:var(--off);border-radius:999px;min-height:44px;padding:0 18px;font-size:15px;color:#000}
+.hmap{display:block;margin:6px auto 0}
 .hbottom{margin-top:auto;padding-top:16px;position:sticky;bottom:0;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%)}
 /* ── map: back arrow + today mode ── */
 .back{width:44px;height:44px;margin-left:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
@@ -144,7 +153,10 @@ html.still .q,html.still .cell{transition:none !important}
 /* ── history grid of days ── */
 .htitle{font-size:44px;line-height:1;letter-spacing:-0.035em;margin-top:12px}
 .hsub{font-size:14px;color:#444;line-height:1.35;margin:8px 0 0}
-.hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:16px}
+.hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:12px repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:16px}
+.hwd{font-size:11px;color:#555;display:flex;align-items:center;justify-content:flex-start}
+.hmon{display:grid;grid-template-columns:12px repeat(9,minmax(0,1fr));gap:0 5px;margin-top:6px;font-size:11px;color:#555;height:14px}
+.hmon span{white-space:nowrap;overflow:visible}
 .day{position:relative;aspect-ratio:.8;border:none;padding:0;border-radius:5px;background:transparent;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.5px;transition:opacity .3s,box-shadow .2s,transform .2s var(--out)}
 .day i{display:block;border-radius:2px;background:var(--off)}
 .day:active{transform:scale(.92)}
@@ -184,7 +196,8 @@ html.still .q,html.still .cell{transition:none !important}
 .zsq.opened .zq:not(.open){opacity:0;pointer-events:none}
 .zq .zdet{opacity:0;max-height:0;overflow:hidden;transition:opacity .3s}
 .zq.open .zdet{opacity:1;max-height:none;transition-delay:.3s}
-.zdet .zs{font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:14px 0 0}
+.zdet .zs{display:block;font:inherit;font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:14px 0 0;padding:0;border:none;background:none;color:inherit;text-align:left;cursor:pointer}
+.zdet button.zs{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;min-height:36px}
 .zdet .znote{font-size:16px;line-height:1.35;margin:6px 0 0;opacity:.85;white-space:pre-wrap}
 .zinfo{flex:none;margin-top:16px}
 .zinfo .zi{font-size:17px;line-height:1.35;margin:0}
@@ -263,9 +276,10 @@ html.still .q,html.still .cell{transition:none !important}
       <h1 class="h htitle">How you’ve<br>been lately</h1>
       <p class="hsub">Each column is a week, the newest on the right. Tap any day to look back at it.</p>
       <div class="hgrid" id="hgrid" role="grid" aria-label="Your days"></div>
+      <div class="hmon" id="hmon" aria-hidden="true"></div>
       <div class="hkey" aria-hidden="true"><span class="kq"><i style="background:var(--mind)"></i><i style="background:var(--heart)"></i><i style="background:var(--pain)"></i><i style="background:var(--body)"></i></span><span>Tiredness and brain fog · Dizzy spells and racing heart<br>Joint and muscle pain · Gut, skin and bladder</span></div>
       <div class="hcard" id="hcard" aria-live="polite"></div>
-      <div class="hbottom"><button class="pill" id="w-fill">How are you today?</button></div>
+      <div class="hbottom"><button class="pill" id="w-fill">How are you today?</button><button class="tx hmap" id="h-map">Your hEDS</button></div>
     </div>
     <div class="zoom" id="zoom" aria-hidden="true">
       <div class="zbg" id="zbg"></div>
@@ -411,7 +425,8 @@ function toggleLink(a,b){
   if(linked(a,b)){if(isUser(a,b))st.userLinks=st.userLinks.filter(function(e){return!same(e[0],e[1],a,b)});else st.cut.push([a,b])}
   else{if(isCut(a,b))st.cut=st.cut.filter(function(e){return!same(e[0],e[1],a,b)});else st.userLinks.push([a,b])}
   save()}
-function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p||8)}catch(e){}}
+var touched=false;['pointerdown','keydown'].forEach(function(t){document.addEventListener(t,function(){touched=true},{capture:true,once:true})});
+function buzz(p){if(!touched)return;try{if(navigator.vibrate)navigator.vibrate(p||8)}catch(e){}}
 
 /* ───────── elements ───────── */
 function $(id){return document.getElementById(id)}
@@ -428,7 +443,7 @@ function cellFor(it){
     b.addEventListener('click',function(e){e.stopPropagation();onCell(b.getAttribute('data-id'),b)});
     b.addEventListener('animationend',function(){b.classList.remove('jig')});
     cellEls[it.id]=b;grid.insertBefore(b,addEl)}
-  b.querySelector('.lb').textContent=it.name;
+  b.querySelector('.lb').textContent=plain(it.name);
   return b;
 }
 
@@ -462,8 +477,8 @@ function placeQuads(screen){
 
 /* ───────── grid layout ───────── */
 function layout(){
-  var W=grid.clientWidth||G.gw,g=8,s=(W-3*g)/4,all=items(),row=0,col=0,slot={};
-  function put(id){slot[id]=[col*(s+g),row*(s+g)];col++;if(col===4){col=0;row++}}
+  var W=grid.clientWidth||G.gw,COLS=3,g=7,s=(W-(COLS-1)*g)/COLS,all=items(),row=0,col=0,slot={};
+  function put(id){slot[id]=[col*(s+g),row*(s+g)];col++;if(col===COLS){col=0;row++}}
   var inView=function(i){return view==='all'||st.claimed[i.id]};
   var cluster={};
   if(focusId&&item(focusId)){
@@ -480,7 +495,7 @@ function layout(){
   var rows=row+(col>0?1:0);grid.style.height=Math.max(s,rows*(s+g)-g)+'px';
   var shadow=0;
   all.forEach(function(it){var b=cellFor(it),p=slot[it.id],vis=!!p;
-    if(!p){var c=shadow%4,r=Math.floor(shadow/4);p=[c*(s+g),r*(s+g)];shadow++}
+    if(!p){var c=shadow%COLS,r=Math.floor(shadow/COLS);p=[c*(s+g),r*(s+g)];shadow++}
     b.style.width=s+'px';b.style.height=s+'px';b.style.transform='translate('+p[0].toFixed(1)+'px,'+p[1].toFixed(1)+'px)'+(vis?'':' scale(.4)');
     b.classList.toggle('hidden',!vis);b.tabIndex=vis?0:-1;b.setAttribute('data-v',vis?'1':'0');b.setAttribute('data-col',Math.round(p[0]/(s+g)));b.setAttribute('data-row',Math.round(p[1]/(s+g)))});
   Object.keys(cellEls).forEach(function(id){if(!item(id)){cellEls[id].parentNode.removeChild(cellEls[id]);delete cellEls[id]}});
@@ -560,13 +575,14 @@ function renderSheet(){
   var r=nb(it.id).map(item).filter(Boolean),have=r.filter(function(i){return st.claimed[i.id]}).length;
   var h='<div class="grp"><i style="background:var(--'+it.k+')"></i>'+(it.own?'Your own · ':'')+GN[it.k]+'</div><div class="nm">'+esc(plain(it.name))+'</div>';
   if(!it.own)h+='<p class="why">'+NOTE[it.k]+'</p>';
-  if(r.length)h+='<p class="with">Often felt together with '+r.map(function(i){return esc(plain(i.name)).toLowerCase()+(st.claimed[i.id]?' <b>(you too)</b>':'')+(isUser(it.id,i.id)?' <b>(you added this)</b>':'')}).join(', ')+'. '+(have?'You have '+have+' of these too.':'You don’t have any of these. That’s fine.')+'</p>';
+  if(r.length)h+='<p class="wlab">'+(have?'You have '+have+' of these too':'You don’t have any of these. That’s fine.')+'</p><div class="chips">'+r.map(function(i){return '<button class="k-'+i.k+(st.claimed[i.id]?' have':'')+(isUser(it.id,i.id)?' yours':'')+'" data-go="'+i.id+'">'+esc(plain(i.name))+'</button>'}).join('')+'</div>';
   else h+='<p class="with">Nothing connected yet. You can add what goes with it for you.</p>';
   h+='<div class="acts"><button class="pill" id="c-link">What goes with it for me?</button>';
   if(it.own)h+='<button class="tx" id="c-rename">Rename</button><button class="tx" id="c-color">Change colour</button><button class="tx" id="c-del">Remove</button>';
   else h+='<button class="tx" id="c-not">This isn’t mine</button>';
   h+='</div><div id="c-extra"></div>'+FOOT;
-  sheet.className='sheet on';sheet.innerHTML=h;sheet.scrollTop=0;
+  sheet.className='sheet on card';sheet.innerHTML=h;sheet.scrollTop=0;
+  [].forEach.call(sheet.querySelectorAll('[data-go]'),function(b){b.onclick=function(){var id=b.getAttribute('data-go');if(view==='mine'&&!st.claimed[id])view='all';focusId=id;gather()}});
   $('c-link').onclick=function(){linking=true;paint();renderSheet()};
   if($('c-not'))$('c-not').onclick=function(){delete st.claimed[it.id];save();closeCard();layout();paint()};
   if($('c-del'))$('c-del').onclick=function(){st.own=st.own.filter(function(o){return o.id!==it.id});delete st.claimed[it.id];st.userLinks=st.userLinks.filter(function(e){return e[0]!==it.id&&e[1]!==it.id});save();closeCard();layout();paint()};
@@ -574,7 +590,7 @@ function renderSheet(){
     i.onkeydown=function(e){if(e.key==='Enter')$('rn-ok').click()};$('rn-x').onclick=function(){renderSheet()};$('rn-ok').onclick=function(){var v=i.value.trim();if(!v){i.focus();return}st.own.forEach(function(o){if(o.id===it.id)o.name=v.charAt(0).toUpperCase()+v.slice(1)});save();layout();paint();renderSheet()}};
   if($('c-color'))$('c-color').onclick=function(){$('c-extra').innerHTML=swatches(it.k,'cc');[].forEach.call(sheet.querySelectorAll('[data-cc]'),function(b){b.onclick=function(){var nk=b.getAttribute('data-cc');st.own.forEach(function(o){if(o.id===it.id)o.k=nk});save();layout();paint();renderSheet();reveal(cellEls[it.id])}})};
 }
-function swatches(sel,attr){return '<div class="sw"><span>Which colour fits?</span>'+GROUPS.map(function(k){return '<button data-'+attr+'="'+k+'" aria-label="'+GN[k]+'" aria-pressed="'+(k===sel)+'" style="background:var(--'+k+')"></button>'}).join('')+'</div>'}
+function swatches(sel,attr){return '<div class="sw"><span>Which colour fits?</span>'+GROUPS.map(function(k){return '<button data-'+attr+'="'+k+'" aria-label="'+GN[k]+'" title="'+GN[k]+'" aria-pressed="'+(k===sel)+'" style="background:var(--'+k+')"></button>'}).join('')+'</div><p class="swn" aria-live="polite">'+GN[sel]+'</p>'}
 
 /* ───────── add your own ───────── */
 var addK='body';
@@ -583,7 +599,7 @@ function openAdd(){
   sheet.className='sheet on';
   sheet.innerHTML='<div class="nm" style="margin-top:0">Something that’s yours</div><p style="color:#555;font-size:14px">If it’s not on the map, it still counts. Name it in your own words.</p><input type="text" id="add-in" maxlength="28" placeholder="Clicking jaw" autocomplete="off" aria-label="Name"><p class="err" id="add-err" aria-live="assertive"></p>'+swatches(addK,'ak')+'<div class="row2"><button class="tx" id="add-x">Cancel</button><button class="pill" id="add-ok">Add it</button></div>';
   var i=$('add-in');setTimeout(function(){try{i.focus()}catch(e){}},150);
-  [].forEach.call(sheet.querySelectorAll('[data-ak]'),function(b){b.onclick=function(){addK=b.getAttribute('data-ak');[].forEach.call(sheet.querySelectorAll('[data-ak]'),function(x){x.setAttribute('aria-pressed',String(x===b))})}});
+  [].forEach.call(sheet.querySelectorAll('[data-ak]'),function(b){b.onclick=function(){addK=b.getAttribute('data-ak');[].forEach.call(sheet.querySelectorAll('[data-ak]'),function(x){x.setAttribute('aria-pressed',String(x===b))});var n=sheet.querySelector('.swn');if(n)n.textContent=GN[addK]}});
   i.oninput=function(){$('add-err').textContent=''};
   i.onkeydown=function(e){if(e.key==='Enter')$('add-ok').click()};
   $('add-x').onclick=closeCard;
@@ -649,7 +665,11 @@ $('start').onclick=function(){go('history')};
 $('w-fill').onclick=function(){go('today')};
 $('t-back').onclick=function(){go('history')};
 $('t-done').onclick=function(){tday().saved=true;save();if(RM){go('history');return}TF.exit=performance.now();[].forEach.call(document.querySelectorAll('.tglow'),function(g){g.classList.remove('in')});setTimeout(function(){go('history');setTimeout(function(){TF.exit=0},600)},520)};
-$('m-back').onclick=function(){todayMode=false;closeCard();go('history')};
+var mapFrom=null;/* where the map was opened from: null = history, or {day} = a day's detail */
+function openMap(fromDay,id){todayMode=false;linking=false;askLink=false;view='all';focusId=null;mapFrom=fromDay?{day:fromDay}:null;go('map');if(id&&item(id)){focusId=id;gather()}}
+$('h-map').onclick=function(){openMap(null)};
+$('m-back').onclick=function(){todayMode=false;closeCard();var f=mapFrom;mapFrom=null;go('history');
+  if(f&&f.day){setTimeout(function(){var t=document.querySelector('.day[data-i="'+f.day.i+'"]');if(t)openDay(HDAYS[f.day.i]||f.day,t)},60)}};
 $('t-save').onclick=function(){tday().saved=true;save();todayMode=false;go('history')};
 
 function route(){
@@ -851,6 +871,10 @@ function buildDays(){
 function groupsOf(ids){return GROUPS.map(function(g){return ids.filter(function(id){var it=item(id);return it&&it.k===g})})}
 function renderHistory(){
   buildDays();var hg=$('hgrid');hg.innerHTML='';
+  ['M','T','W','T','F','S','S'].forEach(function(l){var w=document.createElement('span');w.className='hwd';w.setAttribute('aria-hidden','true');w.textContent=l;hg.appendChild(w)});
+  /* month names under the week where each month starts (and under the first week) */
+  var mh='<span></span>';for(var c=0;c<9;c++){var wk=HDAYS.slice(c*7,c*7+7),lab='';wk.forEach(function(x){if(x.date.getDate()===1)lab=MON[x.date.getMonth()]});if(c===0&&!lab)lab=MON[wk[0].date.getMonth()];mh+='<span>'+lab+'</span>'}
+  $('hmon').innerHTML=mh;
   HDAYS.forEach(function(d){var b=document.createElement('button');b.className='day';b.setAttribute('data-i',d.i);
     if(d.future){b.className+=' future';b.tabIndex=-1;b.setAttribute('aria-hidden','true')}
     var gs=groupsOf(d.ids);b.innerHTML=gs.map(function(g,k){return '<i style="'+(g.length?'background:var(--'+GROUPS[k]+')':'')+'"></i>'}).join('');
@@ -884,9 +908,10 @@ function openDay(d,tile){
   var gs=groupsOf(d.ids);
   sq.className='zsq';
   sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];
-    return '<button class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" aria-expanded="false"><span class="zt">'+GN[key]+'</span><div class="zdet">'+
-      (g.length?g.map(function(id){return '<p class="zs">'+esc(plain(item(id).name))+'</p>'+dayDetail(d,id)}).join(''):'<p class="zs">Quiet</p>')+'</div></button>'}).join('');
-  [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onclick=function(){var open=!q.classList.contains('open');
+    return '<div class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-expanded="false"><span class="zt">'+GN[key]+'</span><div class="zdet">'+
+      (g.length?g.map(function(id){return '<button class="zs" data-id="'+id+'">'+esc(plain(item(id).name))+'</button>'+dayDetail(d,id)}).join(''):'<p class="zs">Quiet</p>')+'</div></div>'}).join('');
+  [].forEach.call(sq.querySelectorAll('button.zs'),function(b){b.onclick=function(e){e.stopPropagation();var id=b.getAttribute('data-id');closeDay(true);openMap(d,id)}});
+  [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onkeydown=function(e){if((e.key==='Enter'||e.key===' ')&&e.target===q){e.preventDefault();q.click()}};q.onclick=function(){var open=!q.classList.contains('open');
     [].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open');o.setAttribute('aria-expanded','false')});
     sq.classList.toggle('opened',open);if(open){q.classList.add('open');q.setAttribute('aria-expanded','true')}buzz(4)}});
   var sim=similar(d);$('zinfo').innerHTML='<p class="zi">'+esc(sim.text)+'</p>';
