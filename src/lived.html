@@ -235,7 +235,12 @@ html.still .q,html.still .cell{transition:none !important}
 .tnote{position:absolute;inset:0;z-index:8;background:var(--c);color:var(--on);opacity:0;pointer-events:none;transition:opacity .3s var(--smooth)}
 .tnote.on{opacity:1;pointer-events:auto}
 .tnote .col{gap:0}
-.tn-close{width:44px;height:44px;margin:-8px 0 0 -7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none;color:inherit}
+.tn-top{display:flex;align-items:center;justify-content:space-between;margin-top:-8px}
+.tn-saved{display:flex;align-items:center;gap:5px;font-size:14px;opacity:0;transition:opacity .4s var(--smooth)}
+.tn-saved b{font-weight:500}
+.tn-saved.on{opacity:.75}
+.tn-saved.busy{opacity:.35}
+.tn-close{width:44px;height:44px;margin:0 0 0 -7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none;color:inherit}
 .tn-close i{width:30px;height:30px;border-radius:50%;background:currentColor;display:flex;align-items:center;justify-content:center}
 .tn-close i svg{color:var(--c)}
 .tmedia{display:flex;gap:8px;overflow-x:auto;flex:none;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -337,7 +342,8 @@ html.still .q,html.still .cell{transition:none !important}
     <div class="tbar cl2"><button class="pill" id="t-done">Done for today</button></div>
     <div class="tnote" id="tnote" role="dialog" aria-modal="true" aria-labelledby="tn-name">
       <div class="col cl">
-        <button class="tn-close" id="tn-close" aria-label="Zoom out"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h8"></path></svg></i></button>
+        <div class="tn-top"><button class="tn-close" id="tn-close" aria-label="Zoom out"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h8"></path></svg></i></button>
+        <span class="tn-saved" id="tn-saved" role="status" aria-live="polite"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"/></svg><b>Saved</b></span></div>
         <h2 class="h htitle" id="tn-name" style="margin-top:14px"></h2>
         <textarea id="tn-text" aria-labelledby="tn-name" placeholder="Your notes"></textarea>
         <div class="tmedia" id="tn-media" aria-label="Your videos, photos and recordings"></div>
@@ -757,11 +763,13 @@ function nearest(){var best=null,bd=1e9;TF.list.forEach(function(o){var mx=TF.cx
 /* zoom all the way into one square: it fills the screen and becomes a page for your notes */
 function openNote(o){if(!o||TF.note)return;TF.note=o;TF.shown=false;TF.moved=true;clearTimeout(TF.nt);
   TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];TF.zgoal=TF.zcover;TF.vx=TF.vy=0;$('s-today').classList.add('noting');
-  var n=$('tnote');n.className='tnote k-'+o.k;n.style.setProperty('--c',FULL[o.k]);$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();setTimeout(fitText,0);
+  var n=$('tnote');n.className='tnote k-'+o.k;n.style.setProperty('--c',FULL[o.k]);$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();savedState();setTimeout(fitText,0);
   if(RM){TF.z=TF.zcover;panTo(TF.goal[0],TF.goal[1]);showNote()}}
 function showNote(){if(TF.shown)return;TF.shown=true;$('tnote').classList.add('on');setTimeout(function(){if(TF.note)try{$('tn-text').focus({preventScroll:true})}catch(e){}},320)}
+function savedState(){var o=TF.note,e=$('tn-saved');if(!o||!e)return;var has=hasNote(o.id);e.classList.remove('busy');e.classList.toggle('on',has)}
 function keepNote(){var o=TF.note;if(!o)return;var t=$('tn-text').value.trim(),N=notesOf(),T=tday();
-  if(t)N[o.id]=t;else delete N[o.id];if(hasNote(o.id)){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true}save()}
+  if(t)N[o.id]=t;else delete N[o.id];if(hasNote(o.id)){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true}save();
+  var e=$('tn-saved');if(e&&hasNote(o.id)){e.classList.add('on','busy');clearTimeout(TF.svT);TF.svT=setTimeout(savedState,450)}else savedState()}
 function closeNote(){var o=TF.note;if(!o)return;stopRec();keepNote();try{$('tn-text').blur()}catch(e){}
   $('tnote').classList.remove('on');$('s-today').classList.remove('noting');TF.note=null;TF.shown=false;renderMedia();shadeField();
   TF.zgoal=1;TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];if(RM){TF.z=1;var c=clampPan(TF.goal[0],TF.goal[1]);panTo(c[0],c[1]);TF.goal=null;TF.zgoal=null}
