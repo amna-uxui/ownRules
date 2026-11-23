@@ -262,19 +262,19 @@ button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-co
 .layer.panel .cat7 > :nth-child(7){grid-column:2 / span 2}
 .layer.panel .cat7 .opt{animation:rise .6s cubic-bezier(.22,1,.36,1) both}
 
-/* body groups: 4 across, 2 rows, aligned to both edges */
-.layer.panel .brick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:8px;row-gap:8px;margin-top:20px;width:100%;max-width:none !important}
+/* body groups: 3 across, circle in the centre, aligned to both edges */
+.layer.panel .brick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:10px;row-gap:10px;margin-top:20px;width:100%;max-width:none !important}
 .layer.panel .brick > *{aspect-ratio:1;height:auto;min-height:0 !important;min-width:0}
 .layer.panel .brick > :nth-child(1){grid-row:1;grid-column:1}
 .layer.panel .brick > :nth-child(2){grid-row:1;grid-column:2}
 .layer.panel .brick > :nth-child(3){grid-row:1;grid-column:3}
-.layer.panel .brick > :nth-child(4){grid-row:1;grid-column:4}
-.layer.panel .brick > :nth-child(6){grid-row:2;grid-column:1}
-.layer.panel .brick > :nth-child(7){grid-row:2;grid-column:2}
-.layer.panel .brick > :nth-child(8){grid-row:2;grid-column:3}
-.layer.panel .brick > :nth-child(5){grid-row:2;grid-column:4}
-.layer.panel .brick .opt{font-size:13px;line-height:1.15;padding:4px;animation:rise .6s cubic-bezier(.22,1,.36,1) both}
-.layer.panel .brick .own{position:relative;left:auto;top:auto;translate:none;width:100%;height:auto;font-size:13px;animation:rise .6s cubic-bezier(.22,1,.36,1) .3s both}
+.layer.panel .brick > :nth-child(4){grid-row:2;grid-column:1}
+.layer.panel .brick > :nth-child(5){grid-row:2;grid-column:2}
+.layer.panel .brick > :nth-child(6){grid-row:2;grid-column:3}
+.layer.panel .brick > :nth-child(7){grid-row:3;grid-column:1}
+.layer.panel .brick > :nth-child(8){grid-row:3;grid-column:3}
+.layer.panel .brick .opt{font-size:14px;line-height:1.15;padding:6px;animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.layer.panel .brick .own{position:relative;left:auto;top:auto;translate:none;width:100%;height:auto;font-size:14px;animation:rise .6s cubic-bezier(.22,1,.36,1) .3s both}
 .layer.panel .brick > :nth-child(6){animation-delay:.12s}.layer.panel .brick > :nth-child(7){animation-delay:.16s}.layer.panel .brick > :nth-child(8){animation-delay:.2s}
 @media (prefers-reduced-motion: reduce){*{animation-duration:1ms !important;animation-delay:0ms !important;transition-duration:1ms !important;transition-delay:0ms !important}}
 
