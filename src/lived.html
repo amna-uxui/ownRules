@@ -62,7 +62,7 @@ html.still .q,html.still .cell{transition:none !important}
 .grid{position:relative;transition:height .55s var(--elastic)}
 .threads{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
 .cell{position:absolute;left:0;top:0;box-sizing:border-box;border:none;border-radius:9px;background:var(--off);color:#000;padding:9px 6px 9px 7px;font-size:14px;line-height:1.15;letter-spacing:-0.01em;text-align:left;display:flex;align-items:flex-end;overflow:hidden;overflow-wrap:normal;word-break:normal;hyphens:none;
-  transition:transform .65s var(--elastic),opacity .35s var(--smooth),background-color .3s,color .3s,outline-color .2s,box-shadow .2s;
+  transition:transform .6s var(--out),opacity .35s var(--smooth),background-color .3s,color .3s,outline-color .2s,box-shadow .2s;
   outline:2px dashed transparent;outline-offset:-4px;z-index:1}
 .cell .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;transition:opacity .3s}
 .k-mind{--c:var(--mind);--on:#000}.k-heart{--c:var(--heart);--on:#fff}.k-pain{--c:var(--pain);--on:#fff}.k-body{--c:var(--body);--on:#000}
@@ -72,6 +72,7 @@ html.still .q,html.still .cell{transition:none !important}
 .cell.often{outline-color:var(--c)}
 .cell.focus{z-index:3;box-shadow:0 0 0 3px #fff,0 0 0 5px #000}
 .cell.dim{opacity:.3}
+.cell.lk{box-shadow:inset 0 0 0 3px #000}
 .cell.hidden{opacity:0;pointer-events:none}
 .cell.add{background:#fff;border:1.5px dashed #000;align-items:center;justify-content:center;text-align:center;font-size:14px}
 .jig{animation:jelly .7s cubic-bezier(.33,0,.2,1)}
@@ -140,7 +141,8 @@ html.still .q,html.still .cell{transition:none !important}
 .htop{display:flex;align-items:center;justify-content:space-between;min-height:44px}
 .brand{font-size:17px;letter-spacing:-0.01em}
 .chip{border:none;background:var(--off);border-radius:999px;min-height:44px;padding:0 18px;font-size:15px;color:#000}
-.hmap{display:block;margin:6px auto 0}
+.htop{display:flex;justify-content:flex-end;margin:-8px 0 0}
+.hmap{min-height:44px;padding:0 18px;border:none;border-radius:999px;background:var(--off);font-size:15px;color:#000}
 .hbottom{margin-top:auto;padding-top:16px;position:sticky;bottom:0;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%)}
 /* ── map: back arrow + today mode ── */
 .back{width:44px;height:44px;margin-left:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
@@ -223,6 +225,13 @@ html.still .q,html.still .cell{transition:none !important}
 .tsq .nm{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:2px;background:currentColor;opacity:.7;display:none;z-index:1}
 .tsq.has-note .nm{display:block}
 #s-today.noting .tback,#s-today.noting .tbar{opacity:0;pointer-events:none}
+#s-today.leaving .tsq{opacity:0 !important;transition:opacity .25s var(--smooth)}
+#s-today.leaving .tsq.on{visibility:hidden}
+#s-today.leaving .tback,#s-today.leaving .tbar{opacity:0}
+.fly{position:fixed;z-index:60;border-radius:8px;pointer-events:none}
+.fly.go{transition:left .75s var(--smooth),top .75s var(--smooth),width .75s var(--smooth),height .75s var(--smooth),border-radius .75s var(--smooth)}
+.fly.go{border-radius:2px}
+.fly.gone{opacity:0;transition:opacity .25s}
 .tnote{position:absolute;inset:0;z-index:8;background:var(--c);color:var(--on);opacity:0;pointer-events:none;transition:opacity .3s var(--smooth)}
 .tnote.on{opacity:1;pointer-events:auto}
 .tnote .col{gap:0}
@@ -273,13 +282,13 @@ html.still .q,html.still .cell{transition:none !important}
 
   <section class="screen" id="s-history" aria-label="How you’ve been lately">
     <div class="col cl hscroll" id="h-col">
+      <div class="htop"><button class="hmap" id="h-map">Your hEDS</button></div>
       <h1 class="h htitle">How you’ve<br>been lately</h1>
       <p class="hsub">Each column is a week, the newest on the right. Tap any day to look back at it.</p>
       <div class="hgrid" id="hgrid" role="grid" aria-label="Your days"></div>
       <div class="hmon" id="hmon" aria-hidden="true"></div>
-      <div class="hkey" aria-hidden="true"><span class="kq"><i style="background:var(--mind)"></i><i style="background:var(--heart)"></i><i style="background:var(--pain)"></i><i style="background:var(--body)"></i></span><span>Tiredness and brain fog · Dizzy spells and racing heart<br>Joint and muscle pain · Gut, skin and bladder</span></div>
       <div class="hcard" id="hcard" aria-live="polite"></div>
-      <div class="hbottom"><button class="pill" id="w-fill">How are you today?</button><button class="tx hmap" id="h-map">Your hEDS</button></div>
+      <div class="hbottom"><button class="pill" id="w-fill">How are you today?</button></div>
     </div>
     <div class="zoom" id="zoom" aria-hidden="true">
       <div class="zbg" id="zbg"></div>
@@ -351,10 +360,10 @@ html.still .q,html.still .cell{transition:none !important}
       </div>
       <div class="poster" id="poster"><svg class="threads" id="p-threads" aria-hidden="true"></svg></div>
       <div class="legend">
-        <span><i style="background:var(--mind)"></i>Tiredness and brain fog</span>
-        <span><i style="background:var(--heart)"></i>Dizzy spells and racing heart</span>
-        <span><i style="background:var(--pain)"></i>Joint and muscle pain</span>
-        <span><i style="background:var(--body)"></i>Gut, skin and bladder</span>
+        <span><i style="background:var(--mind)"></i>What is your energy like?</span>
+        <span><i style="background:var(--heart)"></i>How do you feel?</span>
+        <span><i style="background:var(--pain)"></i>Where do you feel pain?</span>
+        <span><i style="background:var(--body)"></i>How does your body react?</span>
       </div>
       <p class="pfoot">Made with Lived. General information, not medical advice.</p>
       <div style="height:28px;flex:none"></div>
@@ -372,7 +381,8 @@ html.still .q,html.still .cell{transition:none !important}
 'use strict';
 /* ───────── data ───────── */
 var GROUPS=['mind','heart','pain','body'];
-var GN={mind:'Tiredness and brain fog',heart:'Dizzy spells and racing heart',pain:'Joint and muscle pain',body:'Gut, skin and bladder'};
+var GN={mind:'What is your energy like?',heart:'How do you feel?',pain:'Where do you feel pain?',body:'How does your body react?'};
+var GP={mind:'What was your energy level?',heart:'How was your body feeling?',pain:'Where did it hurt?',body:'How did your body react?'};/* the same four questions, asked about a day that's gone */
 var NOTE={
  mind:'Tiredness and brain fog often build up from pain, poor sleep and dizziness together, so they tend to be tied to a lot of other things. It’s real tiredness, not laziness.',
  heart:'Many people with hEDS also have POTS. When you stand up, blood can pool in your legs, so your heart speeds up and you can feel dizzy or faint. It’s common, and it’s not in your head.',
@@ -511,7 +521,7 @@ function paint(){
     if(m)cls.push('mine');if(b.classList.contains('jig'))cls.push('jig');if(b.classList.contains('hidden'))cls.push('hidden');
     var isF=it.id===focusId,isR=rel.indexOf(it.id)>=0;
     if(focusId&&!linking){if(isF)cls.push('focus');else if(isR){if(!m)cls.push('often')}else cls.push('dim')}
-    if(linking){if(isF)cls.push('focus');else if(!m)cls.push('dim')}
+    if(linking){if(isF)cls.push('focus');else if(isR)cls.push('lk')}
     if(todayMode){if(tday().ids[it.id])cls.push('td');else if(m)cls.push('nottd')}
     b.className=cls.join(' ');
     var lm=nb(it.id).filter(function(x){return st.claimed[x]}).length;
@@ -549,7 +559,7 @@ function jig(el){el.classList.remove('jig');void el.offsetWidth;el.classList.add
 function onCell(id,b){
   closePop();
   if(todayMode){var T=tday();if(T.ids[id])delete T.ids[id];else{T.ids[id]=true;st.claimed[id]=true;buzz(8)}save();paint();jig(b);return}
-  if(linking){if(id===focusId||!st.claimed[id]){jig(b);return}toggleLink(focusId,id);buzz(6);layout();paint();jig(b);renderSheet();return}
+  if(linking){if(id===focusId)return;if(!st.claimed[id]&&!linked(focusId,id))st.claimed[id]=true;toggleLink(focusId,id);buzz(6);paint();renderSheet();return}
   if(!st.claimed[id]){st.claimed[id]=true;save();buzz(8);focusId=id;gather();jig(b);return}
   if(focusId===id){closeCard();return}
   focusId=id;gather();
@@ -571,7 +581,7 @@ function renderSheet(){
   scrim.classList.remove('on');
   if(linking){sheet.className='sheet on bar';
     sheet.innerHTML='<div class="barrow"><p>'+(askLink?'<b style="font-weight:500">Added. </b>':'')+'Tap what goes with '+esc(plain(it.name).toLowerCase())+' for you'+'</p><button class="pill" id="lk-done">Done</button></div>';
-    $('lk-done').onclick=function(){linking=false;askLink=false;paint();renderSheet()};return}
+    $('lk-done').onclick=function(){linking=false;askLink=false;gather()};return}
   var r=nb(it.id).map(item).filter(Boolean),have=r.filter(function(i){return st.claimed[i.id]}).length;
   var h='<div class="grp"><i style="background:var(--'+it.k+')"></i>'+(it.own?'Your own · ':'')+GN[it.k]+'</div><div class="nm">'+esc(plain(it.name))+'</div>';
   if(!it.own)h+='<p class="why">'+NOTE[it.k]+'</p>';
@@ -664,7 +674,17 @@ function returning(){return Object.keys(st.claimed).length>0||Object.keys(st.day
 $('start').onclick=function(){go('history')};
 $('w-fill').onclick=function(){go('today')};
 $('t-back').onclick=function(){go('history')};
-$('t-done').onclick=function(){tday().saved=true;save();if(RM){go('history');return}TF.exit=performance.now();[].forEach.call(document.querySelectorAll('.tglow'),function(g){g.classList.remove('in')});setTimeout(function(){go('history');setTimeout(function(){TF.exit=0},600)},520)};
+/* Done for today: what you didn't pick fades away; what you picked flies into today's square in your history, each into its colour's corner */
+$('t-done').onclick=function(){tday().saved=true;save();
+  var picked=TF.list.filter(function(o){return TF.sel[o.id]}).map(function(o){return{o:o,r:o.el.getBoundingClientRect()}});
+  if(RM||!picked.length){go('history');return}
+  $('s-today').classList.add('leaving');
+  var fl=picked.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.o.k];
+    d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.o.k}});
+  setTimeout(function(){go('history');var t=document.querySelector('.day.today');var qs=t?t.querySelectorAll('i'):[];
+    void app.offsetWidth;(function(){fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();
+      f.d.style.transitionDelay=(n*40)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'})})();
+    setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()});$('s-today').classList.remove('leaving')},300)},900+fl.length*40)},260)};
 var mapFrom=null;/* where the map was opened from: null = history, or {day} = a day's detail */
 function openMap(fromDay,id){todayMode=false;linking=false;askLink=false;view='all';focusId=null;mapFrom=fromDay?{day:fromDay}:null;go('map');if(id&&item(id)){focusId=id;gather()}}
 $('h-map').onclick=function(){openMap(null)};
@@ -854,7 +874,8 @@ function sampleDay(k){/* example days so the history isn't empty in the prototyp
   var h=0;for(var i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;var seed=h%2147483646+1;function rnd(){seed=seed*16807%2147483647;return seed/2147483647}
   rnd();rnd();var p=k.split('-'),day=Math.floor(Date.UTC(+p[0],+p[1]-1,+p[2])/864e5),cyc=((day%28)+28)%28;
   var bad=rnd()<.3,rain=rnd()<.3,feet=rnd()<.22,hot=rnd()<.1,stress=rnd()<.15,period=cyc<4;
-  var ids={},ctx={};function on(id,pr){if(rnd()<pr)ids[id]=1}
+  var ids={},ctx={};function on(id,pr){if(rnd()*1.8<pr)ids[id]=1}/* scaled down so the example weeks feel lived-in, not crowded */
+  if(rnd()<.42&&!period){if(rain)ctx.rain=1;return{ids:{},ctx:ctx,sample:true}}/* plenty of quiet days */
   on('ex',bad?.7:.18);on('fog',bad?.55:.1);on('hd',bad||stress?.4:.06);on('unr',bad?.5:0);on('crash',feet?.45:.04);on('mig',stress?.18:.03);if(ids.mig){on('lgt',.7);on('nau',.5)}
   on('dz',.05+(hot?.55:0)+(feet?.3:0)+(bad?.15:0));if(ids.dz){on('rh',.55);on('lh',.35);on('nf',.12)}on('heat',hot?.7:0);on('swt',hot?.5:0);on('swf',feet||hot?.35:0);on('cold',rain?.25:.04);
   on('jp',rain?.6:.12);on('kn',rain?.5:.06);on('hip',rain?.3:.04);on('an',feet?.45:.04);on('mp',feet?.4:.08);on('bk',feet?.3:.06);on('stf',rain?.4:.06);on('sub',.05);on('nj',stress?.3:.04);
@@ -908,7 +929,7 @@ function openDay(d,tile){
   var gs=groupsOf(d.ids);
   sq.className='zsq';
   sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];
-    return '<div class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-expanded="false"><span class="zt">'+GN[key]+'</span><div class="zdet">'+
+    return '<div class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-expanded="false"><span class="zt">'+(d.today?GN:GP)[key]+'</span><div class="zdet">'+
       (g.length?g.map(function(id){return '<button class="zs" data-id="'+id+'">'+esc(plain(item(id).name))+'</button>'+dayDetail(d,id)}).join(''):'<p class="zs">Quiet</p>')+'</div></div>'}).join('');
   [].forEach.call(sq.querySelectorAll('button.zs'),function(b){b.onclick=function(e){e.stopPropagation();var id=b.getAttribute('data-id');closeDay(true);openMap(d,id)}});
   [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onkeydown=function(e){if((e.key==='Enter'||e.key===' ')&&e.target===q){e.preventDefault();q.click()}};q.onclick=function(){var open=!q.classList.contains('open');
