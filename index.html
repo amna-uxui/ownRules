@@ -183,19 +183,27 @@ html.still .q,html.still .cell{transition:none !important}
 .zoom.on{pointer-events:auto;visibility:visible}
 .zbg{position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .45s var(--smooth)}
 .zoom.open .zbg{opacity:1}
-.zsq{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:5px;transform-origin:0 0;transition:transform .6s var(--smooth)}
-.zq{border-radius:10px;background:var(--off);padding:12px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;font-size:15px;line-height:1.2;color:#000;overflow:hidden}
+.zcol{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.zcol>:not(.zsq){opacity:0;transition:opacity .35s var(--smooth)}
+.zoom.open .zcol>:not(.zsq){opacity:1;transition-delay:.25s}
+.zcol .back{margin-top:-8px}
+.zdate{font-size:min(40px,10.2vw);line-height:1.04;letter-spacing:-0.03em;margin:12px 0 0;flex:none}
+.zsq{position:relative;flex:1 0 auto;margin-top:18px;transform-origin:0 0;transition:transform .6s var(--smooth)}
+.zq{position:absolute;box-sizing:border-box;width:calc(50% - 3px);height:calc(50% - 3px);border:none;border-radius:10px;background:var(--off);padding:14px;display:flex;flex-direction:column;justify-content:flex-start;text-align:left;font:inherit;color:#000;overflow:hidden;cursor:pointer;
+  transition:left .5s var(--smooth),top .5s var(--smooth),width .5s var(--smooth),height .5s var(--smooth),opacity .3s var(--smooth)}
+.zq.p0{left:0;top:0}.zq.p1{left:calc(50% + 3px);top:0}.zq.p2{left:0;top:calc(50% + 3px)}.zq.p3{left:calc(50% + 3px);top:calc(50% + 3px)}
 .zq.has{background:var(--c);color:var(--on)}
-.zq small{font-size:12px;opacity:.8}
-.zq span,.zq small{opacity:0;transition:opacity .3s}
-.zoom.open .zq span,.zoom.open .zq small{opacity:1;transition-delay:.4s}
-.zinfo{position:absolute;opacity:0;transform:translateY(12px);transition:opacity .4s,transform .5s var(--out)}
-.zoom.open .zinfo{opacity:1;transform:none;transition-delay:.3s}
-.zinfo .zd{font-size:24px;line-height:1.15;letter-spacing:-0.01em;margin:0}
-.zinfo .zx{font-size:14px;color:#444;margin:6px 0 0}
-.zinfo .zi{font-size:15px;line-height:1.4;margin:12px 0 0}
-.zinfo .zn{font-size:12px;color:#666;margin:6px 0 0}
-.zinfo .row2{margin-top:14px}
+.zq .zt{font-size:17px;line-height:1.2;opacity:0;transition:opacity .3s}
+.zoom.open .zq .zt{opacity:1;transition-delay:.4s}
+.zsq.opened .zq.open{left:0;top:0;width:100%;height:100%;z-index:2;justify-content:flex-start;overflow-y:auto}
+.zsq.opened .zq:not(.open){opacity:0;pointer-events:none}
+.zq .zdet{opacity:0;max-height:0;overflow:hidden;transition:opacity .3s}
+.zq.open .zdet{opacity:1;max-height:none;transition-delay:.3s}
+.zdet .zs{font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:14px 0 0}
+.zdet .znote{font-size:16px;line-height:1.35;margin:6px 0 0;opacity:.85;white-space:pre-wrap}
+.zinfo{flex:none;margin-top:16px}
+.zinfo .zi{font-size:17px;line-height:1.35;margin:0}
+.zbot{flex:none;padding-top:18px}
 /* ── context chips (today) ── */
 .ctxrow{display:none;flex-wrap:nowrap;gap:8px;margin-top:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
 .ctxrow::-webkit-scrollbar{display:none}
@@ -276,8 +284,13 @@ html.still .q,html.still .cell{transition:none !important}
     </div>
     <div class="zoom" id="zoom" aria-hidden="true">
       <div class="zbg" id="zbg"></div>
-      <div class="zsq" id="zsq"></div>
-      <div class="zinfo cl2" id="zinfo"></div>
+      <div class="col cl zcol" id="zcol">
+        <button class="back" id="z-x" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+        <h1 class="h zdate" id="z-date"></h1>
+        <div class="zsq" id="zsq"></div>
+        <div class="zinfo" id="zinfo" aria-live="polite"></div>
+        <div class="zbot"><button class="pill" id="z-sim">Show me similar days</button></div>
+      </div>
     </div>
   </section>
 
@@ -442,7 +455,7 @@ function measure(){
   $('dyn').textContent='.cl{left:'+cx+'px;width:'+cw+'px;padding:calc('+top+'px + env(safe-area-inset-top,0px)) '+pad+'px calc(22px + env(safe-area-inset-bottom,0px))}'+
     '#s-map .cl{padding-bottom:0}'+
     '.scroll{margin:0 -'+pad+'px;padding:4px '+pad+'px 0}'+
-    '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+
+    '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+'.zsq{min-height:'+gw+'px}'+
     '.pop{right:'+(W-(cx+cw-pad))+'px;top:'+(top+50)+'px}';
 }
 function setQ(el,x,y,w,h,extra){el.style.left=x+'px';el.style.top=y+'px';el.style.width=w+'px';el.style.height=h+'px';el.style.transform=extra||''}
@@ -866,8 +879,9 @@ function renderHistory(){
   $('hcard').innerHTML='';
 }
 function similar(d){
-  var A=d.ids,th=Math.min(2,A.length),set={},n=0;
-  HDAYS.forEach(function(o){if(o===d||o.future||(o.today&&!o.ids.length))return;var k=o.ids.filter(function(x){return A.indexOf(x)>=0}).length;if(A.length===0?o.ids.length===0:k>=th){set[o.i]=1;n++}});
+  /* similar = the same colours lit up, so it matches what you see in the grid */
+  var A=d.ids,set={},n=0;function mask(ids){return groupsOf(ids).map(function(g){return g.length?1:0}).join('')}var m=mask(A);
+  HDAYS.forEach(function(o){if(o===d||o.future||(o.today&&!o.ids.length))return;if(mask(o.ids)===m){set[o.i]=1;n++}});
   var grp=HDAYS.filter(function(o){return set[o.i]||o===d}),past=HDAYS.filter(function(o){return!o.future}),best=[];
   CTX.forEach(function(c){var k=grp.filter(function(o){return o.ctx.indexOf(c[0])>=0}).length,base=past.filter(function(o){return o.ctx.indexOf(c[0])>=0}).length/past.length;
     if(grp.length>1&&k/grp.length>base+.15&&k>=2)best.push([k,CTXV[c[0]],Math.round(base*10)])});
@@ -875,34 +889,40 @@ function similar(d){
   var t=!n?'No other day looks quite like this one yet.':'You’ve had '+(n+1)+(A.length?' days like this one.':' calm days like this one.')+(best.length?' '+best.slice(0,2).map(function(b,i){return (i?'and ':'')+b[0]+' of them '+b[1]+' (usually '+b[2]+' in 10)'}).join(', ')+'.':'');
   return{set:set,n:n,text:t}}
 
-/* tap a day: it grows out of the grid into a big square */
-var zoomFrom=null,zoomDay=null;
+/* tap a day: it grows out of the grid into a big screen of its own.
+   Top: the date. Then the day's four squares; tap one to open what you had in that group. Then what it has in common with other days. */
+var zoomFrom=null,zoomDay=null,FULLDAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],FULLMON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function dayDetail(d,id){var rec=st.days[d.key]||{},n=rec.notes&&rec.notes[id];return n?'<p class="znote">'+esc(n)+'</p>':''}
 function openDay(d,tile){
-  zoomDay=d;zoomFrom=tile;var z=$('zoom'),sq=$('zsq'),info=$('zinfo');
+  zoomDay=d;zoomFrom=tile;var z=$('zoom'),sq=$('zsq'),dt=d.date;
+  $('z-date').innerHTML=FULLDAY[dt.getDay()]+'<br>'+dt.getDate()+' '+FULLMON[dt.getMonth()]+' '+dt.getFullYear();
   var gs=groupsOf(d.ids);
-  sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];return '<div class="zq k-'+key+(g.length?' has':'')+'"><small>'+GN[key]+'</small><span>'+(g.length?g.map(function(id){return esc(plain(item(id).name))}).join('<br>'):'Quiet')+'</span></div>'}).join('');
-  var sim=similar(d),ctxT=d.ctx.map(function(c){for(var i=0;i<CTX.length;i++)if(CTX[i][0]===c)return CTX[i][1].toLowerCase();return c});
-  info.innerHTML='<p class="zd">'+(d.today?'Today · ':'')+d.label+'</p><p class="zx">'+(ctxT.length?'Around it: '+esc(ctxT.join(', ')):'Nothing else noted')+(d.sample?' · example':'')+'</p><p class="zi">'+esc(sim.text)+'</p>'+
-    '<p class="zn">A pattern, not a cause.</p><div class="row2"><button class="tx" id="z-x">Back</button>'+(d.today?'<button class="pill" id="z-edit">Add to today</button>':(sim.n?'<button class="pill" id="z-sim">Show me those days</button>':''))+'</div>';
-  var t=tile.getBoundingClientRect(),size=G.gw,x=G.gx,y=Math.max(G.top+40,(G.H-size-230)/2);
-  sq.style.left=x+'px';sq.style.top=y+'px';sq.style.width=size+'px';sq.style.height=(size*.9)+'px';
-  info.style.top=(y+size*.9+20)+'px';
-  sq.style.transition='none';sq.style.transform='translate('+(t.left-x)+'px,'+(t.top-y)+'px) scale('+(t.width/size)+','+(t.height/(size*.9))+')';
-  z.classList.add('on');z.setAttribute('aria-hidden','false');void sq.offsetWidth;
-  sq.style.transition='';sq.style.transform='none';z.classList.add('open');buzz(6);
-  $('z-x').onclick=closeDay;$('zbg').onclick=closeDay;
-  if($('z-sim'))$('z-sim').onclick=function(){hl={sel:d.i,set:sim.set,text:d.label+': '+sim.text};closeDay()};
-  if($('z-edit'))$('z-edit').onclick=function(){closeDay(true);$('w-fill').click()};
-  setTimeout(function(){var f=$('z-sim')||$('z-edit')||$('z-x');try{f.focus({preventScroll:true})}catch(e){}},450);
+  sq.className='zsq';
+  sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];
+    return '<button class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" aria-expanded="false"><span class="zt">'+GN[key]+'</span><div class="zdet">'+
+      (g.length?g.map(function(id){return '<p class="zs">'+esc(plain(item(id).name))+'</p>'+dayDetail(d,id)}).join(''):'<p class="zs">Quiet</p>')+'</div></button>'}).join('');
+  [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onclick=function(){var open=!q.classList.contains('open');
+    [].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open');o.setAttribute('aria-expanded','false')});
+    sq.classList.toggle('opened',open);if(open){q.classList.add('open');q.setAttribute('aria-expanded','true')}buzz(4)}});
+  var sim=similar(d);$('zinfo').innerHTML='<p class="zi">'+esc(sim.text)+'</p>';
+  var btn=$('z-sim');btn.style.display=sim.n?'':'none';
+  btn.onclick=function(){hl={sel:d.i,set:sim.set,text:d.label+': '+sim.text};closeDay()};
+  z.classList.add('on');z.setAttribute('aria-hidden','false');$('zcol').scrollTop=0;
+  var r=sq.getBoundingClientRect(),t=tile.getBoundingClientRect();
+  sq.style.transition='none';sq.style.transform='translate('+(t.left-r.left)+'px,'+(t.top-r.top)+'px) scale('+(t.width/r.width)+','+(t.height/r.height)+')';
+  void sq.offsetWidth;sq.style.transition='';sq.style.transform='none';z.classList.add('open');buzz(6);
+  $('z-x').onclick=closeDay;
+  setTimeout(function(){try{$('z-x').focus({preventScroll:true})}catch(e){}},450);
 }
 function closeDay(instant){
   var z=$('zoom'),sq=$('zsq');if(!z.classList.contains('on'))return;
   if(hl)renderHistory();
+  sq.classList.remove('opened');[].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open')});
   var tile=document.querySelector('.day[data-i="'+(zoomDay&&zoomDay.i)+'"]')||zoomFrom;
-  if(tile&&!instant){var t=tile.getBoundingClientRect(),x=parseFloat(sq.style.left),y=parseFloat(sq.style.top),w=parseFloat(sq.style.width),h=parseFloat(sq.style.height);
-    sq.style.transform='translate('+(t.left-x)+'px,'+(t.top-y)+'px) scale('+(t.width/w)+','+(t.height/h)+')'}
+  if(tile&&!instant){sq.style.transform='none';var r=sq.getBoundingClientRect(),t=tile.getBoundingClientRect();
+    sq.style.transform='translate('+(t.left-r.left)+'px,'+(t.top-r.top)+'px) scale('+(t.width/r.width)+','+(t.height/r.height)+')'}
   z.classList.remove('open');
-  setTimeout(function(){z.classList.remove('on');z.setAttribute('aria-hidden','true');try{tile&&tile.focus({preventScroll:true})}catch(e){}},instant?0:560);
+  setTimeout(function(){z.classList.remove('on');z.setAttribute('aria-hidden','true');sq.style.transition='none';sq.style.transform='none';void sq.offsetWidth;sq.style.transition='';try{tile&&tile.focus({preventScroll:true})}catch(e){}},instant?0:560);
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('zoom').classList.contains('on'))closeDay()});
 $('h-col').addEventListener('click',function(e){if(hl&&!e.target.closest('button')){hl=null;renderHistory()}});
