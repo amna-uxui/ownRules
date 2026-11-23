@@ -141,8 +141,8 @@ html.still .q,html.still .cell{transition:none !important}
 .htop{display:flex;align-items:center;justify-content:space-between;min-height:44px}
 .brand{font-size:17px;letter-spacing:-0.01em}
 .chip{border:none;background:var(--off);border-radius:999px;min-height:44px;padding:0 18px;font-size:15px;color:#000}
-.htop{display:flex;justify-content:flex-end;margin:-8px 0 0}
-.hmap{min-height:44px;padding:0 18px;border:none;border-radius:999px;background:var(--off);font-size:15px;color:#000}
+.htop{display:flex;justify-content:flex-end;margin:14px 0 0}
+.hmap{min-height:44px;padding:0 20px;border:none;border-radius:999px;background:var(--mind);font-size:15px;font-weight:500;color:#000}
 .hbottom{margin-top:auto;padding-top:16px;position:sticky;bottom:0;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%)}
 /* ── map: back arrow + today mode ── */
 .back{width:44px;height:44px;margin-left:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
@@ -153,9 +153,9 @@ html.still .q,html.still .cell{transition:none !important}
 .today .todaybar{display:block}
 
 /* ── history grid of days ── */
-.htitle{font-size:44px;line-height:1;letter-spacing:-0.035em;margin-top:12px}
+.htitle{font-size:44px;line-height:1;letter-spacing:-0.035em;margin-top:26px}
 .hsub{font-size:14px;color:#444;line-height:1.35;margin:8px 0 0}
-.hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:12px repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:16px}
+.hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:12px repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:24px}
 .hwd{font-size:11px;color:#555;display:flex;align-items:center;justify-content:flex-start}
 .hmon{display:grid;grid-template-columns:12px repeat(9,minmax(0,1fr));gap:0 5px;margin-top:6px;font-size:11px;color:#555;height:14px}
 .hmon span{white-space:nowrap;overflow:visible}
@@ -248,7 +248,7 @@ html.still .q,html.still .cell{transition:none !important}
 .tm .x{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:none;background:#000;color:#fff;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
 .tm.audio .x{top:17px}
 .tacts{display:flex;gap:10px;flex:none;padding-top:12px}
-.tact{flex:1;min-height:56px;border-radius:999px;border:2px solid currentColor;background:transparent;color:inherit;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}
+.tact{flex:1;min-height:48px;border-radius:999px;border:1.5px solid currentColor;background:transparent;color:inherit;font-size:15px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}
 .tact.rec{background:#000;border-color:#000;color:#fff}
 .tact.rec .micon{animation:recblink 1s steps(2,start) infinite}
 @keyframes recblink{to{visibility:hidden}}
@@ -342,8 +342,8 @@ html.still .q,html.still .cell{transition:none !important}
         <textarea id="tn-text" aria-labelledby="tn-name" placeholder="Your notes"></textarea>
         <div class="tmedia" id="tn-media" aria-label="Your videos, photos and recordings"></div>
         <div class="tacts">
-          <button class="tact" id="tn-vid"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="11" height="10" rx="2"/><path d="M13 9l5-3v8l-5-3z"/></svg><span>Video</span></button>
-          <button class="tact" id="tn-rec"><svg class="micon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2.5" width="6" height="10" rx="3"/><path d="M4.5 10a5.5 5.5 0 0011 0M10 15.5V18"/></svg><span>Voice</span></button>
+          <button class="tact" id="tn-vid"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5h3l1.5-2h6l1.5 2h3v9.5h-15z"/><circle cx="10" cy="11" r="3"/></svg><span>Upload photo</span></button>
+          <button class="tact" id="tn-rec"><svg class="micon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2.5" width="6" height="10" rx="3"/><path d="M4.5 10a5.5 5.5 0 0011 0M10 15.5V18"/></svg><span>Record voice</span></button>
         </div>
         <input type="file" id="tn-vfile" accept="video/*,image/*" multiple hidden>
         <input type="file" id="tn-afile" accept="audio/*" capture hidden>
@@ -675,7 +675,7 @@ $('start').onclick=function(){go('history')};
 $('w-fill').onclick=function(){go('today')};
 $('t-back').onclick=function(){go('history')};
 /* Done for today: what you didn't pick fades away; what you picked flies into today's square in your history, each into its colour's corner */
-$('t-done').onclick=function(){tday().saved=true;save();
+function doneToday(){if(TF.leaving)return;TF.leaving=true;tday().saved=true;save();
   var picked=TF.list.filter(function(o){return TF.sel[o.id]}).map(function(o){return{o:o,r:o.el.getBoundingClientRect()}});
   if(RM||!picked.length){go('history');return}
   $('s-today').classList.add('leaving');
@@ -685,6 +685,7 @@ $('t-done').onclick=function(){tday().saved=true;save();
     void app.offsetWidth;(function(){fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();
       f.d.style.transitionDelay=(n*40)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'})})();
     setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()});$('s-today').classList.remove('leaving')},300)},900+fl.length*40)},260)};
+$('t-done').onclick=doneToday;
 var mapFrom=null;/* where the map was opened from: null = history, or {day} = a day's detail */
 function openMap(fromDay,id){todayMode=false;linking=false;askLink=false;view='all';focusId=null;mapFrom=fromDay?{day:fromDay}:null;go('map');if(id&&item(id)){focusId=id;gather()}}
 $('h-map').onclick=function(){openMap(null)};
@@ -744,7 +745,7 @@ function buildField(still){
       b.addEventListener('focus',function(){if(b.matches(':focus-visible'))focusOn(o)});
       b.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.shiftKey||e.key==='n'){e.preventDefault();openNote(o)}});
       fe.appendChild(b);TF.els[it.id]=b;TF.list.push(o);minX=Math.min(minX,x);maxX=Math.max(maxX,x+s);minY=Math.min(minY,y);maxY=Math.max(maxY,y+s)})});
-  TF.b=[minX,maxX,minY,maxY];TF.exit=0;TF.vx=TF.vy=0;TF.goal=null;TF.zgoal=null;TF.t0=still||RM?-1e9:performance.now();
+  TF.b=[minX,maxX,minY,maxY];TF.fit=Math.min(1,(G.W-24)/(maxX-minX),(G.H-170)/(maxY-minY));TF.leaving=false;TF.exit=0;TF.vx=TF.vy=0;TF.goal=null;TF.zgoal=null;TF.t0=still||RM?-1e9:performance.now();
   if(!still){TF.z=1;TF.note=null;TF.shown=false;$('tnote').classList.remove('on');$('s-today').classList.remove('noting');var c0=groupView(0);panTo(c0[0],c0[1])}else panTo(TF.ox,TF.oy);
   shadeField();cancelAnimationFrame(TF.raf);TF.lt=performance.now();TF.raf=requestAnimationFrame(frame)}
 function groupView(gi){/* where the camera sits to show one colour; 4 = all four together */
@@ -756,7 +757,7 @@ function nearest(){var best=null,bd=1e9;TF.list.forEach(function(o){var mx=TF.cx
 /* zoom all the way into one square: it fills the screen and becomes a page for your notes */
 function openNote(o){if(!o||TF.note)return;TF.note=o;TF.shown=false;TF.moved=true;clearTimeout(TF.nt);
   TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];TF.zgoal=TF.zcover;TF.vx=TF.vy=0;$('s-today').classList.add('noting');
-  var n=$('tnote');n.className='tnote k-'+o.k;n.style.setProperty('--c',FULL[o.k]);$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();
+  var n=$('tnote');n.className='tnote k-'+o.k;n.style.setProperty('--c',FULL[o.k]);$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();setTimeout(fitText,0);
   if(RM){TF.z=TF.zcover;panTo(TF.goal[0],TF.goal[1]);showNote()}}
 function showNote(){if(TF.shown)return;TF.shown=true;$('tnote').classList.add('on');setTimeout(function(){if(TF.note)try{$('tn-text').focus({preventScroll:true})}catch(e){}},320)}
 function keepNote(){var o=TF.note;if(!o)return;var t=$('tn-text').value.trim(),N=notesOf(),T=tday();
@@ -765,7 +766,7 @@ function closeNote(){var o=TF.note;if(!o)return;stopRec();keepNote();try{$('tn-t
   $('tnote').classList.remove('on');$('s-today').classList.remove('noting');TF.note=null;TF.shown=false;renderMedia();shadeField();
   TF.zgoal=1;TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];if(RM){TF.z=1;var c=clampPan(TF.goal[0],TF.goal[1]);panTo(c[0],c[1]);TF.goal=null;TF.zgoal=null}
   setTimeout(function(){TF.moved=false},0)}
-$('tn-close').onclick=closeNote;$('tn-text').addEventListener('input',keepNote);
+$('tn-close').onclick=closeNote;function fitText(){}$('tn-text').addEventListener('input',function(){keepNote();fitText()});
 $('tnote').addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();closeNote()}});
 /* ───────── videos, photos and voice notes on a symptom's page: kept on this device (IndexedDB) ───────── */
 var MDB=null,MEM={},URLS=[];
@@ -774,7 +775,7 @@ function mput(k,blob){MEM[k]=blob;return mdb().then(function(db){if(!db||!persis
 function mget(k){if(MEM[k])return Promise.resolve(MEM[k]);return mdb().then(function(db){if(!db)return null;return new Promise(function(res){try{var q=db.transaction('m').objectStore('m').get(k);q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}}catch(e){res(null)}})})}
 function mdel(k){delete MEM[k];return mdb().then(function(db){if(!db)return;try{db.transaction('m','readwrite').objectStore('m').delete(k)}catch(e){}})}
 function mediaOf(){var T=tday();if(!T.media)T.media={};return T.media}
-function hasNote(id){var M=mediaOf();return !!(notesOf()[id]||(M[id]&&M[id].length))}
+function hasNote(id){var M=mediaOf(),t=notesOf()[id];return !!((t&&String(t).trim())||(M[id]&&M[id].length))}
 function addMedia(blob,o){o=o||TF.note;if(!o||!blob||!blob.size)return;var M=mediaOf(),k=todayKey()+'|'+o.id+'|'+Date.now()+'|'+Math.random().toString(36).slice(2,6);
   (M[o.id]=M[o.id]||[]).push({k:k,t:blob.type||''});
   mput(k,blob).then(function(){if(TF.note===o){keepNote();renderMedia()}else{var T=tday();TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true;save();shadeField()}})}
@@ -801,14 +802,16 @@ $('tn-rec').onclick=function(){
     var r=new MediaRecorder(stream),chunks=[],t0=Date.now(),who=TF.note;REC={r:r,s:stream};btn.classList.add('rec');recLabel('0:00');
     var iv=setInterval(function(){var d=Math.floor((Date.now()-t0)/1000);recLabel(Math.floor(d/60)+':'+pad2(d%60))},500);
     r.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
-    r.onstop=function(){clearInterval(iv);stream.getTracks().forEach(function(t){t.stop()});REC=null;btn.classList.remove('rec');recLabel('Voice');
+    r.onstop=function(){clearInterval(iv);stream.getTracks().forEach(function(t){t.stop()});REC=null;btn.classList.remove('rec');recLabel('Record voice');
       if(chunks.length)addMedia(new Blob(chunks,{type:r.mimeType||chunks[0].type||'audio/mp4'}),who)};
     r.start()}).catch(function(){recFail=true;$('tn-afile').value='';$('tn-afile').click()})};
 function ease(t){return t<=0?0:t>=1?1:1-Math.pow(1-t,3)}
 function frame(now){
   if(cur!=='today'&&!TF.exit){TF.raf=0;return}
   var dt=Math.min(50,now-TF.lt)/16.7;TF.lt=now;
-  if(TF.zgoal!=null&&!TF.pinch){var fz=1-Math.pow(.86,dt);TF.z+=(TF.zgoal-TF.z)*fz;if(Math.abs(TF.zgoal-TF.z)<.003*TF.zgoal){TF.z=TF.zgoal;TF.zgoal=null}panTo(TF.ox,TF.oy)}
+  if(TF.fold){var F=TF.fold,k=Math.min(1,(now-F.t0)/620),e2=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;/* ease in-out */
+    TF.z=F.z0+(F.zt-F.z0)*e2;var sx=F.sx+(F.tx-F.sx)*e2,sy=F.sy+(F.ty-F.sy)*e2;setCam((sx-TF.cx)/TF.z,(sy-TF.cy)/TF.z);TF.foldE=e2;if(k>=1){finishFold();return}}
+  else if(TF.zgoal!=null&&!TF.pinch){var fz=1-Math.pow(.86,dt);TF.z+=(TF.zgoal-TF.z)*fz;if(Math.abs(TF.zgoal-TF.z)<.003*TF.zgoal){TF.z=TF.zgoal;TF.zgoal=null}panTo(TF.ox,TF.oy)}
   if(TF.goal&&!TF.down&&!TF.pinch){var f=1-Math.pow(.88,dt),gx=TF.goal[0],gy=TF.goal[1];panTo(TF.ox+(gx-TF.ox)*f,TF.oy+(gy-TF.oy)*f);if(Math.abs(gx-TF.ox)+Math.abs(gy-TF.oy)<.3/TF.z&&TF.zgoal==null){panTo(gx,gy);TF.goal=null}}
   else if(!TF.down&&!TF.pinch&&(Math.abs(TF.vx)+Math.abs(TF.vy)>.05)){panTo(TF.ox+TF.vx*dt/TF.z,TF.oy+TF.vy*dt/TF.z);var dmp=Math.pow(.95,dt);TF.vx*=dmp;TF.vy*=dmp}
   if(TF.note&&!TF.shown&&TF.z>TF.zcover*.8)showNote();
@@ -820,16 +823,36 @@ function frame(now){
     var dx=RM?0:Math.sin(now/2300+o.ph)*1.5/z,dy=RM?0:Math.cos(now/2700+o.ph*1.3)*1.5/z;
     var x=o.tx-(o.tx+h)*(1-e),y=o.ty-(o.ty+h)*(1-e);
     o.el.style.transform='translate3d('+(x+dx).toFixed(2)+'px,'+(y+dy).toFixed(2)+'px,0) scale('+(fish*(.2+.8*e)).toFixed(3)+')';
-    o.el.style.opacity=String(Math.min(1,e*1.6))});
+    o.el.style.opacity=String(Math.min(1,e*1.6)*(TF.sel[o.id]?1:(1-collapseP()*.85)*(TF.fold?1-TF.foldE:1)))});
+  behind(TF.fold?1:collapseP());
   TF.raf=requestAnimationFrame(frame)}
 function clampPan(dx,dy){var bb=TF.b,z=TF.z;/* keep the screen covered while you're close; when zoomed out, keep the field centred */
   var lo=(G.W-TF.cx)/z-bb[1],hi=-TF.cx/z-bb[0];dx=lo>hi?(lo+hi)/2:Math.min(hi,Math.max(lo,dx));
   var loy=(G.H-60-TF.cy)/z-bb[3],hiy=(G.top+20-TF.cy)/z-bb[2];dy=loy>hiy?(loy+hiy)/2:Math.min(hiy,Math.max(loy,dy));return[dx,dy]}
+function setCam(ox,oy){TF.ox=ox;TF.oy=oy;var t='translate3d('+TF.cx+'px,'+TF.cy+'px,0) scale('+TF.z.toFixed(4)+') translate3d('+ox+'px,'+oy+'px,0)';$('tglows').style.transform=t;$('tfield').style.transform=t}
 function panTo(dx,dy){var c=TF.note?[dx,dy]:clampPan(dx,dy);if(c[0]!==dx)TF.vx=0;if(c[1]!==dy)TF.vy=0;TF.ox=c[0];TF.oy=c[1];
   var t='translate3d('+TF.cx+'px,'+TF.cy+'px,0) scale('+TF.z.toFixed(4)+') translate3d('+TF.ox+'px,'+TF.oy+'px,0)';$('tglows').style.transform=t;$('tfield').style.transform=t}
 function zoomAt(mx,my,z1){/* zoom around a point on screen, so what's under your fingers stays under them */
-  z1=Math.max(ZMIN,Math.min(2.6,z1));var qx=(mx-TF.cx)/TF.z-TF.ox,qy=(my-TF.cy)/TF.z-TF.oy;TF.z=z1;TF.zgoal=null;TF.goal=null;panTo((mx-TF.cx)/z1-qx,(my-TF.cy)/z1-qy)}
-function settleZoom(){if(TF.note)return;if(TF.z>ZOPEN)openNote(nearest());else if(TF.z>1.25)TF.zgoal=1.25}
+  z1=Math.max(ZEND,Math.min(2.6,z1));var qx=(mx-TF.cx)/TF.z-TF.ox,qy=(my-TF.cy)/TF.z-TF.oy;TF.z=z1;TF.zgoal=null;TF.goal=null;panTo((mx-TF.cx)/z1-qx,(my-TF.cy)/z1-qy)}
+/* zoom out past the overview and today folds into your history: let go past the point and it's done; before it, it slides back */
+var ZEND=.16;function collapseP(){var f=TF.fit||ZMIN;return TF.z>=f?0:Math.min(1,(f-TF.z)/(f-ZEND))}
+/* while you pinch out, your weeks fade in behind today; past halfway, letting go folds today straight into its square */
+var behindOn=false;
+function behind(p){var h=$('s-history'),t=$('s-today');if(cur!=='today')return;
+  if(p>0&&!behindOn){behindOn=true;renderHistory();h.style.transition='none';t.style.transition='none'}
+  if(!behindOn)return;
+  if(p<=0&&!TF.fold){behindOn=false;h.style.opacity='';h.style.transition='';t.style.background='';t.style.transition='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});return}
+  h.style.opacity=String(p);t.style.background='rgba(255,255,255,'+(1-p).toFixed(3)+')';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=String(1-p)})}
+function startFold(){if(TF.fold||TF.leaving)return;TF.leaving=true;tday().saved=true;save();behind(1);
+  var tile=document.querySelector('.day.today'),r=tile?tile.getBoundingClientRect():{left:G.W/2,top:G.H/3,width:10,height:10};
+  /* the middle of the four colours travels to the middle of today's square, and shrinks to its size */
+  var fw=(TF.b[1]-TF.b[0]);TF.fold={t0:performance.now(),z0:TF.z,zt:Math.max(.02,r.width*1.6/fw),sx:TF.cx+TF.z*TF.ox,sy:TF.cy+TF.z*TF.oy,tx:r.left+r.width/2,ty:r.top+r.height/2};TF.foldE=0}
+function finishFold(){TF.fold=null;var h=$('s-history'),t=$('s-today');behindOn=false;
+  go('history');h.style.opacity='';t.style.background='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});
+  t.style.opacity='0';setTimeout(function(){h.style.opacity='';h.style.transition='';t.style.transition='';t.style.opacity=''},50)}
+function settleZoom(){if(TF.note||TF.leaving)return;var f=TF.fit||ZMIN;
+  if(TF.z<f){if(collapseP()>.45){startFold();return}TF.zgoal=f;return}
+  if(TF.z>ZOPEN)openNote(nearest());else if(TF.z>1.25)TF.zgoal=1.25}
 (function(){var v=$('s-today'),P={},sx,sy,ox,oy,lx,ly,lt,hold=null,wt=null,wsum=0;
   function cnt(){return Object.keys(P).length}
   function pin(){var k=Object.keys(P),a=P[k[0]],b=P[k[1]];return{d:Math.hypot(a.x-b.x,a.y-b.y),x:(a.x+b.x)/2,y:(a.y+b.y)/2}}

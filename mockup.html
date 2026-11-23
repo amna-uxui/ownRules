@@ -58,6 +58,7 @@
 </div>
 <script>
   var f=document.getElementById('app');
+  if(location.hash)f.src='index.html'+location.hash;/* opened from a link like index.html#history */
   document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){f.src='index.html?r='+Date.now()+'#'+b.getAttribute('data-go')}});
   function fit(){var s=Math.min(1,(window.innerHeight-48)/876,(window.innerWidth-48)/417);document.getElementById('wrap').style.setProperty('--s',s.toFixed(3));document.querySelector('.phone').style.setProperty('--s',s.toFixed(3))}
   window.addEventListener('resize',fit);fit();
