@@ -163,6 +163,7 @@ html.still .q,html.still .cell{transition:none !important}
 .day i{display:block;border-radius:2px;background:var(--off)}
 .day:active{transform:scale(.92)}
 .day.future{visibility:hidden}
+.day.later::before{content:"";position:absolute;top:-3px;right:-3px;width:6px;height:6px;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px #fff;z-index:1}/* filled in later, from memory */
 .day.jig{animation:jelly .7s cubic-bezier(.33,0,.2,1)}
 .day.today{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #000}
 .day.empty-today{border:1.5px dashed #000;border-radius:6px}
@@ -235,6 +236,9 @@ html.still .q,html.still .cell{transition:none !important}
 .tglow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(40px);opacity:0;transition:opacity 1.2s var(--smooth) .2s}
 .tglow.in{opacity:.32}
 .tback{position:absolute;z-index:6;transition:opacity .3s}
+.tdate{position:absolute;z-index:6;top:calc(var(--ttop,48px) + env(safe-area-inset-top,0px));height:44px;display:flex;align-items:center;font-size:15px;background:#fff;border-radius:999px;padding:0 14px;transition:opacity .3s}
+.tdate[hidden]{display:none}
+#s-today.noting .tdate{opacity:0}
 .tsq .gd{position:absolute;z-index:1;top:9px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--c)}
 .tsq.on .gd,.tsq.has-note .gd{opacity:0}
 .tsq .nm{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:2px;background:currentColor;opacity:.7;display:none;z-index:1}
@@ -337,7 +341,7 @@ html.still .q,html.still .cell{transition:none !important}
         <h1 class="h zdate" id="z-date"></h1>
         <div class="zsq" id="zsq"></div>
         <div class="zinfo" id="zinfo" aria-live="polite"></div>
-        <div class="zbot"><button class="pill" id="z-sim">Show me similar days</button></div>
+        <div class="zbot"><button class="pill" id="z-sim">Show me similar days</button><button class="pill" id="z-add" hidden>Add to this day</button></div>
       </div>
     </div>
   </section>
@@ -373,6 +377,7 @@ html.still .q,html.still .cell{transition:none !important}
   <section class="screen" id="s-today" aria-label="Today">
     <div class="tfield" id="tglows" aria-hidden="true"></div>
     <div class="tfield" id="tfield" role="group" aria-label="What you feel today"></div>
+    <span class="tdate" id="t-date" hidden></span>
     <button class="back tback" id="t-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
     <div class="tbar cl2"><button class="pill" id="t-done">Done for today</button></div>
     <div class="tnote" id="tnote" role="dialog" aria-modal="true" aria-labelledby="tn-name">
@@ -450,7 +455,12 @@ var CTX=[['sleep','Poor sleep'],['rain','Rainy'],['feet','On my feet a lot'],['h
 function pad2(n){return(n<10?'0':'')+n}
 function keyOf(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
 function todayKey(){return keyOf(new Date())}
-function tday(){var k=todayKey();if(!st.days[k])st.days[k]={ids:{},ctx:{}};return st.days[k]}
+var editKey=null;/* null = today; otherwise the date of a past day you're filling in from memory */
+function tday(){var k=editKey||todayKey();if(!st.days[k])st.days[k]={ids:{},ctx:{}};if(editKey)st.days[k].later=true;return st.days[k]}
+function dayTile(){var k=editKey||todayKey();for(var i=0;i<HDAYS.length;i++)if(HDAYS[i].key===k)return document.querySelector('.day[data-i="'+i+'"]');return null}
+function openToday(key){editKey=key&&key!==todayKey()?key:null;var el=$('t-date');
+  if(editKey){var p=editKey.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);el.textContent=FULLDAY[d.getDay()]+' '+d.getDate()+' '+FULLMON[d.getMonth()];el.hidden=false}else el.hidden=true;
+  $('t-done').textContent=editKey?'Done':'Done for today';go('today')}
 
 /* ───────── state ───────── */
 function blank(){return{claimed:{},own:[],userLinks:[],cut:[],days:{},conditions:[],onboarded:false}}
@@ -506,7 +516,7 @@ function measure(){
   $('dyn').textContent='.cl{left:'+cx+'px;width:'+cw+'px;padding:calc('+top+'px + env(safe-area-inset-top,0px)) '+pad+'px calc(22px + env(safe-area-inset-bottom,0px))}'+
     '#s-map .cl{padding-bottom:0}'+
     '.scroll{margin:0 -'+pad+'px;padding:4px '+pad+'px 0}'+
-    '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+'.zsq{min-height:'+gw+'px}'+
+    '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.tdate{right:'+(W-gx-gw)+'px;--ttop:'+(top-8)+'px}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+'.zsq{min-height:'+gw+'px}'+
     '.pop{right:'+(W-(cx+cw-pad))+'px;top:'+(top+50)+'px}';
 }
 function setQ(el,x,y,w,h,extra){el.style.left=x+'px';el.style.top=y+'px';el.style.width=w+'px';el.style.height=h+'px';el.style.transform=extra||''}
@@ -725,16 +735,16 @@ function renderOb(){
     b.onclick=function(){if(st.claimed[it.id])delete st.claimed[it.id];else st.claimed[it.id]=true;save();b.setAttribute('aria-pressed',String(!!st.claimed[it.id]))};g.appendChild(b)});
   [].forEach.call(g.childNodes,function(b){b.setAttribute('aria-pressed',String(!!st.claimed[b.getAttribute('data-id')]))})}
 [].forEach.call(document.querySelectorAll('[data-ob]'),function(b){b.onclick=function(){var n=b.getAttribute('data-ob');if(n==='3'){st.onboarded=true;save();go('history')}else go('ob'+n)}});
-$('w-fill').onclick=function(){go('today')};
-$('t-back').onclick=function(){go('history')};
+$('w-fill').onclick=function(){openToday(null)};
+$('t-back').onclick=function(){go('history');editKey=null};
 /* Done for today: what you didn't pick fades away; what you picked flies into today's square in your history, each into its colour's corner */
 function doneToday(){if(TF.leaving)return;TF.leaving=true;tday().saved=true;save();
   var picked=TF.list.filter(function(o){return TF.sel[o.id]}).map(function(o){return{o:o,r:o.el.getBoundingClientRect()}});
-  if(RM||!picked.length){go('history');return}
+  if(RM||!picked.length){go('history');editKey=null;return}
   $('s-today').classList.add('leaving');
   var fl=picked.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.o.k];
     d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.o.k}});
-  setTimeout(function(){go('history');var t=document.querySelector('.day.today');var qs=t?t.querySelectorAll('i'):[];
+  setTimeout(function(){go('history');var t=dayTile();editKey=null;var qs=t?t.querySelectorAll('i'):[];
     void app.offsetWidth;(function(){fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();
       f.d.style.transitionDelay=(n*40)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'})})();
     setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()});$('s-today').classList.remove('leaving')},300)},900+fl.length*40)},260)};
@@ -843,7 +853,7 @@ function mget(k){if(MEM[k])return Promise.resolve(MEM[k]);return mdb().then(func
 function mdel(k){delete MEM[k];return mdb().then(function(db){if(!db)return;try{db.transaction('m','readwrite').objectStore('m').delete(k)}catch(e){}})}
 function mediaOf(){var T=tday();if(!T.media)T.media={};return T.media}
 function hasNote(id){var M=mediaOf(),t=notesOf()[id];return !!((t&&String(t).trim())||(M[id]&&M[id].length))}
-function addMedia(blob,o){o=o||TF.note;if(!o||!blob||!blob.size)return;var M=mediaOf(),k=todayKey()+'|'+o.id+'|'+Date.now()+'|'+Math.random().toString(36).slice(2,6);
+function addMedia(blob,o){o=o||TF.note;if(!o||!blob||!blob.size)return;var M=mediaOf(),k=(editKey||todayKey())+'|'+o.id+'|'+Date.now()+'|'+Math.random().toString(36).slice(2,6);
   (M[o.id]=M[o.id]||[]).push({k:k,t:blob.type||''});
   mput(k,blob).then(function(){if(TF.note===o){keepNote();renderMedia()}else{var T=tday();TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true;save();shadeField()}})}
 function renderMedia(){var o=TF.note,box=$('tn-media');URLS.forEach(function(u){try{URL.revokeObjectURL(u)}catch(e){}});URLS=[];box.innerHTML='';if(!o)return;
@@ -910,10 +920,10 @@ function behind(p){var h=$('s-history'),t=$('s-today');if(cur!=='today')return;
   if(p<=0&&!TF.fold){behindOn=false;h.style.opacity='';h.style.transition='';t.style.background='';t.style.transition='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});return}
   h.style.opacity=String(p);t.style.background='rgba(255,255,255,'+(1-p).toFixed(3)+')';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=String(1-p)})}
 function startFold(){if(TF.fold||TF.leaving)return;TF.leaving=true;tday().saved=true;save();behind(1);
-  var tile=document.querySelector('.day.today'),r=tile?tile.getBoundingClientRect():{left:G.W/2,top:G.H/3,width:10,height:10};
+  var tile=dayTile(),r=tile?tile.getBoundingClientRect():{left:G.W/2,top:G.H/3,width:10,height:10};
   /* the middle of the four colours travels to the middle of today's square, and shrinks to its size */
   var fw=(TF.b[1]-TF.b[0]);TF.fold={t0:performance.now(),z0:TF.z,zt:Math.max(.02,r.width*1.6/fw),sx:TF.cx+TF.z*TF.ox,sy:TF.cy+TF.z*TF.oy,tx:r.left+r.width/2,ty:r.top+r.height/2};TF.foldE=0}
-function finishFold(){TF.fold=null;var h=$('s-history'),t=$('s-today');behindOn=false;
+function finishFold(){TF.fold=null;var h=$('s-history'),t=$('s-today');behindOn=false;editKey=null;
   go('history');h.style.opacity='';t.style.background='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});
   t.style.opacity='0';setTimeout(function(){h.style.opacity='';h.style.transition='';t.style.transition='';t.style.opacity=''},50)}
 function settleZoom(){if(TF.note||TF.leaving)return;var f=TF.fit||ZMIN;
@@ -972,12 +982,14 @@ function sampleDay(k){/* example days so the history isn't empty in the prototyp
   if(bad)ctx.sleep=1;if(rain)ctx.rain=1;if(feet)ctx.feet=1;if(hot)ctx.hot=1;if(stress)ctx.stress=1;if(period)ctx.period=1;
   return{ids:ids,ctx:ctx,sample:true}}
 var HDAYS=[],hl=null;
+/* a new user starts with an empty history; add ?demo to the address to show example weeks (for tests and presentations) */
+var DEMO_WEEKS=/[?&]demo\b/.test(location.search);
 function buildDays(){
   var now=new Date();now.setHours(12,0,0,0);var wd=(now.getDay()+6)%7,start=new Date(now);start.setDate(now.getDate()-wd-56);
   HDAYS=[];for(var i=0;i<63;i++){var d=new Date(start);d.setDate(start.getDate()+i);var k=keyOf(d),isToday=k===todayKey(),future=d>now&&!isToday;
-    var real=st.days[k],rec=real&&(Object.keys(real.ids||{}).length||real.saved)?real:(isToday||future?{ids:{},ctx:{}}:sampleDay(k));
+    var real=st.days[k],rec=real&&(Object.keys(real.ids||{}).length||real.saved)?real:(isToday||future||!DEMO_WEEKS?{ids:{},ctx:{}}:sampleDay(k));
     var ids=Object.keys(rec.ids||{}).filter(function(id){return item(id)});
-    HDAYS.push({i:i,key:k,date:d,today:isToday,future:future,sample:!!rec.sample,ids:ids,ctx:Object.keys(rec.ctx||{}),label:DAYN[(d.getDay()+6)%7]+' '+d.getDate()+' '+MON[d.getMonth()]})}}
+    HDAYS.push({i:i,key:k,date:d,today:isToday,future:future,sample:!!rec.sample,later:!!(real&&real.later),ids:ids,ctx:Object.keys(rec.ctx||{}),label:DAYN[(d.getDay()+6)%7]+' '+d.getDate()+' '+MON[d.getMonth()]})}}
 function groupsOf(ids){return GROUPS.map(function(g){return ids.filter(function(id){var it=item(id);return it&&it.k===g})})}
 function renderHistory(){
   buildDays();var hg=$('hgrid');hg.innerHTML='';
@@ -988,6 +1000,7 @@ function renderHistory(){
   HDAYS.forEach(function(d){var b=document.createElement('button');b.className='day';b.setAttribute('data-i',d.i);
     if(d.future){b.className+=' future';b.tabIndex=-1;b.setAttribute('aria-hidden','true')}
     var gs=groupsOf(d.ids);b.innerHTML=gs.map(function(g,k){return '<i style="'+(g.length?'background:var(--'+GROUPS[k]+')':'')+'"></i>'}).join('');
+    if(d.later&&d.ids.length)b.className+=' later';
     if(d.today){b.className+=' today';if(!d.ids.length)b.className+=' empty-today'}
     if(hl){if(hl.sel===d.i)b.className+=' sel';else if(hl.set[d.i])b.className+=' sim'}
     b.setAttribute('aria-label',d.label+(d.today?', today':'')+': '+(d.ids.length?d.ids.map(function(id){return plain(item(id).name)}).join(', '):'nothing noted'));
@@ -1025,7 +1038,9 @@ function openDay(d,tile){
     [].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open');o.setAttribute('aria-expanded','false')});
     sq.classList.toggle('opened',open);if(open){q.classList.add('open');q.setAttribute('aria-expanded','true')}buzz(4)}});
   var sim=similar(d);$('zinfo').innerHTML='<p class="zi">'+esc(sim.text)+'</p>';
-  var btn=$('z-sim');btn.style.display=sim.n?'':'none';
+  var btn=$('z-sim'),empty=!d.ids.length&&!d.today&&!d.future&&!d.sample;btn.style.display=sim.n&&!empty?'':'none';
+  var ab=$('z-add');ab.hidden=!empty;ab.onclick=function(){closeDay(true);openToday(d.key)};
+  if(empty)$('zinfo').innerHTML='';
   btn.onclick=function(){hl={sel:d.i,set:sim.set,text:d.label+': '+sim.text};closeDay()};
   z.classList.add('on');z.setAttribute('aria-hidden','false');$('zcol').scrollTop=0;
   var r=sq.getBoundingClientRect(),t=tile.getBoundingClientRect();
