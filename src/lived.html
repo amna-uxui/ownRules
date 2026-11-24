@@ -53,7 +53,9 @@ html.still .q,html.still .cell{transition:none !important}
 /* ── map screen ── */
 .mhead{flex:none;padding-bottom:12px;background:var(--bg);position:relative;z-index:3}
 .mtop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.menu-btn{flex:none;width:44px;height:44px;border:none;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;letter-spacing:1px}
+.mbar{display:flex;align-items:center;justify-content:space-between}
+.menu-btn{flex:none;width:44px;height:44px;margin-right:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center}
+.menu-btn i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
 .mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .count{font-size:15px;color:var(--muted)}
 .seg{display:flex;background:var(--off);border-radius:999px;padding:3px;flex:none}
@@ -97,6 +99,7 @@ html.still .q,html.still .cell{transition:none !important}
 .sheet .nm{font-size:20px;line-height:1.2;margin:4px 0 10px}
 .sheet p{margin:0 0 10px;font-size:15px;line-height:1.4}
 .sheet .why{color:#333}
+.sheet .rslist{margin:-4px 0 10px;padding-left:20px;font-size:15px;line-height:1.45}
 .sheet .with b{font-weight:500}
 .sheet .acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:6px}
 .sheet .acts .pill{flex:1 1 100%}
@@ -199,6 +202,7 @@ html.still .q,html.still .cell{transition:none !important}
 .zsq.opened .zq:not(.open){opacity:0;pointer-events:none}
 .zq .zdet{opacity:0;max-height:0;overflow:hidden;transition:opacity .3s}
 .zq.open .zdet{opacity:1;max-height:none;transition-delay:.3s}
+.zdet .zs.zn{font-size:20px;line-height:1.25}
 .zdet .zs{display:block;font:inherit;font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:14px 0 0;padding:0;border:none;background:none;color:inherit;text-align:left;cursor:pointer}
 .zdet button.zs{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;min-height:36px}
 .zdet .znote{font-size:16px;line-height:1.35;margin:6px 0 0;opacity:.85;white-space:pre-wrap}
@@ -226,6 +230,22 @@ html.still .q,html.still .cell{transition:none !important}
 .obgrid button .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--c);transition:opacity .3s}
 .obgrid button[aria-pressed="true"]{background:var(--c);color:var(--on)}
 .obgrid button[aria-pressed="true"] .gd{opacity:0}
+/* ── confirm your day: what you logged, and how heavy the app thinks it was ── */
+.cfgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;margin-top:22px}
+.cfgrid>div{border-radius:10px;padding:12px;box-sizing:border-box;background:var(--off);color:#000;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.cfgrid>div.has{background:var(--c);color:var(--on)}
+.cfgrid .zt{font-size:13px;line-height:1.2;opacity:.85}
+.cfgrid ul{list-style:none;margin:0;padding:0;font-size:17px;line-height:1.2;letter-spacing:-0.01em;overflow-y:auto}
+.cfgrid li+li{margin-top:3px}
+.cfq{font-size:17px;line-height:1.3;margin:16px 0 10px;flex:none}
+.cfrange{-webkit-appearance:none;appearance:none;width:100%;height:32px;margin:0;background:transparent;flex:none;cursor:pointer}
+.cfrange::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--fill,var(--off))}
+.cfrange::-moz-range-track{height:8px;border-radius:4px;background:var(--fill,var(--off))}
+.cfrange::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--heart);margin-top:-9px;border:none}
+.cfrange::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--heart);border:none}
+.cfstops{display:flex;justify-content:space-between;flex:none;margin-top:2px}
+.cfstops button{border:none;background:none;padding:6px 0;min-height:36px;font:inherit;font-size:15px;color:#777;transition:color .2s}
+.cfstops button[aria-pressed="true"]{color:#000}
 /* ── today: one field of squares, the ones you usually have in the middle ── */
 #s-today{background:#fff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .tfield{position:absolute;left:0;top:0;will-change:transform}
@@ -349,10 +369,12 @@ html.still .q,html.still .cell{transition:none !important}
   <section class="screen" id="s-map" aria-label="Your hEDS">
     <div class="col cl">
       <div class="mhead">
+        <div class="mbar">
         <button class="back" id="m-back" aria-label="Back to your weeks"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+          <button class="menu-btn" id="menu-btn" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="12.5" cy="8" r="1.5" fill="currentColor"/></svg></i></button>
+        </div>
         <div class="mtop" style="margin-top:8px">
           <h1 class="h" id="m-title">Your hEDS</h1>
-          <button class="menu-btn" id="menu-btn" aria-label="Menu" aria-haspopup="true" aria-expanded="false">•••</button>
         </div>
         <div class="ctxrow" id="ctxrow"></div>
         <div class="mrow">
@@ -397,6 +419,18 @@ html.still .q,html.still .cell{transition:none !important}
     </div>
   </section>
 
+  <section class="screen" id="s-confirm" aria-label="Confirm your day">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="cf-back" aria-label="Back to your picks"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span></span></div>
+      <h1 class="h" id="cf-title" style="margin-top:12px"></h1>
+      <div class="cfgrid" id="cf-sym" aria-label="What you logged"></div>
+      <p class="cfq" id="cf-q">How much did it take from you?</p>
+      <input type="range" class="cfrange" id="cf-range" min="0" max="2" step="1" aria-labelledby="cf-q" aria-valuetext="">
+      <div class="cfstops"><button data-l="0">Some</button><button data-l="1">A lot</button><button data-l="2">More than I had</button></div>
+      <div style="padding-top:12px;flex:none"><button class="pill" id="cf-yes">Done for today</button></div>
+    </div>
+  </section>
+
   <section class="screen share" id="s-share" aria-label="My hEDS poster">
     <div class="col cl">
       <div style="position:relative;flex:none">
@@ -428,6 +462,9 @@ html.still .q,html.still .cell{transition:none !important}
 /* ───────── data ───────── */
 var GROUPS=['mind','heart','pain','body'];
 var GN={mind:'What is your energy like?',heart:'How do you feel?',pain:'Where do you feel pain?',body:'How does your body react?'};
+/* what an empty box says when you open it: honest that nothing was logged, not that nothing happened */
+var NONE_PAST={mind:'Nothing logged about your energy that day.',heart:'Nothing logged about how you felt that day.',pain:'No pain logged that day.',body:'Nothing logged about how your body reacted that day.'};
+var NONE_NOW={mind:'Nothing logged about your energy yet today.',heart:'Nothing logged about how you feel yet today.',pain:'No pain logged yet today.',body:'Nothing logged about how your body reacts yet today.'};
 var GP={mind:'What was your energy level?',heart:'How was your body feeling?',pain:'Where did it hurt?',body:'How did your body react?'};/* the same four questions, asked about a day that's gone */
 var NOTE={
  mind:'Tiredness and brain fog often build up from pain, poor sleep and dizziness together, so they tend to be tied to a lot of other things. It’s real tiredness, not laziness.',
@@ -517,7 +554,7 @@ function measure(){
     '#s-map .cl{padding-bottom:0}'+
     '.scroll{margin:0 -'+pad+'px;padding:4px '+pad+'px 0}'+
     '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.tdate{right:'+(W-gx-gw)+'px;--ttop:'+(top-8)+'px}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+'.zsq{min-height:'+gw+'px}'+
-    '.pop{right:'+(W-(cx+cw-pad))+'px;top:'+(top+50)+'px}';
+    '.pop{right:'+(W-(cx+cw-pad))+'px;top:'+(top+40)+'px}';
 }
 function setQ(el,x,y,w,h,extra){el.style.left=x+'px';el.style.top=y+'px';el.style.width=w+'px';el.style.height=h+'px';el.style.transform=extra||''}
 function placeQuads(screen){
@@ -678,8 +715,8 @@ function closePop(){pop.classList.remove('on');$('menu-btn').setAttribute('aria-
 $('menu-btn').onclick=function(e){e.stopPropagation();var on=!pop.classList.contains('on');pop.classList.toggle('on',on);this.setAttribute('aria-expanded',String(on))};
 document.addEventListener('click',function(e){if(!pop.contains(e.target)&&e.target!==$('menu-btn'))closePop()});
 $('m-reset').onclick=function(){closePop();focusId=null;linking=false;paint();scrim.classList.add('on');sheet.className='sheet on';
-  sheet.innerHTML='<div class="nm" style="margin-top:0">Start over?</div><p>This clears everything you’ve added, so you’d begin with a fresh map. It can’t be undone.</p><div class="row2"><button class="tx" id="rs-x">Keep my map</button><button class="pill" id="rs-ok">Start over</button></div>';
-  $('rs-x').onclick=closeCard;$('rs-ok').onclick=function(){persist=true;st=blank();save();closeCard();view='all';layout();paint();scroll.scrollTop=0}};
+  sheet.innerHTML='<div class="nm" style="margin-top:0">Start over?</div><p>This deletes everything Lived has saved on this phone:</p><ul class="rslist"><li>every day in your history</li><li>your notes, photos and voice recordings</li><li>the symptoms and links you marked as yours</li></ul><p>You’ll begin again from the first screen. This can’t be undone.</p><div class="row2"><button class="tx" id="rs-x">Keep everything</button><button class="pill" id="rs-ok">Delete and start over</button></div>';
+  $('rs-x').onclick=closeCard;$('rs-ok').onclick=function(){persist=true;st=blank();save();try{MDB&&MDB.close();MDB=null;indexedDB.deleteDatabase('lived-media')}catch(e){}MEM={};closeCard();view='all';layout();paint();scroll.scrollTop=0;go('intro')}};
 $('m-share').onclick=function(){closePop();go('share')};
 $('p-close').onclick=function(){go('map')};
 
@@ -711,11 +748,12 @@ document.addEventListener('keydown',function(e){
 var cur=null,splashT=null;
 function go(name){
   cur=name;clearTimeout(splashT);
-  ['splash','intro','ob1','ob2','history','map','share','today'].forEach(function(n){$('s-'+n).classList.toggle('on',n===name)});
+  ['splash','intro','ob1','ob2','history','map','share','today','confirm'].forEach(function(n){$('s-'+n).classList.toggle('on',n===name)});
   app.classList.toggle('splash-in',name==='splash');
   if(name==='splash'){placeQuads('splash');splashT=setTimeout(function(){if(cur==='splash')go('intro')},3600)}
   else if(name==='intro')placeQuads('intro');
   else if(name==='ob1'||name==='ob2'){placeQuads('ob');renderOb()}
+  else if(name==='confirm'){placeQuads('ob');renderConfirm()}
   else if(name==='map'){var arrive=!Q[0].classList.contains('hide');layout();paint();placeQuads(arrive?'map-arrive':'map')}
   else if(name==='share'){placeQuads('map');setTimeout(drawPoster,30)}
   else if(name==='today'){Q.forEach(function(q){q.classList.add('hide')});dot.classList.add('gone');buildField()}
@@ -737,17 +775,42 @@ function renderOb(){
 [].forEach.call(document.querySelectorAll('[data-ob]'),function(b){b.onclick=function(){var n=b.getAttribute('data-ob');if(n==='3'){st.onboarded=true;save();go('history')}else go('ob'+n)}});
 $('w-fill').onclick=function(){openToday(null)};
 $('t-back').onclick=function(){go('history');editKey=null};
-/* Done for today: what you didn't pick fades away; what you picked flies into today's square in your history, each into its colour's corner */
-function doneToday(){if(TF.leaving)return;TF.leaving=true;tday().saved=true;save();
-  var picked=TF.list.filter(function(o){return TF.sel[o.id]}).map(function(o){return{o:o,r:o.el.getBoundingClientRect()}});
-  if(RM||!picked.length){go('history');editKey=null;return}
-  $('s-today').classList.add('leaving');
-  var fl=picked.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.o.k];
-    d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.o.k}});
-  setTimeout(function(){go('history');var t=dayTile();editKey=null;var qs=t?t.querySelectorAll('i'):[];
-    void app.offsetWidth;(function(){fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();
-      f.d.style.transitionDelay=(n*40)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'})})();
-    setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()});$('s-today').classList.remove('leaving')},300)},900+fl.length*40)},260)};
+/* Done: first show what you logged and how heavy the app thinks the day was; you confirm (or nudge it), then it folds into the day's square */
+var LEVELS=['That sounds like a lot to carry today.','That sounds like a lot to carry today.','That sounds like a lot to carry today.'],HEAVY={sub:1,dis:1,nf:1,crash:1,mig:1,chp:1,br:1,blv:1,pal:1},cfLevel=1;
+function estimate(ids){/* more symptoms, heavier ones, and more of the four questions touched = a heavier day */
+  var sc=0,gs={};ids.forEach(function(id){var it=item(id);if(!it)return;sc+=HEAVY[id]?2:1;gs[it.k]=1});sc+=Math.max(0,Object.keys(gs).length-1);
+  return sc<=3?0:sc<=7?1:2}
+function resetBehind(){var h=$('s-history'),t=$('s-today');behindOn=false;h.style.opacity='';h.style.transition='';t.style.background='';t.style.transition='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''})}
+function doneToday(){if(TF.leaving)return;resetBehind();TF.fold=null;
+  var T=tday(),ids=Object.keys(T.ids).filter(function(id){return item(id)});
+  if(!ids.length){T.saved=true;save();go('history');editKey=null;return}
+  cfLevel=T.weight!=null?T.weight:estimate(ids);go('confirm')}
+function renderConfirm(){var T=tday(),ids=Object.keys(T.ids).filter(function(id){return item(id)}),g=$('cf-sym');
+  /* the day you're about to save, as its four question boxes (like opening a day from your history) */
+  var gs=groupsOf(ids),Q=editKey?GP:GN;g.innerHTML='';
+  GROUPS.forEach(function(k,i){var d=document.createElement('div');d.className='k-'+k+(gs[i].length?' has':'');d.setAttribute('data-k',k);
+    d.innerHTML='<ul></ul>';d.setAttribute('aria-label',Q[k]);var ul=d.querySelector('ul');/* only what was logged: no titles, empty boxes stay empty */
+    gs[i].forEach(function(id){var li=document.createElement('li');li.textContent=plain(item(id).name);ul.appendChild(li)});g.appendChild(d)});
+  $('cf-title').textContent=editKey?'That sounds like a lot to carry that day.':'That sounds like a lot to carry today.';
+  $('cf-yes').textContent=editKey?'Done':'Done for today';setLevel(cfLevel)}
+/* the app's guess is already chosen; one tap changes it */
+/* the line fills up to the handle in red */
+function paintFill(){var r=$('cf-range'),T=tday(),gs=groupsOf(Object.keys(T.ids).filter(function(id){return item(id)})),tot=0;gs.forEach(function(g){tot+=g.length});
+  var upto=cfLevel/2*100;if(!tot){r.style.removeProperty('--fill');return}
+  var c=FULL.heart;/* always red */
+  r.style.setProperty('--fill','linear-gradient(to right,'+c+' '+upto.toFixed(1)+'%,#F1F2F4 '+upto.toFixed(1)+'%)')}
+function setLevel(l){cfLevel=Math.max(0,Math.min(2,l));var r=$('cf-range');r.value=cfLevel;paintFill();var names=['Some','A lot','More than I had'];r.setAttribute('aria-valuetext',names[cfLevel]);
+  [].forEach.call(document.querySelectorAll('.cfstops button'),function(b){b.setAttribute('aria-pressed',String(+b.getAttribute('data-l')===cfLevel))})}
+$('cf-range').addEventListener('input',function(){setLevel(+this.value)});
+[].forEach.call(document.querySelectorAll('.cfstops button'),function(b){b.onclick=function(){setLevel(+b.getAttribute('data-l'))}});
+$('cf-back').onclick=function(){go('today')};
+$('cf-yes').onclick=function(){var T=tday();T.weight=cfLevel;T.saved=true;save();
+  var sq=[].slice.call($('cf-sym').querySelectorAll('.has')).map(function(el){return{r:el.getBoundingClientRect(),k:el.getAttribute('data-k')}}).filter(function(p){return p.r.bottom>0&&p.r.top<G.H});
+  if(RM||!sq.length){go('history');editKey=null;return}
+  var fl=sq.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.k];d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.k}});
+  go('history');var t=dayTile();editKey=null;var qs=t?t.querySelectorAll('i'):[];void app.offsetWidth;
+  fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();f.d.style.transitionDelay=(n*30)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'});
+  setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()})},300)},900+fl.length*30)};
 $('t-done').onclick=doneToday;
 var mapFrom=null;/* where the map was opened from: null = history, or {day} = a day's detail */
 function openMap(fromDay,id){todayMode=false;linking=false;askLink=false;view='all';focusId=null;mapFrom=fromDay?{day:fromDay}:null;go('map');if(id&&item(id)){focusId=id;gather()}}
@@ -789,7 +852,7 @@ function recScore(){/* how often each symptom showed up in your last 8 weeks, pl
   var sc={};items().forEach(function(it){sc[it.id]=(f[it.id]||0)+(st.claimed[it.id]?2:0)});return sc}
 function notesOf(){var T=tday();if(!T.notes)T.notes={};return T.notes}
 function buildField(still){
-  var fe=$('tfield'),gw=$('tglows'),T=tday(),N=notesOf(),sc=recScore();if(!still){TF.sel={};TF.pre={};for(var pk in T.ids)TF.pre[pk]=true}var g=5,s=Math.round(Math.min(124,(G.W-3*g)/3.3)),u=s+g,COLS=4;
+  var fe=$('tfield'),gw=$('tglows'),T=tday(),N=notesOf(),sc=recScore();if(!still){TF.sel={};TF.pre={};for(var pk in T.ids)TF.sel[pk]=true}/* what's already saved for this day shows as picked */var g=5,s=Math.round(Math.min(124,(G.W-3*g)/3.3)),u=s+g,COLS=4;
   TF.s=s;TF.u=u;TF.cx=G.W/2;TF.cy=G.top+30+(G.H-G.top-30-100)/2;TF.zcover=Math.max(G.W,G.H)/s*1.25;
   gw.innerHTML='';fe.innerHTML='';TF.els={};TF.list=[];var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
   GROUPS.forEach(function(k,gi){var sx=gi%2?1:-1,sy=gi>1?1:-1;
@@ -805,7 +868,7 @@ function buildField(still){
         if(e.clientX||e.clientY){rp.style.left=((e.clientX-rr.left)/rr.width*100)+'%';rp.style.top=((e.clientY-rr.top)/rr.height*100)+'%'}else rp.style.left=rp.style.top='50%';
         var added=!TF.sel[o.id];if(added){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true;buzz(6)}else{delete TF.sel[o.id];if(!TF.pre[o.id])delete T.ids[o.id]}save();shadeField();
         /* each pick moves the camera on to the next colour: energy → heart → pain → body → back to all four */
-        if(added){clearTimeout(TF.nt);TF.nt=setTimeout(function(){goGroup(o.gi+1)},RM?0:380)}});
+        /* the screen stays still after a pick: you move it yourself (Lea's test: moving on its own caused wrong taps and dizziness) */});
       b.addEventListener('focus',function(){if(b.matches(':focus-visible'))focusOn(o)});
       b.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.shiftKey||e.key==='n'){e.preventDefault();openNote(o)}});
       fe.appendChild(b);TF.els[it.id]=b;TF.list.push(o);minX=Math.min(minX,x);maxX=Math.max(maxX,x+s);minY=Math.min(minY,y);maxY=Math.max(maxY,y+s)})});
@@ -927,7 +990,7 @@ function finishFold(){TF.fold=null;var h=$('s-history'),t=$('s-today');behindOn=
   go('history');h.style.opacity='';t.style.background='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});
   t.style.opacity='0';setTimeout(function(){h.style.opacity='';h.style.transition='';t.style.transition='';t.style.opacity=''},50)}
 function settleZoom(){if(TF.note||TF.leaving)return;var f=TF.fit||ZMIN;
-  if(TF.z<f){if(collapseP()>.45){startFold();return}TF.zgoal=f;return}
+  if(TF.z<f){if(collapseP()>.45){TF.z=f;panTo(TF.ox,TF.oy);doneToday();return}TF.zgoal=f;return}
   if(TF.z>ZOPEN)openNote(nearest());else if(TF.z>1.25)TF.zgoal=1.25}
 (function(){var v=$('s-today'),P={},sx,sy,ox,oy,lx,ly,lt,hold=null,wt=null,wsum=0;
   function cnt(){return Object.keys(P).length}
@@ -1032,7 +1095,7 @@ function openDay(d,tile){
   sq.className='zsq';
   sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];
     return '<div class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-expanded="false"><span class="zt">'+(d.today?GN:GP)[key]+'</span><div class="zdet">'+
-      (g.length?g.map(function(id){return '<button class="zs" data-id="'+id+'">'+esc(plain(item(id).name))+'</button>'+dayDetail(d,id)}).join(''):'<p class="zs">Quiet</p>')+'</div></div>'}).join('');
+      (g.length?g.map(function(id){return '<button class="zs" data-id="'+id+'">'+esc(plain(item(id).name))+'</button>'+dayDetail(d,id)}).join(''):'<p class="zs zn">'+(d.today?NONE_NOW:NONE_PAST)[key]+'</p>')+'</div></div>'}).join('');
   [].forEach.call(sq.querySelectorAll('button.zs'),function(b){b.onclick=function(e){e.stopPropagation();var id=b.getAttribute('data-id');closeDay(true);openMap(d,id)}});
   [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onkeydown=function(e){if((e.key==='Enter'||e.key===' ')&&e.target===q){e.preventDefault();q.click()}};q.onclick=function(){var open=!q.classList.contains('open');
     [].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open');o.setAttribute('aria-expanded','false')});
