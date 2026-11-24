@@ -17,7 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-/* Lived · Your hEDS — one map you build and explore. White page, black type, four colours. */
+/* Lived · visual language: black = buttons and icons · grey = not picked yet · the four colours = what you picked, always meaning
+   lime: energy · red: how you feel · blue: where it hurts · lilac: how your body reacts. White page, black type. */
 :root{
   --mind:#D7EE6B; --heart:#E0141E; --pain:#3F5BD3; --body:#AB98EE; --off:#F1F2F4;
   --ink:#000; --bg:#fff; --muted:#555;
@@ -67,7 +68,7 @@ html.still .q,html.still .cell{transition:none !important}
 /* ── map screen ── */
 .mhead{flex:none;padding-bottom:12px;background:var(--bg);position:relative;z-index:3}
 .mtop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.menu-btn{flex:none;width:44px;height:44px;border:none;border-radius:50%;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;letter-spacing:1px}
+.menu-btn{flex:none;width:44px;height:44px;border:none;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;letter-spacing:1px}
 .mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
 .count{font-size:15px;color:var(--muted)}
 .seg{display:flex;background:var(--off);border-radius:999px;padding:3px;flex:none}
@@ -84,7 +85,7 @@ html.still .q,html.still .cell{transition:none !important}
 .cell .gd{background:var(--c)}
 .cell.mine{background:var(--c);color:var(--on)}
 .cell.mine .gd{opacity:0}
-.cell.often{outline-color:var(--c)}
+/* linked squares that aren't yours stay plain grey: being gathered next to it already shows the link */
 .cell.focus{z-index:3;box-shadow:0 0 0 3px #fff,0 0 0 5px #000}
 .cell.dim{opacity:.3}
 .cell.lk{box-shadow:inset 0 0 0 3px #000}
@@ -103,10 +104,9 @@ html.still .q,html.still .cell{transition:none !important}
 .sheet.card{max-height:50%}
 .sheet .wlab{font-size:14px;color:#333;margin:4px 0 8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
-.chips button{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px;border:1.5px solid var(--c);background:#fff;color:#000}
-.chips button.k-mind{border-color:#A9C23A}
+.chips button{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px;border:none;background:var(--off);color:#000;position:relative}
 .chips button.have{background:var(--c);color:var(--on)}
-.chips button.yours{border-width:3px}
+.chips button.yours{box-shadow:inset 0 0 0 2.5px #000}
 .sheet .grp{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .sheet .grp i{width:10px;height:10px;border-radius:3px;display:block}
 .sheet .nm{font-size:20px;line-height:1.2;margin:4px 0 10px}
@@ -157,7 +157,7 @@ html.still .q,html.still .cell{transition:none !important}
 .brand{font-size:17px;letter-spacing:-0.01em}
 .chip{border:none;background:var(--off);border-radius:999px;min-height:44px;padding:0 18px;font-size:15px;color:#000}
 .htop{display:flex;justify-content:flex-end;margin:14px 0 0}
-.hmap{min-height:44px;padding:0 20px;border:none;border-radius:999px;background:var(--mind);font-size:15px;font-weight:500;color:#000}
+.hmap{min-height:44px;padding:0 20px;border:none;border-radius:999px;background:#000;font-size:15px;color:#fff}
 .hbottom{margin-top:auto;padding-top:16px;position:sticky;bottom:0;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%)}
 /* ── map: back arrow + today mode ── */
 .back{width:44px;height:44px;margin-left:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
@@ -227,6 +227,19 @@ html.still .q,html.still .cell{transition:none !important}
 .cx{flex:none;white-space:nowrap;min-height:44px}
 .cx{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #000;background:#fff;font-size:14px}
 .cx[aria-pressed="true"]{background:#000;color:#fff}
+/* ── first run: other conditions, then the symptoms you live with ── */
+.obbar{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin-top:-8px;flex:none}
+.pill.obsmall{width:auto;min-height:40px;padding:0 18px;font-size:15px}
+.obchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.obchips button{min-height:44px;padding:0 18px;border:none;border-radius:999px;background:var(--off);color:#000;font:inherit;font-size:15px;transition:background-color .25s,color .25s}
+.obchips button[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.obchips button.k-none[aria-pressed="true"]{background:#D3D5DA;color:#000}
+.obgrid{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:22px -2px 0;padding:2px;align-content:start}
+.obgrid button{aspect-ratio:1;border:none;border-radius:9px;background:var(--off);color:#000;padding:9px 6px 9px 7px;font:inherit;font-size:14px;line-height:1.15;letter-spacing:-0.01em;text-align:left;display:flex;align-items:flex-end;transition:background-color .3s,color .3s}
+.obgrid button{position:relative}
+.obgrid button .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--c);transition:opacity .3s}
+.obgrid button[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.obgrid button[aria-pressed="true"] .gd{opacity:0}
 /* ── today: one field of squares, the ones you usually have in the middle ── */
 #s-today{background:#fff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .tfield{position:absolute;left:0;top:0;will-change:transform}
@@ -237,6 +250,8 @@ html.still .q,html.still .cell{transition:none !important}
 .tglow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(40px);opacity:0;transition:opacity 1.2s var(--smooth) .2s}
 .tglow.in{opacity:.32}
 .tback{position:absolute;z-index:6;transition:opacity .3s}
+.tsq .gd{position:absolute;z-index:1;top:9px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--c)}
+.tsq.on .gd,.tsq.has-note .gd{opacity:0}
 .tsq .nm{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:2px;background:currentColor;opacity:.7;display:none;z-index:1}
 .tsq.has-note .nm{display:block}
 #s-today.noting .tback,#s-today.noting .tbar{opacity:0;pointer-events:none}
@@ -259,8 +274,7 @@ html.still .q,html.still .cell{transition:none !important}
 .tn-saved.on{opacity:.75}
 .tn-saved.busy{opacity:.35}
 .tn-close{width:44px;height:44px;margin:0 0 0 -7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none;color:inherit}
-.tn-close i{width:30px;height:30px;border-radius:50%;background:currentColor;display:flex;align-items:center;justify-content:center}
-.tn-close i svg{color:var(--c)}
+.tn-close i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
 .tmedia{display:flex;gap:8px;overflow-x:auto;flex:none;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tmedia::-webkit-scrollbar{display:none}
 .tmedia:empty{display:none}
@@ -271,8 +285,8 @@ html.still .q,html.still .cell{transition:none !important}
 .tm .x{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:none;background:#000;color:#fff;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
 .tm.audio .x{top:17px}
 .tacts{display:flex;gap:10px;flex:none;padding-top:12px}
-.tact{flex:1;min-height:48px;border-radius:999px;border:1.5px solid currentColor;background:transparent;color:inherit;font-size:15px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}
-.tact.rec{background:#000;border-color:#000;color:#fff}
+.tact{flex:1;min-height:48px;border-radius:999px;border:none;background:#000;color:#fff;font-size:15px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}
+.tact.rec{background:#000;color:#fff;box-shadow:inset 0 0 0 2px #fff}
 .tact.rec .micon{animation:recblink 1s steps(2,start) infinite}
 @keyframes recblink{to{visibility:hidden}}
 .tnote textarea{flex:1;min-height:80px;margin-top:18px;border:none;background:transparent;color:inherit;font:inherit;font-size:22px;line-height:1.3;letter-spacing:-.01em;resize:none;outline:none;padding:0;user-select:text;-webkit-user-select:text}
@@ -300,6 +314,24 @@ html.still .q,html.still .cell{transition:none !important}
       <h1 class="h intro-copy" style="margin-top:12px">Understand your hEDS</h1>
       <p class="intro-copy isub">Tap the symptoms you live with to learn how they link to your condition, and to each other.</p>
       <div style="margin-top:auto" class="intro-go"><button class="pill" id="start">Let’s begin</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ob1" aria-label="Other conditions">
+    <div class="col cl">
+      <div class="obbar"><span></span><button class="pill obsmall" data-ob="2">Skip</button></div>
+      <h1 class="h" style="margin-top:12px">Do you live with<br>anything else?</h1>
+      <div class="obchips" id="ob-cond"></div>
+      <div style="margin-top:auto;padding-top:16px"><button class="pill" data-ob="2">Next</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ob2" aria-label="The symptoms you live with">
+    <div class="col cl">
+      <div class="obbar"><button class="back" data-ob="1" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><button class="pill obsmall" data-ob="3">Skip</button></div>
+      <h1 class="h" style="margin-top:12px">Tap the symptoms<br>you live with</h1>
+      <div class="obgrid" id="ob-sym"></div>
+      <div style="padding-top:16px;flex:none"><button class="pill" data-ob="3">Next</button></div>
     </div>
   </section>
 
@@ -436,12 +468,12 @@ function todayKey(){return keyOf(new Date())}
 function tday(){var k=todayKey();if(!st.days[k])st.days[k]={ids:{},ctx:{}};return st.days[k]}
 
 /* ───────── state ───────── */
-function blank(){return{claimed:{},own:[],userLinks:[],cut:[],days:{}}}
+function blank(){return{claimed:{},own:[],userLinks:[],cut:[],days:{},conditions:[],onboarded:false}}
 var st=blank();
 var persist=true;            /* demo / sample routes never overwrite the person's own map */
 var view='all',focusId=null,linking=false,askLink=false,uid=1,todayMode=false;
-function save(){if(!persist)return;try{localStorage.setItem(KEY,JSON.stringify({claimed:st.claimed,own:st.own,userLinks:st.userLinks,cut:st.cut,days:st.days,uid:uid}))}catch(e){}}
-function load(){try{var r=localStorage.getItem(KEY);if(!r)return;var d=JSON.parse(r);st.claimed=d.claimed||{};st.own=d.own||[];st.userLinks=d.userLinks||[];st.cut=d.cut||[];st.days=d.days||{};uid=d.uid||1}catch(e){}}
+function save(){if(!persist)return;try{localStorage.setItem(KEY,JSON.stringify({claimed:st.claimed,own:st.own,userLinks:st.userLinks,cut:st.cut,days:st.days,conditions:st.conditions||[],onboarded:!!st.onboarded,uid:uid}))}catch(e){}}
+function load(){try{var r=localStorage.getItem(KEY);if(!r)return;var d=JSON.parse(r);st.claimed=d.claimed||{};st.own=d.own||[];st.userLinks=d.userLinks||[];st.cut=d.cut||[];st.days=d.days||{};st.conditions=d.conditions||[];st.onboarded=!!d.onboarded;uid=d.uid||1}catch(e){}}
 function sample(ids){persist=false;st=blank();ids.forEach(function(i){st.claimed[i]=true})}
 
 function plain(s){return String(s).replace(/­/g,'')}
@@ -684,10 +716,11 @@ document.addEventListener('keydown',function(e){
 var cur=null,splashT=null;
 function go(name){
   cur=name;clearTimeout(splashT);
-  ['splash','intro','history','map','share','today'].forEach(function(n){$('s-'+n).classList.toggle('on',n===name)});
+  ['splash','intro','ob1','ob2','history','map','share','today'].forEach(function(n){$('s-'+n).classList.toggle('on',n===name)});
   app.classList.toggle('splash-in',name==='splash');
   if(name==='splash'){placeQuads('splash');splashT=setTimeout(function(){if(cur==='splash')go('intro')},3600)}
   else if(name==='intro')placeQuads('intro');
+  else if(name==='ob1'||name==='ob2'){placeQuads('ob');renderOb()}
   else if(name==='map'){var arrive=!Q[0].classList.contains('hide');layout();paint();placeQuads(arrive?'map-arrive':'map')}
   else if(name==='share'){placeQuads('map');setTimeout(drawPoster,30)}
   else if(name==='today'){Q.forEach(function(q){q.classList.add('hide')});dot.classList.add('gone');buildField()}
@@ -696,7 +729,17 @@ function go(name){
 }
 $('skip').onclick=function(){go('intro')};
 function returning(){return Object.keys(st.claimed).length>0||Object.keys(st.days).some(function(k){return st.days[k].saved})}
-$('start').onclick=function(){go('history')};
+$('start').onclick=function(){go(st.onboarded?'history':'ob1')};
+/* first run: two skippable steps, then your (empty) weeks */
+var COND=[['POTS','heart'],['MCAS','body'],['Fibromyalgia','pain'],['ME/CFS','mind'],['IBS','body'],['Migraine','mind'],['Anxiety or depression','heart'],['ADHD or autism','mind'],['Something else','none'],['I’m not sure','none']];
+function renderOb(){
+  var c=$('ob-cond');if(!c.childNodes.length)COND.forEach(function(cn){var n=cn[0],b=document.createElement('button');b.className='k-'+cn[1];b.textContent=n;b.setAttribute('aria-pressed','false');
+    b.onclick=function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));var L=st.conditions||(st.conditions=[]);if(on){if(L.indexOf(n)<0)L.push(n)}else st.conditions=L.filter(function(x){return x!==n});save()};c.appendChild(b)});
+  [].forEach.call(c.childNodes,function(b){b.setAttribute('aria-pressed',String((st.conditions||[]).indexOf(b.textContent)>=0))});
+  var g=$('ob-sym');if(!g.childNodes.length)items().forEach(function(it){if(it.own)return;var b=document.createElement('button');b.className='k-'+it.k;b.innerHTML='<span class="gd"></span>';b.appendChild(document.createTextNode(plain(it.name)));b.setAttribute('data-id',it.id);
+    b.onclick=function(){if(st.claimed[it.id])delete st.claimed[it.id];else st.claimed[it.id]=true;save();b.setAttribute('aria-pressed',String(!!st.claimed[it.id]))};g.appendChild(b)});
+  [].forEach.call(g.childNodes,function(b){b.setAttribute('aria-pressed',String(!!st.claimed[b.getAttribute('data-id')]))})}
+[].forEach.call(document.querySelectorAll('[data-ob]'),function(b){b.onclick=function(){var n=b.getAttribute('data-ob');if(n==='3'){st.onboarded=true;save();go('history')}else go('ob'+n)}});
 $('w-fill').onclick=function(){go('today')};
 $('t-back').onclick=function(){go('history')};
 /* Done for today: what you didn't pick fades away; what you picked flies into today's square in your history, each into its colour's corner */
@@ -731,6 +774,7 @@ function route(){
   else if(h==='history')go('history');
   else if(h==='today')go('today');
   else if(h==='intro')go('intro');
+  else if(h==='welcome'){go('ob1')}
   else go('splash');
 }
 
@@ -757,8 +801,8 @@ function buildField(still){
     /* clusters in order; inside a cluster, what you usually have comes first (closest to the middle) */
     var list=items().filter(function(it){return it.k===k}).sort(function(p,q){return p.cl-q.cl||(sc[q.id]||0)-(sc[p.id]||0)});
     list.forEach(function(it,i){var a=i%COLS,r=Math.floor(i/COLS),x=sx>0?a*u+g/2:-(a+1)*u+g/2,y=sy>0?r*u+g/2:-(r+1)*u+g/2;
-      var b=document.createElement('button');b.className='tsq k-'+k+(TF.sel[it.id]?' on':'')+(hasNote(it.id)?' has-note':'');b.innerHTML='<i class="rip"></i><span class="nm"></span><span class="lb"></span>';b.querySelector('.lb').textContent=it.name;b.setAttribute('data-id',it.id);
-      b.style.setProperty('--t',mixHex(TINT[k],FULL[k],Math.min(it.cl,2)*.08));
+      var b=document.createElement('button');b.className='tsq k-'+k+(TF.sel[it.id]?' on':'')+(hasNote(it.id)?' has-note':'');b.innerHTML='<i class="rip"></i><span class="gd"></span><span class="nm"></span><span class="lb"></span>';b.querySelector('.lb').textContent=it.name;b.setAttribute('data-id',it.id);
+      b.style.setProperty('--t','var(--off)');
       var rp=b.querySelector('.rip');rp.style.left=rp.style.top='50%';rp.style.width=rp.style.height=(s*2.9)+'px';
       b.style.left='0px';b.style.top='0px';b.style.width=s+'px';b.style.height=s+'px';b.setAttribute('aria-pressed',String(!!TF.sel[it.id]));
       var o={id:it.id,gi:gi,k:k,name:it.name,el:b,tx:x,ty:y,dist:Math.hypot(a,r),ph:Math.random()*6.28,delay:Math.hypot(a,r)*90+gi*20};
