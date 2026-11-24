@@ -2,6 +2,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
+/* Type rhythm: titles line-height 1.05 · body 1.35 · title → text under it 10px · between blocks 24px */
 /* Lived · visual language: black = buttons and icons · grey = not picked yet · the four colours = what you picked, always meaning
    lime: energy · red: how you feel · blue: where it hurts · lilac: how your body reacts. White page, black type. */
 :root{
@@ -22,7 +23,7 @@ html.still .q,html.still .cell{transition:none !important}
 .screen{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s var(--smooth)}
 .screen.on{opacity:1;pointer-events:auto}
 .col{position:absolute;top:0;bottom:0;box-sizing:border-box;display:flex;flex-direction:column}
-.h{font-weight:400;font-size:32px;line-height:1.1;letter-spacing:-0.02em;margin:0}
+.h{font-weight:400;font-size:32px;line-height:1.05;letter-spacing:-0.02em;margin:0}
 .pill{min-height:56px;border:none;border-radius:999px;background:#000;color:#fff;font-size:17px;width:100%;transition:transform .2s var(--out)}
 .pill:active{transform:scale(.97)}
 .tx{border:none;background:none;font-size:15px;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 4px;color:#000}
@@ -47,7 +48,7 @@ html.still .q,html.still .cell{transition:none !important}
 .intro-copy{animation:rise .8s var(--out) .45s both}
 .intro-go{animation:rise .8s var(--out) .9s both;position:relative;z-index:40}
 #s-intro .intro-copy{position:relative;z-index:40}
-.isub{font-size:17px;line-height:1.25;color:#333;margin:10px 0 0}
+.isub{font-size:17px;line-height:1.35;color:#333;margin:10px 0 0}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* ── map screen ── */
@@ -96,8 +97,8 @@ html.still .q,html.still .cell{transition:none !important}
 .chips button.yours{box-shadow:inset 0 0 0 2.5px #000}
 .sheet .grp{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .sheet .grp i{width:10px;height:10px;border-radius:3px;display:block}
-.sheet .nm{font-size:20px;line-height:1.2;margin:4px 0 10px}
-.sheet p{margin:0 0 10px;font-size:15px;line-height:1.4}
+.sheet .nm{font-size:20px;line-height:1.05;margin:4px 0 10px}
+.sheet p{margin:0 0 10px;font-size:15px;line-height:1.35}
 .sheet .why{color:#333}
 .sheet .rslist{margin:-4px 0 10px;padding-left:20px;font-size:15px;line-height:1.45}
 .sheet .with b{font-weight:500}
@@ -108,11 +109,12 @@ html.still .q,html.still .cell{transition:none !important}
 .sheet input[type=text]{width:100%;box-sizing:border-box;min-height:52px;border:1.5px solid #000;border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:#fff;color:#000;outline:none}
 .sheet input[type=text]:focus-visible{box-shadow:0 0 0 3px rgba(0,0,0,.2)}
 .sheet .err{color:#B3261E;font-size:14px;margin:6px 0 0}
-.sw{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
-.sw button{width:44px;height:44px;border:none;border-radius:10px;padding:0}
-.sw button[aria-pressed="true"]{box-shadow:0 0 0 3px #fff,0 0 0 5px #000}
+.sw{display:flex;gap:14px;align-items:center;margin:16px 0 4px;flex-wrap:wrap}
+.sw button{width:30px;height:30px;border:none;border-radius:7px;padding:0;position:relative}
+.sw button::after{content:"";position:absolute;inset:-7px}/* keeps a 44px tap area */
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 2px #fff,0 0 0 4px #000}
 .sw span{font-size:14px;color:var(--muted);margin-right:2px}
-.swn{font-size:13px;color:#333;margin:2px 0 6px}
+.swn{font-size:15px;color:#000;margin:8px 0 6px}
 .row2{display:flex;align-items:center;gap:14px;margin-top:14px}
 .row2 .pill{flex:1}
 .sheet.bar{padding-top:14px}
@@ -156,8 +158,8 @@ html.still .q,html.still .cell{transition:none !important}
 .today .todaybar{display:block}
 
 /* ── history grid of days ── */
-.htitle{font-size:44px;line-height:1;letter-spacing:-0.035em;margin-top:26px}
-.hsub{font-size:14px;color:#444;line-height:1.35;margin:8px 0 0}
+.htitle{font-size:44px;line-height:1.05;letter-spacing:-0.035em;margin-top:26px}
+.hsub{font-size:14px;color:#444;line-height:1.35;margin:10px 0 0}
 .hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:12px repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:24px}
 .hwd{font-size:11px;color:#555;display:flex;align-items:center;justify-content:flex-start}
 .hmon{display:grid;grid-template-columns:12px repeat(9,minmax(0,1fr));gap:0 5px;margin-top:6px;font-size:11px;color:#555;height:14px}
@@ -190,7 +192,7 @@ html.still .q,html.still .cell{transition:none !important}
 .zcol>:not(.zsq){opacity:0;transition:opacity .35s var(--smooth)}
 .zoom.open .zcol>:not(.zsq){opacity:1;transition-delay:.25s}
 .zcol .back{margin-top:-8px}
-.zdate{font-size:min(40px,10.2vw);line-height:1.04;letter-spacing:-0.03em;margin:12px 0 0;flex:none}
+.zdate{font-size:min(40px,10.2vw);line-height:1.05;letter-spacing:-0.03em;margin:12px 0 0;flex:none}
 .zsq{position:relative;flex:1 0 auto;margin-top:18px;transform-origin:0 0;transition:transform .6s var(--smooth)}
 .zq{position:absolute;box-sizing:border-box;width:calc(50% - 3px);height:calc(50% - 3px);border:none;border-radius:10px;background:var(--off);padding:14px;display:flex;flex-direction:column;justify-content:flex-start;text-align:left;font:inherit;color:#000;overflow:hidden;cursor:pointer;
   transition:left .5s var(--smooth),top .5s var(--smooth),width .5s var(--smooth),height .5s var(--smooth),opacity .3s var(--smooth)}
@@ -237,15 +239,11 @@ html.still .q,html.still .cell{transition:none !important}
 .cfgrid .zt{font-size:13px;line-height:1.2;opacity:.85}
 .cfgrid ul{list-style:none;margin:0;padding:0;font-size:17px;line-height:1.2;letter-spacing:-0.01em;overflow-y:auto}
 .cfgrid li+li{margin-top:3px}
-.cfq{font-size:17px;line-height:1.3;margin:16px 0 10px;flex:none}
-.cfrange{-webkit-appearance:none;appearance:none;width:100%;height:32px;margin:0;background:transparent;flex:none;cursor:pointer}
-.cfrange::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--fill,var(--off))}
-.cfrange::-moz-range-track{height:8px;border-radius:4px;background:var(--fill,var(--off))}
-.cfrange::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--heart);margin-top:-9px;border:none}
-.cfrange::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--heart);border:none}
-.cfstops{display:flex;justify-content:space-between;flex:none;margin-top:2px}
-.cfstops button{border:none;background:none;padding:6px 0;min-height:36px;font:inherit;font-size:15px;color:#777;transition:color .2s}
-.cfstops button[aria-pressed="true"]{color:#000}
+.cfq{font-size:22px;line-height:1.05;letter-spacing:-0.01em;margin:24px 0 10px;flex:none}
+.cfopts{display:flex;flex-direction:column;flex:none}
+.cfopts button{border:none;background:none;padding:0;min-height:44px;font:inherit;font-size:17px;text-align:left;color:#000;display:flex;align-items:center;gap:12px}
+.cfopts button::before{content:"";width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px solid #B5B5B5;background:#fff;flex:none;transition:border-color .2s,box-shadow .2s}
+.cfopts button[aria-checked="true"]::before{border:2px solid #000;box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 10px var(--heart)}
 /* ── today: one field of squares, the ones you usually have in the middle ── */
 #s-today{background:#fff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 .tfield{position:absolute;left:0;top:0;will-change:transform}
@@ -425,8 +423,7 @@ html.still .q,html.still .cell{transition:none !important}
       <h1 class="h" id="cf-title" style="margin-top:12px"></h1>
       <div class="cfgrid" id="cf-sym" aria-label="What you logged"></div>
       <p class="cfq" id="cf-q">How much did it take from you?</p>
-      <input type="range" class="cfrange" id="cf-range" min="0" max="2" step="1" aria-labelledby="cf-q" aria-valuetext="">
-      <div class="cfstops"><button data-l="0">Some</button><button data-l="1">A lot</button><button data-l="2">More than I had</button></div>
+      <div class="cfopts" role="radiogroup" aria-labelledby="cf-q"><button role="radio" data-l="0">Some</button><button role="radio" data-l="1">A lot</button><button role="radio" data-l="2">More than I had</button></div>
       <div style="padding-top:12px;flex:none"><button class="pill" id="cf-yes">Done for today</button></div>
     </div>
   </section>
@@ -689,7 +686,7 @@ function renderSheet(){
     i.onkeydown=function(e){if(e.key==='Enter')$('rn-ok').click()};$('rn-x').onclick=function(){renderSheet()};$('rn-ok').onclick=function(){var v=i.value.trim();if(!v){i.focus();return}st.own.forEach(function(o){if(o.id===it.id)o.name=v.charAt(0).toUpperCase()+v.slice(1)});save();layout();paint();renderSheet()}};
   if($('c-color'))$('c-color').onclick=function(){$('c-extra').innerHTML=swatches(it.k,'cc');[].forEach.call(sheet.querySelectorAll('[data-cc]'),function(b){b.onclick=function(){var nk=b.getAttribute('data-cc');st.own.forEach(function(o){if(o.id===it.id)o.k=nk});save();layout();paint();renderSheet();reveal(cellEls[it.id])}})};
 }
-function swatches(sel,attr){return '<div class="sw"><span>Which colour fits?</span>'+GROUPS.map(function(k){return '<button data-'+attr+'="'+k+'" aria-label="'+GN[k]+'" title="'+GN[k]+'" aria-pressed="'+(k===sel)+'" style="background:var(--'+k+')"></button>'}).join('')+'</div><p class="swn" aria-live="polite">'+GN[sel]+'</p>'}
+function swatches(sel,attr){return '<div class="sw">'+GROUPS.map(function(k){return '<button data-'+attr+'="'+k+'" aria-label="'+GN[k]+'" title="'+GN[k]+'" aria-pressed="'+(k===sel)+'" style="background:var(--'+k+')"></button>'}).join('')+'</div><p class="swn" aria-live="polite">'+GN[sel]+'</p>'}
 
 /* ───────── add your own ───────── */
 var addK='body';
@@ -794,17 +791,10 @@ function renderConfirm(){var T=tday(),ids=Object.keys(T.ids).filter(function(id)
   $('cf-title').textContent=editKey?'That sounds like a lot to carry that day.':'That sounds like a lot to carry today.';
   $('cf-yes').textContent=editKey?'Done':'Done for today';setLevel(cfLevel)}
 /* the app's guess is already chosen; one tap changes it */
-/* the line fills up to the handle in red */
-function paintFill(){var r=$('cf-range'),T=tday(),gs=groupsOf(Object.keys(T.ids).filter(function(id){return item(id)})),tot=0;gs.forEach(function(g){tot+=g.length});
-  var upto=cfLevel/2*100;if(!tot){r.style.removeProperty('--fill');return}
-  var c=FULL.heart;/* always red */
-  r.style.setProperty('--fill','linear-gradient(to right,'+c+' '+upto.toFixed(1)+'%,#F1F2F4 '+upto.toFixed(1)+'%)')}
-function setLevel(l){cfLevel=Math.max(0,Math.min(2,l));var r=$('cf-range');r.value=cfLevel;paintFill();var names=['Some','A lot','More than I had'];r.setAttribute('aria-valuetext',names[cfLevel]);
-  [].forEach.call(document.querySelectorAll('.cfstops button'),function(b){b.setAttribute('aria-pressed',String(+b.getAttribute('data-l')===cfLevel))})}
-$('cf-range').addEventListener('input',function(){setLevel(+this.value)});
-[].forEach.call(document.querySelectorAll('.cfstops button'),function(b){b.onclick=function(){setLevel(+b.getAttribute('data-l'))}});
-$('cf-back').onclick=function(){go('today')};
-$('cf-yes').onclick=function(){var T=tday();T.weight=cfLevel;T.saved=true;save();
+/* three answers as plain words; the app's guess is already chosen, one tap picks another */
+function setLevel(l){cfLevel=Math.max(0,Math.min(2,l));[].forEach.call(document.querySelectorAll('.cfopts button'),function(b){b.setAttribute('aria-checked',String(+b.getAttribute('data-l')===cfLevel))})}
+[].forEach.call(document.querySelectorAll('.cfopts button'),function(b){b.onclick=function(){setLevel(+b.getAttribute('data-l'))}});
+$('cf-yes').onclick=function(){var T=tday();T.weight=cfLevel;delete T.take;T.saved=true;save();
   var sq=[].slice.call($('cf-sym').querySelectorAll('.has')).map(function(el){return{r:el.getBoundingClientRect(),k:el.getAttribute('data-k')}}).filter(function(p){return p.r.bottom>0&&p.r.top<G.H});
   if(RM||!sq.length){go('history');editKey=null;return}
   var fl=sq.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.k];d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.k}});
