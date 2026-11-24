@@ -247,8 +247,11 @@ html.still .q,html.still .cell{transition:none !important}
 .fly.go{transition:left .75s var(--smooth),top .75s var(--smooth),width .75s var(--smooth),height .75s var(--smooth),border-radius .75s var(--smooth)}
 .fly.go{border-radius:2px}
 .fly.gone{opacity:0;transition:opacity .25s}
-.tnote{position:absolute;inset:0;z-index:8;background:var(--c);color:var(--on);opacity:0;pointer-events:none;transition:opacity .3s var(--smooth)}
-.tnote.on{opacity:1;pointer-events:auto}
+.tnote{position:absolute;inset:0;z-index:8;background:var(--c);color:var(--on);visibility:hidden;pointer-events:none;clip-path:inset(0 round 0);
+  transition:clip-path .5s var(--smooth),background-color .5s var(--smooth),color .3s;will-change:clip-path}
+.tnote.on{visibility:visible;pointer-events:auto}
+.tnote .col{transition:opacity .25s var(--smooth)}
+.tnote.hush .col{opacity:0;transition-duration:.15s}
 .tnote .col{gap:0}
 .tn-top{display:flex;align-items:center;justify-content:space-between;margin-top:-8px}
 .tn-saved{display:flex;align-items:center;gap:5px;font-size:14px;opacity:0;transition:opacity .4s var(--smooth)}
@@ -592,7 +595,8 @@ scroll.addEventListener('click',function(e){if((e.target===scroll||e.target.id==
 function reveal(b){if(!b)return;setTimeout(function(){var sb=scroll.getBoundingClientRect(),br=b.getBoundingClientRect(),sh=sheet.classList.contains('on')?sheet.getBoundingClientRect().height:0,limit=window.innerHeight-sh-12;
   if(br.bottom>limit)scroll.scrollTop+=br.bottom-limit+8;else if(br.top<sb.top)scroll.scrollTop+=br.top-sb.top-8},120)}
 
-function setView(v){view=v;if(v==='mine'&&focusId&&!st.claimed[focusId])closeCard();layout();paint()}
+function setView(v){if(v!==view)scroll.scrollTop=0;/* the other list starts at its top, not where the last one was scrolled to */
+  view=v;if(v==='mine'&&focusId&&!st.claimed[focusId])closeCard();layout();paint()}
 $('v-all').onclick=function(){setView('all')};$('v-mine').onclick=function(){setView('mine')};
 
 /* ───────── symptom card ───────── */
@@ -777,17 +781,28 @@ function shadeField(){var N=notesOf();TF.list.forEach(function(o){var on=!!TF.se
 function nearest(){var best=null,bd=1e9;TF.list.forEach(function(o){var mx=TF.cx+TF.z*(o.tx+TF.s/2+TF.ox),my=TF.cy+TF.z*(o.ty+TF.s/2+TF.oy),d=Math.hypot(mx-TF.cx,my-TF.cy);if(d<bd){bd=d;best=o}});return best}
 /* zoom all the way into one square: it fills the screen and becomes a page for your notes */
 function openNote(o){if(!o||TF.note)return;TF.note=o;TF.shown=false;TF.moved=true;clearTimeout(TF.nt);
-  TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];TF.zgoal=TF.zcover;TF.vx=TF.vy=0;$('s-today').classList.add('noting');
-  var n=$('tnote');n.className='tnote k-'+o.k;n.style.setProperty('--c',FULL[o.k]);$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();savedState();setTimeout(fitText,0);
-  if(RM){TF.z=TF.zcover;panTo(TF.goal[0],TF.goal[1]);showNote()}}
-function showNote(){if(TF.shown)return;TF.shown=true;$('tnote').classList.add('on');setTimeout(function(){if(TF.note)try{$('tn-text').focus({preventScroll:true})}catch(e){}},320)}
+  TF.goal=null;TF.zgoal=null;TF.vx=TF.vy=0;$('s-today').classList.add('noting');
+  var n=$('tnote');$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();savedState();
+  /* the page starts as the square itself (same place, same colour) and grows to fill the screen */
+  n.style.transition='none';n.className='tnote on hush k-'+o.k;n.style.clipPath=squareClip(o);n.style.backgroundColor=squareColour(o);void n.offsetWidth;n.style.transition='';
+  n.style.clipPath='inset(0px 0px 0px 0px round 0px)';n.style.backgroundColor=FULL[o.k];
+  setTimeout(function(){if(TF.note!==o)return;n.classList.remove('hush');TF.shown=true;
+    if(TF.z!==1){TF.z=1;var c=clampPan(-(o.tx+TF.s/2),-(o.ty+TF.s/2));setCam(c[0],c[1])}/* behind the page, quietly put the field back to normal size */
+    try{$('tn-text').focus({preventScroll:true})}catch(e){}},RM?0:430)}
+function squareClip(o){var r=o.el.getBoundingClientRect(),p=$('s-today').getBoundingClientRect(),rad=8*(r.width/TF.s);
+  return 'inset('+(r.top-p.top).toFixed(1)+'px '+(p.right-r.right).toFixed(1)+'px '+(p.bottom-r.bottom).toFixed(1)+'px '+(r.left-p.left).toFixed(1)+'px round '+rad.toFixed(1)+'px)'}
+function squareColour(o){return TF.sel[o.id]?FULL[o.k]:getComputedStyle(o.el).backgroundColor}
+function showNote(){}
 function savedState(){var o=TF.note,e=$('tn-saved');if(!o||!e)return;var has=hasNote(o.id);e.classList.remove('busy');e.classList.toggle('on',has)}
 function keepNote(){var o=TF.note;if(!o)return;var t=$('tn-text').value.trim(),N=notesOf(),T=tday();
   if(t)N[o.id]=t;else delete N[o.id];if(hasNote(o.id)){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true}save();
   var e=$('tn-saved');if(e&&hasNote(o.id)){e.classList.add('on','busy');clearTimeout(TF.svT);TF.svT=setTimeout(savedState,450)}else savedState()}
 function closeNote(){var o=TF.note;if(!o)return;stopRec();keepNote();try{$('tn-text').blur()}catch(e){}
-  $('tnote').classList.remove('on');$('s-today').classList.remove('noting');TF.note=null;TF.shown=false;renderMedia();shadeField();
-  TF.zgoal=1;TF.goal=[-(o.tx+TF.s/2),-(o.ty+TF.s/2)];if(RM){TF.z=1;var c=clampPan(TF.goal[0],TF.goal[1]);panTo(c[0],c[1]);TF.goal=null;TF.zgoal=null}
+  var n=$('tnote');TF.note=null;TF.shown=false;shadeField();
+  /* the page shrinks back into its square, landing in the square's new colour (full if it now has something) */
+  var c=clampPan(-(o.tx+TF.s/2),-(o.ty+TF.s/2));if(Math.abs(c[0]-TF.ox)+Math.abs(c[1]-TF.oy)>1)setCam(c[0],c[1]);
+  n.classList.add('hush');n.style.clipPath=squareClip(o);n.style.backgroundColor=squareColour(o);
+  setTimeout(function(){n.classList.remove('on','hush');n.style.clipPath='';n.style.backgroundColor='';$('s-today').classList.remove('noting');renderMedia()},RM?0:520);
   setTimeout(function(){TF.moved=false},0)}
 $('tn-close').onclick=closeNote;function fitText(){}$('tn-text').addEventListener('input',function(){keepNote();fitText()});
 $('tnote').addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();closeNote()}});
@@ -837,7 +852,6 @@ function frame(now){
   else if(TF.zgoal!=null&&!TF.pinch){var fz=1-Math.pow(.86,dt);TF.z+=(TF.zgoal-TF.z)*fz;if(Math.abs(TF.zgoal-TF.z)<.003*TF.zgoal){TF.z=TF.zgoal;TF.zgoal=null}panTo(TF.ox,TF.oy)}
   if(TF.goal&&!TF.down&&!TF.pinch){var f=1-Math.pow(.88,dt),gx=TF.goal[0],gy=TF.goal[1];panTo(TF.ox+(gx-TF.ox)*f,TF.oy+(gy-TF.oy)*f);if(Math.abs(gx-TF.ox)+Math.abs(gy-TF.oy)<.3/TF.z&&TF.zgoal==null){panTo(gx,gy);TF.goal=null}}
   else if(!TF.down&&!TF.pinch&&(Math.abs(TF.vx)+Math.abs(TF.vy)>.05)){panTo(TF.ox+TF.vx*dt/TF.z,TF.oy+TF.vy*dt/TF.z);var dmp=Math.pow(.95,dt);TF.vx*=dmp;TF.vy*=dmp}
-  if(TF.note&&!TF.shown&&TF.z>TF.zcover*.8)showNote();
   var W=G.W,z=TF.z,h=TF.s/2;
   TF.list.forEach(function(o){
     var e=ease((now-TF.t0-o.delay)/800);if(TF.exit)e=1-ease((now-TF.exit-(6-Math.min(6,o.dist))*35)/420);
