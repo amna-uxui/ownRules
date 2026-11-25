@@ -815,7 +815,7 @@ function placeQuads(screen){
     /* [x, y, size, rotation, label anchor] — big, uneven, some bleeding off the screen */
     var L=[[0.55*W,y0+0.11*av,0.40*W,-12,''],[0.52*W,y0+0.62*av,0.58*W,-9,'lt'],[-0.10*W,y0+0.01*av,0.55*W,0,'lr'],[0.08*W,y0+0.49*av,0.36*W,7,'']];
     L.forEach(function(o,i){setQ(Q[i],o[0],o[1],o[2],o[2],o[3]?'rotate('+o[3]+'deg)':'');Q[i].classList.remove('hide','tiny','lt','lr');if(o[4])Q[i].classList.add(o[4]);Q[i].classList.add('nolet','labeled')});dot.classList.add('gone')}
-  else if(screen==='history-arrive'){dot.classList.add('gone');var t=document.querySelector('.day.today');if(!t){Q.forEach(function(q){q.classList.add('hide')});return}var r=t.getBoundingClientRect(),qw=(r.width-1.5)/2,qh=(r.height-1.5)/2;
+  else if(screen==='history-arrive'){dot.classList.add('gone');/* the squares fade out where they are; they no longer fly into a tile */Q.forEach(function(q){q.classList.add('hide')});return;var t=null;if(!t){return}var r=t.getBoundingClientRect(),qw=(r.width-1.5)/2,qh=(r.height-1.5)/2;
     [[0,0],[qw+1.5,0],[0,qh+1.5],[qw+1.5,qh+1.5]].forEach(function(o,i){Q[i].classList.remove('labeled','lt','lr');Q[i].classList.add('nolet','tiny');setQ(Q[i],r.left+o[0],r.top+o[1],qw,qh,'');setTimeout(function(){Q[i].classList.add('hide')},1050)});
     setTimeout(function(){t.classList.add('jig');buzz(6)},950)}
   else{dot.classList.add('gone');Q.forEach(function(q){q.classList.remove('labeled')});
