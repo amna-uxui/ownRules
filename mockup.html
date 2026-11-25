@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lived on iPhone</title>
 <style>
-  :root{--bg:#EDEDEF;--ink:#111;--muted:#666}
+  :root{--bg:#fff;--ink:#111;--muted:#666}
   html,body{height:100%;margin:0;background:var(--bg);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink)}
   .stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:48px;padding:24px;box-sizing:border-box;flex-wrap:wrap}
   .wrap{width:calc(417px*var(--s,1));height:calc(876px*var(--s,1));flex:none}
@@ -47,19 +47,10 @@
       </div>
     </div>
   </div>
-  <div class="side">
-    <h1>Lived</h1>
-    <p>The prototype running on an iPhone-sized screen. Tap and drag inside the phone like on a real one.</p>
-    <button class="main" data-go="splash">Start from the beginning</button>
-    <button data-go="history">How you’ve been lately</button>
-    <button data-go="today">Add to today</button>
-    <button data-go="map">Your hEDS</button>
-  </div>
 </div>
 <script>
   var f=document.getElementById('app');
   if(location.hash)f.src='index.html'+location.hash;/* opened from a link like index.html#history */
-  document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){f.src='index.html?r='+Date.now()+'#'+b.getAttribute('data-go')}});
   function fit(){var s=Math.min(1,(window.innerHeight-48)/876,(window.innerWidth-48)/417);document.getElementById('wrap').style.setProperty('--s',s.toFixed(3));document.querySelector('.phone').style.setProperty('--s',s.toFixed(3))}
   window.addEventListener('resize',fit);fit();
 </script>
