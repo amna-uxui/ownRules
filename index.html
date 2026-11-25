@@ -1681,7 +1681,7 @@ function renderFabric(){
     var wd=(d.date.getDay()+6)%7;
     return '<button class="frow'+(d.today?' ftoday':'')+'" data-i="'+d.i+'" aria-label="'+d.label+(d.today?', today':'')+': '+(d.ids.length?d.ids.map(function(id){return plain(item(id).name)}).join(', '):'nothing noted')+'"><span class="fdl'+(d.today?' td':wd>4?' we':'')+'">'+(d.today?'Today':FAB2[wd]+' '+d.date.getDate())+'</span><svg viewBox="0 0 '+VW+' 20" aria-hidden="true">'+r+'</svg></button>'}
   function wk(days){if(!days.length)return '';var a=days[0].date,z=days[days.length-1].date;return '<p class="fwk">'+a.getDate()+(a.getMonth()!==z.getMonth()?' '+MON[a.getMonth()]:'')+'–'+z.getDate()+' '+MON[z.getMonth()]+'</p>'+days.map(row).join('')}
-  var pages=[[W[0],W[1]],[W[2],W[3]]],fab=$('fab');fab.classList.toggle('loom',loom);$('fab-prev').parentNode.style.visibility=loom?'hidden':'';
+  var pages=[[W[0],W[1]],[W[2],W[3]]],fab=$('fab');fab.classList.toggle('loom',loom);
   $('fab-sub').textContent=loom?'Each day you log adds a row here. Each column is one of your symptoms.':'The last four weeks. Each row is a day, each column one of your symptoms. Tap a day to look back.';
   fab.innerHTML=pages.map(function(p){return '<div class="fpage">'+wk(p[0])+wk(p[1])+'</div>'}).join('');
   /* rows as tall as the space allows, squares stay square */
