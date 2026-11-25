@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lived · all screens</title>
+<style>
+body{margin:0;padding:32px;background:#E9EAEC;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#000}
+h1{font-size:28px;font-weight:400;margin:0 0 24px}
+.grid{display:flex;flex-wrap:wrap;gap:28px}
+figure{margin:0;width:234px}
+.ph{width:234px;height:506px;border-radius:28px;overflow:hidden;background:#fff;box-shadow:0 0 0 6px #1b1b1d}
+iframe{width:390px;height:844px;border:0;transform:scale(.6);transform-origin:0 0}
+figcaption{margin-top:14px;font-size:14px;line-height:1.3}
+figcaption b{font-weight:500;display:block}
+</style>
+</head>
+<body>
+<h1>Lived · every screen right now</h1>
+<div class="grid" id="g"></div>
+<script>
+var S=[
+ ['2','Intro','',function(w){w.go('intro')}],
+ ['3','Welcome · about you','',function(w){w.go('ob1')}],
+ ['4','Welcome · step 2','',function(w){w.go('ob2')}],
+ ['5','History · empty','',function(w){w.go('history')}],
+ ['6','How are you today?','four colour boxes',function(w,d){w.go('history');d.getElementById('w-fill')&&d.getElementById('w-fill').click()}],
+ ['7','A colour open','scattered symptoms',function(w,d){w.go('history');d.getElementById('w-fill')&&d.getElementById('w-fill').click();setTimeout(function(){var c=d.querySelectorAll('#us-svg > g.btn');c[2]&&c[2].dispatchEvent(new MouseEvent('click',{bubbles:true}))},1200)}],
+ ['8','Your hEDS','',function(w){w.go('map')}],
+ ['9','Share · poster','',function(w){w.go('share')}]
+];
+var g=document.getElementById('g');
+S.forEach(function(s,i){
+  var f=document.createElement('figure');
+  f.innerHTML='<div class="ph"><iframe title="'+s[1]+'"></iframe></div><figcaption><b>'+s[0]+' · '+s[1]+'</b>'+(s[2]||'')+'</figcaption>';
+  g.appendChild(f);
+  var ifr=f.querySelector('iframe');
+  setTimeout(function(){
+    ifr.onload=function(){setTimeout(function(){try{s[3](ifr.contentWindow,ifr.contentDocument)}catch(e){f.querySelector('figcaption').insertAdjacentHTML('beforeend','<br>(could not open: '+e.message+')')}},1500)};
+    ifr.src='index.html?shot='+i+'&v='+Date.now();
+  },i*700);
+});
+</script>
+</body>
+</html>
