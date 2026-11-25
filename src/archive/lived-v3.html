@@ -1,0 +1,1651 @@
+<title>Lived</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+/* Type rhythm: titles line-height 1.05 · body 1.35 · title → text under it 10px · between blocks 24px */
+/* Lived · visual language: black = buttons and icons · grey = not picked yet · the four colours = what you picked, always meaning
+   lime: energy · red: how you feel · blue: where it hurts · lilac: how your body reacts. White page, black type. */
+:root{
+  --mind:#D7EE6B; --heart:#E0141E; --pain:#3F5BD3; --body:#AB98EE; --off:#F1F2F4;
+  --ink:#000; --bg:#fff; --muted:#555;
+  --font:"Helvetica Neue",Helvetica,Inter,Arial,sans-serif;
+  --elastic:cubic-bezier(.34,1.4,.64,1); --smooth:cubic-bezier(.65,0,.35,1); --out:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);overflow:hidden;overscroll-behavior:none}
+body{font-family:var(--font);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #000;outline-offset:3px}
+.app{position:fixed;inset:0;overflow:hidden;background:var(--bg)}
+html.still .q,html.still .cell{transition:none !important}
+
+/* ── screens ── */
+.screen{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s var(--smooth)}
+.screen.on{opacity:1;pointer-events:auto}
+.col{position:absolute;top:0;bottom:0;box-sizing:border-box;display:flex;flex-direction:column}
+.h{font-weight:400;font-size:32px;line-height:1.05;letter-spacing:-0.02em;margin:0}
+.pill{min-height:56px;border:none;border-radius:999px;background:#000;color:#fff;font-size:17px;width:100%;transition:transform .2s var(--out)}
+.pill:active{transform:scale(.97)}
+.tx{border:none;background:none;font-size:15px;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 4px;color:#000}
+
+/* ── simple pages: a plain question gets plain answers, no boxes ── */
+.opts{display:flex;flex-direction:column;gap:8px;flex:none;margin-top:10px}
+.opts button{border:none;box-shadow:inset 0 0 0 1px #000;background:#fff;border-radius:26px;padding:13px 20px;min-height:52px;font:inherit;font-size:17px;line-height:1.3;text-align:left;color:#000;transition:background-color .2s,color .2s}
+.opts button[aria-checked="true"]{background:#000;color:#fff}/* answers are outlined pills; the chosen one fills in */
+.q2{display:block;font-size:22px;line-height:1.15;letter-spacing:-0.01em;margin:28px 0 4px}
+.q2 .opt{font-size:15px;color:var(--muted)}
+.pbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.pbot{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:8px;flex:none}
+.pbot.two{flex-direction:row}.pbot.two .pill{flex:1}
+.pill.sec{background:#fff;color:#000;box-shadow:inset 0 0 0 1.5px #000}/* second choice: outlined; the main action stays filled */
+.phint{margin:0;font-size:15px;color:var(--muted);text-align:center}
+.phint:empty{display:none}
+.field{display:block;width:100%;box-sizing:border-box;min-height:52px;border:none;border-radius:26px;background:#fff;box-shadow:inset 0 0 0 1px #B5B5B5;font:inherit;font-size:17px;padding:0 20px;margin-top:6px;color:#000;resize:none}
+.field::placeholder{color:#9A9A9A}
+.field:focus{outline:none;box-shadow:inset 0 0 0 1.5px #000}/* empty and writable: outlined in grey, black when you type */
+.qrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.qrow .q2{margin-bottom:4px}
+.addq{width:44px;height:44px;margin-right:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+.addq i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+#ak-list .field+.field{margin-top:8px}
+.pstat{margin:14px 0 0;font-size:17px;line-height:1.35}
+/* the summary as stacked colour cards: each colour shows the symptoms the person logged */
+.cards{display:flex;flex-direction:column;margin-top:16px}
+.kc{position:relative;border-radius:32px;padding:0 20px 32px}
+.kc+.kc{margin-top:-32px}.kc:last-child{padding-bottom:12px}
+.kc.out .kh,.kc.out .kb{opacity:.4}
+.kh{display:flex;align-items:center;gap:10px;width:100%;min-height:64px;border:none;background:none;color:inherit;font:inherit;padding:14px 2px;text-align:left;transition:opacity .25s}
+
+.kh h3{flex:1;margin:0;font-size:24px;font-weight:400;line-height:1.1;letter-spacing:-0.02em}
+.kh .kn{font-size:15px;flex:none}
+.kb{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--smooth),opacity .25s}
+.kc.open .kb{grid-template-rows:1fr}
+.kb>div{overflow:hidden}
+.kp{display:flex;flex-wrap:wrap;gap:6px;padding:0 2px 22px}
+.kp span,.kp button{box-shadow:inset 0 0 0 1.5px currentColor;border-radius:999px;padding:7px 13px;font-size:15px;line-height:1.2}
+.kp button{border:none;background:none;color:inherit;font-family:inherit;min-height:36px;cursor:pointer}
+/* one symptom: one big card per day it came, swipe sideways through them */
+.sntop{display:flex;align-items:center;gap:8px;margin-top:-8px}.sntop .h{flex:1;min-width:0}
+.snsub{margin:10px 0 0;font-size:15px;color:var(--muted)}
+.sndash{display:flex;gap:6px;margin-top:10px}.sndash i{flex:1;height:3px;border-radius:2px;background:#E3E4E7;transition:background-color .3s}.sndash i.on{background:#000}
+.sncar{flex:1;min-height:0;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:18px;padding-bottom:4px}
+.sncar::-webkit-scrollbar{display:none}
+.sncar.one .snc{width:100%}
+.snc{flex:none;width:calc(100% - 20px);scroll-snap-align:center;border-radius:32px;padding:22px 22px 24px;box-sizing:border-box;display:flex;flex-direction:column;overflow:hidden}
+.snc .sl{margin:0;font-size:15px;opacity:.8}
+.snc h2{margin:4px 0 0;font-size:44px;font-weight:400;line-height:1;letter-spacing:-0.03em}
+.snc .scw{margin:22px 0 6px;font-size:15px;opacity:.8}
+.snc .scp{display:flex;flex-wrap:wrap;gap:6px}.snc .scp span{box-shadow:inset 0 0 0 1.5px currentColor;border-radius:999px;padding:6px 12px;font-size:15px}
+.snc .snote{margin:22px 0 0;font-size:19px;line-height:1.35}.snc .snote.none{opacity:.55}
+.snc .smed{margin:14px 0 0;font-size:15px;opacity:.85}
+.smedia{margin-top:auto;padding-top:16px;flex:1;min-height:0;display:flex;align-items:flex-end}
+.smedia:empty{display:none}
+.smedia img,.smedia video{width:100%;height:100%;max-height:300px;object-fit:cover;border-radius:20px;display:block}
+.splay{width:64px;height:64px;border-radius:50%;border:none;background:rgba(255,255,255,.35);color:inherit;padding:0;display:flex;align-items:center;justify-content:center}
+.kwant{padding:0 2px 20px}.kwant .kql{margin:10px 0 2px;font-size:14px;color:#555}.kwant .kql:first-child{margin-top:0}.kwant .kqq{margin:0 0 2px;font-size:17px;line-height:1.3}
+.kt{position:absolute;right:14px;top:10px;width:44px;height:44px;border:none;border-radius:50%;background:#000;color:#fff;padding:0;display:flex;align-items:center;justify-content:center}
+/* only one card is open at a time; the rest fold to their title, so nothing scrolls */
+.big{margin-top:24px;display:flex;flex-direction:column;gap:16px;font-size:20px;line-height:1.25;letter-spacing:-0.01em}
+.big .bl{font-size:15px;color:var(--muted);letter-spacing:0}
+.ksq{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pat{margin-top:28px}.pat .pt{margin:0;font-size:20px;line-height:1.3;letter-spacing:-0.01em}
+.pat .pacts{display:flex;gap:20px;margin-top:2px}
+.pat .tx{padding:0}
+.pev{margin:4px 0 0;font-size:15px;line-height:1.5;color:#333}
+.vslist p{margin:6px 0 0;font-size:17px}
+.vsrow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;font-size:17px}
+.hlinks{display:flex;gap:8px;margin-bottom:8px}.hlinks .pill{flex:1;min-height:48px;font-size:15px}
+
+/* ── the four logo squares: one object from splash to intro to the map ── */
+.q{position:absolute;border-radius:8px;z-index:30;transition:left .9s var(--smooth),top .9s var(--smooth),width .9s var(--smooth),height .9s var(--smooth),transform .9s var(--smooth),opacity .5s var(--smooth),border-radius .9s var(--smooth);will-change:left,top,width,height,transform}
+.q:nth-child(2){transition-delay:.05s}.q:nth-child(3){transition-delay:.1s}.q:nth-child(4){transition-delay:.15s}
+.q b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:400;font-size:32px;color:#000;transition:opacity .4s}
+.q.hide{opacity:0;pointer-events:none}
+.q .ql{position:absolute;left:14px;right:14px;bottom:13px;font-size:16px;line-height:1.2;color:var(--on);opacity:0;transition:opacity .4s}
+.q.lr .ql{left:auto;right:14px;width:56%;text-align:right}
+.q.lt .ql{top:16px;bottom:auto;width:62%}
+.q.labeled .ql{opacity:1;transition-delay:.7s}
+.q.tiny{border-radius:2px}
+.q.nolet b{opacity:0}
+.splash-in .q{animation:drop .9s var(--out) both}
+.splash-in .q:nth-child(2){animation-delay:.2s}.splash-in .q:nth-child(3){animation-delay:.4s}.splash-in .q:nth-child(4){animation-delay:.6s}
+@keyframes drop{from{opacity:0;translate:0 18px;scale:.92}to{opacity:1;translate:0 0;scale:1}}
+.dot{position:absolute;width:58px;height:58px;border-radius:50%;background:#fff;z-index:31;display:flex;align-items:center;justify-content:center;font-size:32px;transition:opacity .5s var(--smooth),transform .7s var(--smooth);animation:dpop .8s var(--out) 1.1s both}
+.dot.gone{animation:none;opacity:0;transform:scale(.6);pointer-events:none}
+@keyframes dpop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.intro-copy{animation:rise .8s var(--out) .45s both}
+.intro-go{animation:rise .8s var(--out) .9s both;position:relative;z-index:40}
+#s-intro .intro-copy{position:relative;z-index:40}
+.isub{font-size:17px;line-height:1.35;color:#333;margin:10px 0 0}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ── map screen ── */
+.mhead{flex:none;padding-bottom:12px;background:var(--bg);position:relative;z-index:3}
+.mtop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.mbar{display:flex;align-items:center;justify-content:space-between}
+.menu-btn{flex:none;width:44px;height:44px;margin-right:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center}
+.menu-btn i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.count{font-size:15px;color:var(--muted)}
+.seg{display:flex;background:var(--off);border-radius:999px;padding:3px;flex:none}
+.seg button{border:none;background:transparent;font-size:15px;min-height:38px;min-width:56px;padding:0 14px;border-radius:999px;transition:background-color .25s,color .25s}
+.seg button[aria-pressed="true"]{background:#000;color:#fff}
+.scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.grid{position:relative;transition:height .55s var(--elastic)}
+.threads{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.cell{position:absolute;left:0;top:0;box-sizing:border-box;border:none;border-radius:9px;background:var(--off);color:#000;padding:9px 6px 9px 7px;font-size:14px;line-height:1.15;letter-spacing:-0.01em;text-align:left;display:flex;align-items:flex-end;overflow:hidden;overflow-wrap:normal;word-break:normal;hyphens:none;
+  transition:transform .6s var(--out),opacity .35s var(--smooth),background-color .3s,color .3s,outline-color .2s,box-shadow .2s;
+  outline:2px dashed transparent;outline-offset:-4px;z-index:1}
+.cell .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;transition:opacity .3s}
+.k-mind{--c:var(--mind);--on:#000}.k-heart{--c:var(--heart);--on:#fff}.k-pain{--c:var(--pain);--on:#fff}.k-body{--c:var(--body);--on:#000}
+.cell .gd{background:var(--c)}
+.cell.mine{background:var(--c);color:var(--on)}
+.cell.mine .gd{opacity:0}
+/* linked squares that aren't yours stay plain grey: being gathered next to it already shows the link */
+.cell.focus{z-index:3;box-shadow:0 0 0 3px #fff,0 0 0 5px #000}
+.cell.dim{opacity:.3}
+.cell.lk{box-shadow:inset 0 0 0 3px #000}
+.cell.hidden{opacity:0;pointer-events:none}
+.cell.add{background:#fff;border:1.5px dashed #000;align-items:center;justify-content:center;text-align:center;font-size:14px}
+.jig{animation:jelly .7s cubic-bezier(.33,0,.2,1)}
+@keyframes jelly{0%{scale:1 1}18%{scale:1.13 .87}36%{scale:.9 1.1}54%{scale:1.05 .95}72%{scale:.98 1.02}100%{scale:1 1}}
+
+/* ── bottom sheet ── */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,0);pointer-events:none;transition:background-color .3s;z-index:40}
+.scrim.on{background:rgba(0,0,0,.28);pointer-events:auto}
+.sheet{position:absolute;bottom:0;box-sizing:border-box;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.12);z-index:41;
+  padding:20px 22px calc(18px + env(safe-area-inset-bottom,0px));max-height:62%;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  transform:translateY(105%);transition:transform .45s var(--out);visibility:hidden}
+.sheet.on{transform:none;visibility:visible}
+.sheet.card{max-height:50%}
+.sheet .wlab{font-size:14px;color:#333;margin:4px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.chips button{min-height:40px;padding:0 14px;border-radius:999px;font-size:14px;border:none;background:var(--off);color:#000;position:relative}
+.chips button.have{background:var(--c);color:var(--on)}
+.chips button.yours{box-shadow:inset 0 0 0 2.5px #000}
+.sheet .grp{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.sheet .grp i{width:10px;height:10px;border-radius:3px;display:block}
+.sheet .nm{font-size:20px;line-height:1.05;margin:4px 0 10px}
+.sheet p{margin:0 0 10px;font-size:15px;line-height:1.35}
+.sheet .why{color:#333}
+.sheet .rslist{margin:-4px 0 10px;padding-left:20px;font-size:15px;line-height:1.45}
+.sheet .with b{font-weight:500}
+.sheet .acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:6px}
+.sheet .acts .pill{flex:1 1 100%}
+.sheet .foot{margin-top:14px;padding-top:12px;border-top:1px solid #E5E5E5;font-size:12px;color:var(--muted)}
+.sheet .foot a{color:var(--muted)}
+.sheet input[type=text]{width:100%;box-sizing:border-box;min-height:52px;border:1.5px solid #000;border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:#fff;color:#000;outline:none}
+.sheet input[type=text]:focus-visible{box-shadow:0 0 0 3px rgba(0,0,0,.2)}
+.sheet .err{color:#B3261E;font-size:14px;margin:6px 0 0}
+.sw{display:flex;gap:14px;align-items:center;margin:16px 0 4px;flex-wrap:wrap}
+.sw button{width:30px;height:30px;border:none;border-radius:7px;padding:0;position:relative}
+.sw button::after{content:"";position:absolute;inset:-7px}/* keeps a 44px tap area */
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 2px #fff,0 0 0 4px #000}
+.sw span{font-size:14px;color:var(--muted);margin-right:2px}
+.swn{font-size:15px;color:#000;margin:8px 0 6px}
+.row2{display:flex;align-items:center;gap:14px;margin-top:14px}
+.row2 .pill{flex:1}
+.sheet.bar{padding-top:14px}
+.barrow{display:flex;align-items:center;gap:12px}
+.barrow p{flex:1;margin:0;font-size:15px;line-height:1.3}
+.barrow .pill{width:auto;min-width:96px;padding:0 20px;min-height:48px}
+
+/* ── menu popover ── */
+.pop{position:absolute;z-index:45;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:6px;min-width:200px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s,transform .25s var(--out)}
+.pop.on{opacity:1;transform:none;pointer-events:auto}
+.pop button{display:block;width:100%;text-align:left;border:none;background:none;min-height:48px;padding:0 14px;font-size:16px;border-radius:10px}
+.pop button:active{background:var(--off)}
+
+/* ── share poster ── */
+.share{background:#fff;z-index:50}
+.share .col{overflow-y:auto}
+.close{position:absolute;right:0;top:0;width:44px;height:44px;border:none;border-radius:50%;background:var(--off);font-size:22px;line-height:1}
+.poster{position:relative;margin-top:18px;flex:none}
+.pcell{position:absolute;box-sizing:border-box;border-radius:9px;padding:9px;font-size:14px;line-height:1.15;display:flex;align-items:flex-end;background:var(--c);color:var(--on);z-index:1;overflow-wrap:break-word}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:18px;font-size:13px;color:#333;flex:none}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:block}
+.pfoot{margin-top:16px;font-size:12px;color:var(--muted);line-height:1.4;flex:none}
+
+
+/* ── history (main screen) ── */
+.hscroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.hscroll > *{flex-shrink:0}
+.htop{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.brand{font-size:17px;letter-spacing:-0.01em}
+.chip{border:none;background:var(--off);border-radius:999px;min-height:44px;padding:0 18px;font-size:15px;color:#000}
+.htop{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin:14px 0 0}
+.hmap{min-height:44px;padding:0 20px;border:none;border-radius:999px;background:#000;font-size:15px;color:#fff}
+.hbottom{margin-top:auto;padding-top:16px;position:sticky;bottom:0;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 30%)}
+/* ── map: back arrow + today mode ── */
+.back{width:44px;height:44px;margin-left:-7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+.back i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.cell.td{box-shadow:inset 0 0 0 2.5px #000}
+.cell.nottd{opacity:.42}
+.todaybar{position:absolute;bottom:0;z-index:5;box-sizing:border-box;padding:14px 0 calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 28%);display:none}
+.today .todaybar{display:block}
+
+/* ── history grid of days ── */
+.htitle{font-size:44px;line-height:1.05;letter-spacing:-0.035em;margin-top:26px}
+.hsub{font-size:14px;color:#444;line-height:1.35;margin:10px 0 0}
+.hgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,auto);grid-template-columns:12px repeat(9,minmax(0,1fr));gap:6px 5px;margin-top:24px}
+.hwd{font-size:11px;color:#555;display:flex;align-items:center;justify-content:flex-start}
+.hmon{display:grid;grid-template-columns:12px repeat(9,minmax(0,1fr));gap:0 5px;margin-top:6px;font-size:11px;color:#555;height:14px}
+.hmon span{white-space:nowrap;overflow:visible}
+.day{position:relative;aspect-ratio:.8;border:none;padding:0;border-radius:5px;background:transparent;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.5px;transition:opacity .3s,box-shadow .2s,transform .2s var(--out)}
+.day i{display:block;border-radius:2px;background:var(--off)}
+.day:active{transform:scale(.92)}
+.day.future{visibility:hidden}
+.day.later::before{content:"";position:absolute;top:-3px;right:-3px;width:6px;height:6px;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px #fff;z-index:1}/* filled in later, from memory */
+.day.jig{animation:jelly .7s cubic-bezier(.33,0,.2,1)}
+.day.today{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #000}
+.day.empty-today{border:1.5px dashed #000;border-radius:6px}
+.day.empty-today i{background:transparent}
+.day.empty-today::after{content:"+";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.day.sim{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #000}
+.day.sel{box-shadow:0 0 0 2px #fff,0 0 0 4.5px #000}
+.hgrid.hl .day:not(.sim):not(.sel){opacity:.22}
+.hkey{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:12px;color:#555;line-height:1.35}
+.kq{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;width:22px;height:22px;flex:none}
+.kq i{display:block;border-radius:2px}
+.hcard{background:var(--off);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.4;margin-top:12px;min-height:44px;box-sizing:border-box}
+.hcard:empty{display:none}
+.hcard .tx{font-size:14px;min-height:36px}
+/* ── zoomed day ── */
+.zoom{position:absolute;inset:0;z-index:35;pointer-events:none;visibility:hidden}
+.zoom.on{pointer-events:auto;visibility:visible}
+.zbg{position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .45s var(--smooth)}
+.zoom.open .zbg{opacity:1}
+.zcol{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.zcol>:not(.zsq){opacity:0;transition:opacity .35s var(--smooth)}
+.zoom.open .zcol>:not(.zsq){opacity:1;transition-delay:.25s}
+.zcol .back{margin-top:-8px}
+.zdate{font-size:min(40px,10.2vw);line-height:1.05;letter-spacing:-0.03em;margin:12px 0 0;flex:none}
+.zsq{position:relative;flex:1 0 auto;margin-top:18px;transform-origin:0 0;transition:transform .6s var(--smooth)}
+.zq{position:absolute;box-sizing:border-box;width:calc(50% - 3px);height:calc(50% - 3px);border:none;border-radius:10px;background:var(--off);padding:14px;display:flex;flex-direction:column;justify-content:flex-start;text-align:left;font:inherit;color:#000;overflow:hidden;cursor:pointer;
+  transition:left .5s var(--smooth),top .5s var(--smooth),width .5s var(--smooth),height .5s var(--smooth),opacity .3s var(--smooth)}
+.zq.p0{left:0;top:0}.zq.p1{left:calc(50% + 3px);top:0}.zq.p2{left:0;top:calc(50% + 3px)}.zq.p3{left:calc(50% + 3px);top:calc(50% + 3px)}
+.zq.has{background:var(--c);color:var(--on)}
+.zq .zt{font-size:17px;line-height:1.2;opacity:0;transition:opacity .3s}
+.zoom.open .zq .zt{opacity:1;transition-delay:.4s}
+.zsq.opened .zq.open{left:0;top:0;width:100%;height:100%;z-index:2;justify-content:flex-start;overflow-y:auto}
+.zsq.opened .zq:not(.open){opacity:0;pointer-events:none}
+.zq .zdet{opacity:0;max-height:0;overflow:hidden;transition:opacity .3s}
+.zq.open .zdet{opacity:1;max-height:none;transition-delay:.3s}
+.zdet .zs.zn{font-size:20px;line-height:1.25}
+.zdet .zs{display:block;font:inherit;font-size:26px;line-height:1.1;letter-spacing:-.02em;margin:14px 0 0;padding:0;border:none;background:none;color:inherit;text-align:left;cursor:pointer}
+.zdet button.zs{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px;min-height:36px}
+.zdet .znote{font-size:16px;line-height:1.35;margin:6px 0 0;opacity:.85;white-space:pre-wrap}
+.zinfo{flex:none;margin-top:16px}
+.zinfo .zi{font-size:17px;line-height:1.35;margin:0}
+.zbot{flex:none;padding-top:18px}
+/* ── context chips (today) ── */
+.ctxrow{display:none;flex-wrap:nowrap;gap:8px;margin-top:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.ctxrow::-webkit-scrollbar{display:none}
+.today .ctxrow{display:flex}
+.ctxrow span{font-size:13px;color:#555;flex:none;align-self:center}
+.cx{flex:none;white-space:nowrap;min-height:44px}
+.cx{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #000;background:#fff;font-size:14px}
+.cx[aria-pressed="true"]{background:#000;color:#fff}
+/* ── first run: other conditions, then the symptoms you live with ── */
+.obbar{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin-top:-8px;flex:none}
+.pill.obsmall{width:auto;min-height:40px;padding:0 18px;font-size:15px}
+.obchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.obchips button{min-height:44px;padding:0 18px;border:none;border-radius:999px;background:var(--off);color:#000;font:inherit;font-size:15px;transition:background-color .25s,color .25s}
+.obchips button[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.obchips button.k-none[aria-pressed="true"]{background:#D3D5DA;color:#000}
+.obgrid{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:22px -2px 0;padding:2px;align-content:start}
+.obgrid button{aspect-ratio:1;border:none;border-radius:9px;background:var(--off);color:#000;padding:9px 6px 9px 7px;font:inherit;font-size:14px;line-height:1.15;letter-spacing:-0.01em;text-align:left;display:flex;align-items:flex-end;transition:background-color .3s,color .3s}
+.obgrid button{position:relative}
+.obgrid button .gd{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--c);transition:opacity .3s}
+.obgrid button[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.obgrid button[aria-pressed="true"] .gd{opacity:0}
+/* ── add to today: four colours that open one at a time ── */
+.lgdate{font-size:15px}
+.usq{flex:1;min-height:0;overflow:hidden;margin:18px -4px 0;padding:4px}
+.usq svg{display:block;width:100%;overflow:visible;touch-action:manipulation}
+.usq g.btn{cursor:pointer;outline:none}
+.usq g.btn:focus-visible .shape{stroke:#000;stroke-width:3}
+.ushint{font-size:15px;color:#555;text-align:center;margin:12px 0 0;height:36px;line-height:36px;flex:none}
+#us-notes{justify-content:center;padding:0;margin:12px 0 0;min-height:0;flex:none}#us-notes:empty{display:none}/* hint and Add note share one slot: same gap above and below */
+.lgscroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:20px -30px 0;padding:0 30px}
+.lg{border-top:1px solid #EDEDED}
+.lg:last-child{border-bottom:1px solid #EDEDED}
+.lghead{width:100%;min-height:64px;border:none;background:none;padding:0;display:flex;align-items:center;gap:14px;text-align:left;font:inherit;font-size:19px;line-height:1.2;color:#000}
+.lghead .sq{width:28px;height:28px;border-radius:7px;background:var(--c);flex:none}
+.lghead .tt{flex:1}
+.lghead .got{display:flex;gap:3px}
+.lghead .got b{width:10px;height:10px;border-radius:2px;background:var(--c)}
+.lgbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--smooth)}
+.lg.open .lgbody{grid-template-rows:1fr}
+.lgin{overflow:hidden}
+.lgchips{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 14px}
+.lgchips button{min-height:42px;padding:0 16px;border:none;border-radius:999px;background:var(--off);color:#000;font:inherit;font-size:15px;transition:background-color .25s,color .25s;position:relative}
+.lgchips button[aria-pressed="true"]{background:var(--c);color:var(--on)}
+.lgchips button.has-note::after{content:"";position:absolute;top:6px;right:8px;width:6px;height:6px;border-radius:2px;background:currentColor;opacity:.7}
+.lgmore{margin:-6px 0 12px -4px}
+.lgnotes{display:flex;flex-wrap:wrap;gap:8px;padding:0 0 16px}
+.lgnotes .pill{width:auto;min-height:36px;padding:0 14px;font-size:14px;display:flex;align-items:center;gap:6px}
+/* ── confirm your day: what you logged, and how heavy the app thinks it was ── */
+.cfgrid{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:22px}
+.cfgrid>div{aspect-ratio:.877;border-radius:10px;padding:12px;box-sizing:border-box;background:var(--off);color:#000;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.cfgrid>div.has{background:var(--c);color:var(--on)}
+.cfgrid .zt{font-size:13px;line-height:1.2;opacity:.85}
+.cfgrid ul{list-style:none;margin:0;padding:0;font-size:17px;line-height:1.2;letter-spacing:-0.01em;overflow-y:auto}
+.cfgrid li+li{margin-top:3px}
+.cfq{font-size:22px;line-height:1.05;letter-spacing:-0.01em;margin:24px 0 10px;flex:none}
+.cfopts{display:flex;flex-direction:column;flex:none}
+.cfopts button{border:none;background:none;padding:0;min-height:44px;font:inherit;font-size:17px;text-align:left;color:#000;display:flex;align-items:center;gap:12px}
+.cfopts button::before{content:"";width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px solid #B5B5B5;background:#fff;flex:none;transition:border-color .2s,box-shadow .2s}
+.cfopts button[aria-checked="true"]::before{border:2px solid #000;box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 10px var(--heart)}
+/* ── today: one field of squares, the ones you usually have in the middle ── */
+#s-today{background:#fff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.tfield{position:absolute;left:0;top:0;will-change:transform}
+.tsq{position:absolute;border:none;border-radius:8px;padding:10px;box-sizing:border-box;display:flex;align-items:flex-end;text-align:left;font-size:15px;line-height:1.15;background:var(--t);color:#333;overflow:hidden;overflow-wrap:break-word;hyphens:manual;transform-origin:50% 50%;will-change:transform;transition:color .3s var(--smooth) .08s}
+.tsq .lb{position:relative;z-index:1}
+.tsq .rip{position:absolute;border-radius:50%;background:var(--c);transform:translate(-50%,-50%) scale(0);transition:transform .6s var(--out);pointer-events:none}
+.tsq.on{color:var(--on)}.tsq.on .rip{transform:translate(-50%,-50%) scale(1)}
+.tglow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(40px);opacity:0;transition:opacity 1.2s var(--smooth) .2s}
+.tglow.in{opacity:.32}
+.tback{position:absolute;z-index:6;transition:opacity .3s}
+.tdate{position:absolute;z-index:6;top:calc(var(--ttop,48px) + env(safe-area-inset-top,0px));height:44px;display:flex;align-items:center;font-size:15px;background:#fff;border-radius:999px;padding:0 14px;transition:opacity .3s}
+.tdate[hidden]{display:none}
+#s-today.noting .tdate{opacity:0}
+.tsq .gd{position:absolute;z-index:1;top:9px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--c)}
+.tsq.on .gd,.tsq.has-note .gd{opacity:0}
+.tsq .nm{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:2px;background:currentColor;opacity:.7;display:none;z-index:1}
+.tsq.has-note .nm{display:block}
+#s-today.noting .tback,#s-today.noting .tbar{opacity:0;pointer-events:none}
+#s-today.leaving .tsq{opacity:0 !important;transition:opacity .25s var(--smooth)}
+#s-today.leaving .tsq.on{visibility:hidden}
+#s-today.leaving .tback,#s-today.leaving .tbar{opacity:0}
+.fly{position:fixed;z-index:60;border-radius:8px;pointer-events:none}
+.fly.go{transition:left .75s var(--smooth),top .75s var(--smooth),width .75s var(--smooth),height .75s var(--smooth),border-radius .75s var(--smooth)}
+.fly.go{border-radius:2px}
+.fly.gone{opacity:0;transition:opacity .25s}
+.tnote{position:absolute;inset:0;z-index:8;background:var(--c);color:var(--on);visibility:hidden;pointer-events:none;clip-path:inset(0 round 0);
+  transition:clip-path .5s var(--smooth),background-color .5s var(--smooth),color .3s;will-change:clip-path}
+.tnote.on{visibility:visible;pointer-events:auto}
+.tnote .col{transition:opacity .25s var(--smooth)}
+.tnote.hush .col{opacity:0;transition-duration:.15s}
+.tnote .col{gap:0}
+.tn-top{display:flex;align-items:center;justify-content:space-between;margin-top:-8px}
+.tn-saved{display:flex;align-items:center;gap:5px;font-size:14px;opacity:0;transition:opacity .4s var(--smooth)}
+.tn-saved b{font-weight:500}
+.tn-saved.on{opacity:.75}
+.tn-saved.busy{opacity:.35}
+.tn-close{width:44px;height:44px;margin:0 0 0 -7px;border:none;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex:none;color:inherit}
+.tn-close i{width:30px;height:30px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.tmedia{display:flex;gap:8px;overflow-x:auto;flex:none;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tmedia::-webkit-scrollbar{display:none}
+.tmedia:empty{display:none}
+.tm{position:relative;flex:none;height:132px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,.14)}
+.tm img,.tm video{height:132px;max-width:240px;display:block;object-fit:cover}
+.tm.audio{display:flex;align-items:center;padding:0 44px 0 10px;box-sizing:border-box;height:64px;align-self:flex-start}
+.tm audio{width:230px;height:40px}
+.tm .x{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:none;background:#000;color:#fff;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
+.tm.audio .x{top:17px}
+.tacts{display:flex;gap:10px;flex:none;padding-top:12px}
+.tact{flex:1;min-height:48px;border-radius:999px;border:none;background:#000;color:#fff;font-size:15px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}
+.tact.rec{background:#000;color:#fff;box-shadow:inset 0 0 0 2px #fff}
+.tact.rec .micon{animation:recblink 1s steps(2,start) infinite}
+@keyframes recblink{to{visibility:hidden}}
+.tnote textarea{flex:1;min-height:80px;margin-top:18px;border:none;background:transparent;color:inherit;font:inherit;font-size:22px;line-height:1.3;letter-spacing:-.01em;resize:none;outline:none;padding:0;user-select:text;-webkit-user-select:text}
+.tnote textarea::placeholder{color:currentColor;opacity:.45}
+.tbar{position:absolute;bottom:0;z-index:5;box-sizing:border-box;transition:opacity .3s;padding:28px 0 calc(22px + env(safe-area-inset-bottom,0px))}
+.ttop{position:absolute;left:0;right:0;top:0;height:120px;z-index:4;pointer-events:none;background:linear-gradient(to bottom,#fff 35%,rgba(255,255,255,0))}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:1ms !important;animation-delay:0ms !important;transition-duration:1ms !important;transition-delay:0ms !important}}
+</style>
+
+<div class="app" id="app">
+  <div id="qs" aria-hidden="true">
+    <div class="q k-mind" style="background:var(--mind)"><b>L</b><span class="ql">What is your energy like?</span></div>
+    <div class="q k-heart" style="background:var(--heart)"><b>I</b><span class="ql">How do you feel?</span></div>
+    <div class="q k-pain" style="background:var(--pain)"><b>V</b><span class="ql">Where do you feel pain?</span></div>
+    <div class="q k-body" style="background:var(--body)"><b>E</b><span class="ql">How does your body react?</span></div>
+  </div>
+  <div class="dot" id="dot" aria-hidden="true">D</div>
+
+  <section class="screen" id="s-splash" aria-label="Lived">
+    <button id="skip" style="position:absolute;inset:0;border:none;background:transparent" aria-label="Lived. Tap to continue"></button>
+  </section>
+
+  <section class="screen" id="s-intro" aria-label="Intro">
+    <div class="col cl">
+      <h1 class="h intro-copy" style="margin-top:12px">Understand your hEDS</h1>
+      <p class="intro-copy isub">Tap the symptoms you live with to learn how they link to your condition, and to each other.</p>
+      <div style="margin-top:auto" class="intro-go"><button class="pill" id="start">Let’s begin</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ob1" aria-label="Other conditions">
+    <div class="col cl">
+      <div class="obbar"><span></span><button class="pill obsmall" data-ob="2">Skip</button></div>
+      <h1 class="h" style="margin-top:12px">Do you have other<br>conditions besides hEDS?</h1>
+      <p class="isub">Many people with hEDS also have POTS, MCAS or another condition. Choose any you have.</p>
+      <div class="obchips" id="ob-cond" role="group" aria-label="Other conditions"></div>
+      <div style="margin-top:auto;padding-top:16px"><button class="pill" data-ob="2">Next</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ob2" aria-label="The symptoms you live with">
+    <div class="col cl">
+      <div class="obbar"><button class="back" data-ob="1" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><button class="pill obsmall" data-ob="3">Skip</button></div>
+      <h1 class="h" style="margin-top:12px">Which symptoms<br>do you live with?</h1>
+      <p class="isub">Choose the ones you have most days. You can change this any time.</p>
+      <div class="obgrid" id="ob-sym"></div>
+      <div style="padding-top:16px;flex:none"><button class="pill" data-ob="3">Next</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-history" aria-label="How you’ve been lately">
+    <div class="col cl hscroll" id="h-col">
+      <div class="htop"><button class="hmap" id="h-map">Your hEDS</button><button class="menu-btn" id="h-menu" aria-label="More" aria-haspopup="true" aria-expanded="false"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="12.5" cy="8" r="1.5" fill="currentColor"/></svg></i></button></div>
+      <h1 class="h htitle">How you’ve<br>been lately</h1>
+      <p class="hsub">Each column is a week, the newest on the right. Tap any day to look back at it.</p>
+      <div class="hgrid" id="hgrid" role="grid" aria-label="Your days"></div>
+      <div class="hmon" id="hmon" aria-hidden="true"></div>
+      <div class="hcard" id="hcard" aria-live="polite"></div>
+      <div class="hbottom"><button class="pill" id="w-fill">How are you today?</button></div>
+    </div>
+    <div class="zoom" id="zoom" aria-hidden="true">
+      <div class="zbg" id="zbg"></div>
+      <div class="col cl zcol" id="zcol">
+        <button class="back" id="z-x" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+        <h1 class="h zdate" id="z-date"></h1>
+        <div class="zsq" id="zsq"></div>
+        <div class="zinfo" id="zinfo" aria-live="polite"></div>
+        <div class="zbot"><button class="pill" id="z-sim">Show me similar days</button><button class="pill" id="z-add" hidden>Add to this day</button></div>
+      </div>
+    </div>
+    <div class="pop" id="hpop" role="menu"><button role="menuitem" id="h-pat">Your patterns</button><button role="menuitem" id="h-visit">Before a visit</button></div>
+  </section>
+
+  <section class="screen" id="s-map" aria-label="Your hEDS">
+    <div class="col cl">
+      <div class="mhead">
+        <div class="mbar">
+        <button class="back" id="m-back" aria-label="Back to your weeks"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+          <button class="menu-btn" id="menu-btn" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><i><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="12.5" cy="8" r="1.5" fill="currentColor"/></svg></i></button>
+        </div>
+        <div class="mtop" style="margin-top:8px">
+          <h1 class="h" id="m-title">Your hEDS</h1>
+        </div>
+        <div class="ctxrow" id="ctxrow"></div>
+        <div class="mrow">
+          <span class="count" id="count" aria-live="polite">Tap the things you live with</span>
+          <div class="seg" role="group" aria-label="Show" id="segwrap"><button id="v-all" aria-pressed="true">All</button><button id="v-mine" aria-pressed="false">Mine</button></div>
+        </div>
+      </div>
+      <div class="scroll" id="scroll">
+        <div class="grid" id="grid" role="group" aria-label="hEDS symptoms">
+          <svg class="threads" id="threads" aria-hidden="true"></svg>
+        </div>
+        <div id="pad" style="height:40px"></div>
+      </div>
+    </div>
+    <div class="todaybar cl2" id="todaybar"><button class="pill" id="t-save">Done for today</button></div>
+    <div class="pop" id="pop" role="menu">
+      <button role="menuitem" id="m-share">Show Your hEDS to someone</button>
+      <button role="menuitem" id="m-reset">Start over</button>
+    </div>
+  </section>
+
+  <section class="screen" id="s-today" aria-label="Today">
+    <div class="tfield" id="tglows" aria-hidden="true"></div>
+    <div class="tfield" id="tfield" role="group" aria-label="What you feel today"></div>
+    <span class="tdate" id="t-date" hidden></span>
+    <button class="back tback" id="t-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button>
+    <div class="tbar cl2"><button class="pill" id="t-done">Done for today</button></div>
+    <div class="tnote" id="tnote" role="dialog" aria-modal="true" aria-labelledby="tn-name">
+      <div class="col cl">
+        <div class="tn-top"><button class="tn-close" id="tn-close" aria-label="Zoom out"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h8"></path></svg></i></button>
+        <span class="tn-saved" id="tn-saved" role="status" aria-live="polite"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"/></svg><b>Saved</b></span></div>
+        <h2 class="h htitle" id="tn-name" style="margin-top:14px"></h2>
+        <textarea id="tn-text" aria-labelledby="tn-name" placeholder="Your notes"></textarea>
+        <div class="tmedia" id="tn-media" aria-label="Your videos, photos and recordings"></div>
+        <div class="tacts">
+          <button class="tact" id="tn-vid"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5h3l1.5-2h6l1.5 2h3v9.5h-15z"/><circle cx="10" cy="11" r="3"/></svg><span>Upload photo</span></button>
+          <button class="tact" id="tn-rec"><svg class="micon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2.5" width="6" height="10" rx="3"/><path d="M4.5 10a5.5 5.5 0 0011 0M10 15.5V18"/></svg><span>Record voice</span></button>
+        </div>
+        <input type="file" id="tn-vfile" accept="video/*,image/*" multiple hidden>
+        <input type="file" id="tn-afile" accept="audio/*" capture hidden>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-log" aria-label="Add to today">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="lg-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="lg-date"></span></div>
+      <h1 class="h" id="lg-title" style="margin-top:12px">What do you feel today?</h1>
+      <div class="usq" id="us-wrap"><svg id="us-svg" viewBox="0 0 360 400" role="group" aria-label="Your four colours"></svg></div>
+      <p class="ushint" id="us-hint"></p>
+      <div class="lgnotes usnotes" id="us-notes"></div>
+      <div style="padding-top:12px;flex:none"><button class="pill" id="lg-done">Done for today</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-confirm" aria-label="Confirm your day">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="cf-back" aria-label="Back to your picks"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span></span></div>
+      <h1 class="h" id="cf-title" style="margin-top:12px"></h1>
+      <div class="cfgrid" id="cf-sym" aria-label="What you logged"></div>
+      <p class="cfq" id="cf-q">How much did it take from you?</p>
+      <div class="cfopts" role="radiogroup" aria-labelledby="cf-q"><button role="radio" data-l="0">Some</button><button role="radio" data-l="1">A lot</button><button role="radio" data-l="2">More than I had</button></div>
+      <div style="padding-top:12px;flex:none"><button class="pill" id="cf-yes">Done for today</button></div>
+    </div>
+  </section>
+
+  <section class="screen share" id="s-share" aria-label="My hEDS poster">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="p-close" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span></span></div>
+      <div style="position:relative;flex:none">
+        <h1 class="h" style="margin-top:12px">My hEDS</h1>
+        <p id="p-sub" style="margin:8px 0 0;font-size:15px;color:#333"></p>
+      </div>
+      <div class="poster" id="poster"><svg class="threads" id="p-threads" aria-hidden="true"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--mind)"></i>What is your energy like?</span>
+        <span><i style="background:var(--heart)"></i>How do you feel?</span>
+        <span><i style="background:var(--pain)"></i>Where do you feel pain?</span>
+        <span><i style="background:var(--body)"></i>How does your body react?</span>
+      </div>
+      <p class="pfoot">Made with Lived. General information, not medical advice.</p>
+      <div style="height:28px;flex:none"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-check" aria-label="How are you today?">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="ck-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="ck-back-d"></span></div>
+      <h1 class="h" id="ck-title" style="margin-top:12px">How are you today?</h1>
+      <p class="isub">One tap is enough.</p>
+      <div class="opts" id="ck-opts" role="radiogroup" aria-labelledby="ck-title"><button data-v="0">Good</button><button data-v="1">Okay</button><button data-v="2">Hard</button><button data-v="3">Very hard</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-rest" aria-label="Saved">
+    <div class="col cl">
+      <div class="obbar"></div>
+      <h1 class="h" style="margin-top:12px">Saved.<br>Rest now.</h1>
+      <p class="isub">That’s enough for today. You can add more later if you want to.</p>
+      <div class="pbot"><button class="pill sec" id="rs-add">Add what you feel</button><button class="pill" id="rs-close">Close</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-visit" aria-label="Before a visit">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="vi-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="vi-back-d"></span></div>
+      <h1 class="h" style="margin-top:12px">Before a visit</h1>
+      <p class="isub">Lived puts your last two weeks together. You check it before anyone sees it.</p>
+      <div class="pbody">
+        <p class="q2" id="vi-q1">Who are you seeing?</p>
+        <div class="opts" id="vi-who" role="radiogroup" aria-labelledby="vi-q1"><button data-v="GP">GP</button><button data-v="Physiotherapist">Physiotherapist</button><button data-v="Specialist">Specialist</button><button data-v="Someone else">Someone else</button></div>
+        <label class="q2" for="vi-date">When is it?</label>
+        <input class="field" type="date" id="vi-date">
+      </div>
+      <div class="pbot"><p class="phint" id="vi-hint" role="status"></p><button class="pill" id="vi-go">Make my summary</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-sum" aria-label="Your summary">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="su-back" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="su-back-d"></span></div>
+      <h1 class="h" style="margin-top:12px">Your last two weeks</h1>
+      <p class="isub" id="su-sub"></p>
+      <div class="pbody">
+        <p class="pstat" id="su-stat"></p>
+        <div class="cards" id="su-items" role="group" aria-label="What goes in your summary"></div>
+        
+      </div>
+      <div class="pbot"><button class="pill sec" id="su-ask">What I want from this visit</button><button class="pill" id="su-go">Ready for the visit</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ask" aria-label="What you want from this visit">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="ak-back" aria-label="Back to your summary"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span></span></div>
+      <h1 class="h" style="margin-top:12px">What do you want<br>from this visit?</h1>
+      <p class="isub">Write it down now, so nothing gets forgotten in the room.</p>
+      <div class="pbody">
+        <div class="qrow"><p class="q2" id="ak-q1">Your questions</p><button class="addq" id="ak-add" aria-label="Add another question"><i><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg></i></button></div>
+        <div id="ak-list"></div>
+        <label class="q2" for="ak-goal">What you hope for</label>
+        <input class="field" id="ak-goal" type="text" autocomplete="off" placeholder="For example, a referral or a new plan">
+      </div>
+      <div class="pbot"><button class="pill" id="ak-save">Save</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-symn" aria-label="Notes for a symptom">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="sn-back" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span></span></div>
+      <h1 class="h" id="sn-title" style="margin-top:12px"></h1>
+      <p class="isub" id="sn-sub"></p>
+      <div class="sndash" id="sn-dash" aria-hidden="true"></div>
+      <div class="sncar" id="sn-car" role="group" aria-label="The days it came"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-ready" aria-label="Ready for the visit">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="re-back" aria-label="Back to your summary"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="re-back-d"></span></div>
+      <h1 class="h" id="re-title" style="margin-top:12px"></h1>
+      <div class="pbody"><p class="pstat" id="re-stat"></p><div class="cards" id="re-cards"></div><div class="big" id="re-list"></div></div>
+      <div class="pbot two"><button class="pill sec" id="re-share">Share it</button><button class="pill" id="re-after">After the visit</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-vshare" aria-label="Share your summary">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="vs-back" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="vs-back-d"></span></div>
+      <h1 class="h" style="margin-top:12px">Share your summary</h1>
+      <div class="pbody">
+        <p class="q2" id="vs-q1">Who is it for?</p>
+        <div class="opts" id="vs-who" role="radiogroup" aria-labelledby="vs-q1"><button data-v="doc">A doctor or therapist</button><button data-v="fam">Family or a partner</button></div>
+        <p class="q2" id="vs-q2">How?</p>
+        <div class="opts" id="vs-how" role="radiogroup" aria-labelledby="vs-q2"><button data-v="pdf">As a PDF</button><button data-v="link">As a link that stops working after 7 days</button></div>
+        <p class="q2">Who can see it now</p>
+        <div id="vs-list" class="vslist"></div>
+      </div>
+      <div class="pbot"><p class="phint" id="vs-hint" role="status"></p><button class="pill" id="vs-go">Share</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-after" aria-label="After the visit">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="af-back" aria-label="Back"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="af-back-d"></span></div>
+      <h1 class="h" style="margin-top:12px">What did they say?</h1>
+      <p class="isub">Write it down or record it while you still remember.</p>
+      <div class="pbot"><button class="pill sec" id="af-done">Not now</button><button class="pill" id="af-note">Add a note</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="s-pat" aria-label="Your patterns">
+    <div class="col cl">
+      <div class="obbar"><button class="back" id="pa-back" aria-label="Back to how you’ve been lately"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"></path></svg></i></button><span class="lgdate" id="pa-back-d"></span></div>
+      <h1 class="h" style="margin-top:12px">Your patterns</h1>
+      <p class="isub">What Lived noticed in your last six weeks. You have the final word.</p>
+      <div class="pbody" id="pa-list"></div>
+    </div>
+  </section>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-label="Details"></div>
+</div>
+
+<style id="dyn"></style>
+
+<script>
+(function(){
+'use strict';
+/* ───────── data ───────── */
+var GROUPS=['mind','heart','pain','body'];
+var GN={mind:'What is your energy like?',heart:'How do you feel?',pain:'Where do you feel pain?',body:'How does your body react?'};
+/* what an empty box says when you open it: honest that nothing was logged, not that nothing happened */
+var NONE_PAST={mind:'Nothing logged about your energy that day.',heart:'Nothing logged about how you felt that day.',pain:'No pain logged that day.',body:'Nothing logged about how your body reacted that day.'};
+var NONE_NOW={mind:'Nothing logged about your energy yet today.',heart:'Nothing logged about how you feel yet today.',pain:'No pain logged yet today.',body:'Nothing logged about how your body reacts yet today.'};
+/* open colour titles: the question becomes what to do (drafts, user to confirm) */
+var TAPN={mind:'Tap what your energy is like',heart:'Tap how you feel',pain:'Tap where you feel pain',body:'Tap how your body reacts'},TAPP={mind:'Tap what your energy was like',heart:'Tap how you felt',pain:'Tap where it hurt',body:'Tap how your body reacted'};
+var GP={mind:'What was your energy level?',heart:'How was your body feeling?',pain:'Where did it hurt?',body:'How did your body react?'};/* the same four questions, asked about a day that's gone */
+var NOTE={
+ mind:'Tiredness and brain fog often build up from pain, poor sleep and dizziness together, so they tend to be tied to a lot of other things. It’s real tiredness, not laziness.',
+ heart:'Many people with hEDS also have POTS. When you stand up, blood can pool in your legs, so your heart speeds up and you can feel dizzy or faint. It’s common, and it’s not in your head.',
+ pain:'In hEDS the tissue holding joints together is looser, so joints move further than they should. That strains them and the muscles working to keep them steady, which is why pain can show up without an obvious injury.',
+ body:'Connective tissue is also in your gut, skin, bladder and blood vessels, so digestion, bruising and skin reactions can be part of hEDS. Some people also have mast cell reactions, like flushing and itching. These are part of the picture too.'};
+var SEED=[/* [id, name, group, cluster]: clusters inside a colour stay together on the Today field */
+ ['fog','Brain fog','mind',0],['hd','Head­aches','mind',0],['mig','Migraine','mind',0],['wrd','Can’t find words','mind',0],['frg','Forget­ful','mind',0],['lgt','Light sensi­tivity','mind',0],['nse','Noise sensi­tivity','mind',0],['tng','Tingling','mind',0],
+ ['ex','Exhaus­tion','mind',1],['crash','Crash after effort','mind',1],['wk','Weak muscles','mind',1],
+ ['slp','Poor sleep','mind',2],['unr','Unre­freshing sleep','mind',2],['nsw','Night sweats','mind',2],
+ ['dz','Dizzy when standing','heart',0],['lh','Light­headed','heart',0],['nf','Near fainting','heart',0],['blv','Blurry vision','heart',0],['shk','Shaky','heart',0],
+ ['rh','Racing heart','heart',1],['pal','Palpi­tations','heart',1],['br','Breath­less','heart',1],['chp','Chest pain','heart',1],
+ ['heat','Heat intol­erance','heart',2],['swt','Sweating','heart',2],['cold','Cold hands and feet','heart',2],['pur','Purple feet','heart',2],['swf','Swollen feet','heart',2],
+ ['jp','Joint pain','pain',0],['sub','Sub­luxations','pain',0],['dis','Dis­locations','pain',0],['kn','Knee pain','pain',0],['hip','Hip pain','pain',0],['sh','Shoulder pain','pain',0],['wr','Wrist and hand pain','pain',0],['an','Ankle and foot pain','pain',0],['clk','Clicking joints','pain',0],
+ ['mp','Muscle pain','pain',1],['stf','Stiff­ness','pain',1],['bk','Back pain','pain',1],['spa','Muscle spasms','pain',1],
+ ['nj','Neck and jaw pain','pain',2],['nrv','Nerve pain','pain',2],['brn','Burning pain','pain',2],['pel','Pelvic pain','pain',2],
+ ['nau','Nausea','body',0],['blo','Bloating','body',0],['ref','Reflux','body',0],['ful','Full quickly','body',0],['con','Consti­pation','body',0],['dia','Diarrhoea','body',0],
+ ['bru','Easy bruising','body',1],['itc','Itching','body',1],['flu','Flushing','body',1],['hiv','Hives','body',1],['slw','Slow healing','body',1],['str','Stretchy skin','body',1],
+ ['bla','Bladder urgency','body',2],['lek','Bladder leaks','body',2],['pp','Painful periods','body',2],['dre','Dry eyes','body',2],['drm','Dry mouth','body',2]];
+var BUILTIN='dz-rh dz-lh dz-nf dz-fog dz-ex dz-nau dz-heat dz-cold rh-br rh-heat rh-flu rh-cold lh-nf nf-heat fog-ex fog-slp fog-hd ex-slp ex-crash ex-jp crash-mp slp-jp jp-sub jp-stf jp-mp sub-dis sub-mp sub-bru mp-stf mp-nj nj-hd nj-tng blo-nau blo-ref nau-ref itc-flu flu-heat flu-nau itc-blo pel-bla pel-blo mig-hd mig-lgt mig-nse mig-nau wrd-fog frg-fog wrd-frg unr-slp unr-ex nsw-slp nsw-swt wk-ex wk-crash blv-dz shk-dz shk-lh pal-rh chp-rh chp-br swt-heat pur-cold swf-pur swf-heat kn-jp hip-jp sh-jp wr-jp an-jp clk-jp kn-sub sh-sub wr-sub hip-bk bk-mp spa-mp spa-stf nrv-tng brn-nrv nrv-nj ful-nau con-blo dia-blo dia-nau hiv-itc hiv-flu slw-bru str-bru str-sub lek-bla pp-pel pp-blo dre-drm'.split(' ').map(function(s){return s.split('-')});
+var DEMO=['dz','rh','fog','ex','jp','sub','nau','heat'];
+var KEY='lived.map.v1';
+var CTXV={sleep:'came after poor sleep',rain:'were rainy',feet:'you were on your feet a lot',hot:'were hot',stress:'were stressful',period:'were during your period'};
+var CTX=[['sleep','Poor sleep'],['rain','Rainy'],['feet','On my feet a lot'],['hot','Hot day'],['stress','Stress'],['period','Period']];
+function pad2(n){return(n<10?'0':'')+n}
+function keyOf(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
+function todayKey(){return keyOf(new Date())}
+var editKey=null;/* null = today; otherwise the date of a past day you're filling in from memory */
+function tday(){var k=editKey||todayKey();if(!st.days[k])st.days[k]={ids:{},ctx:{}};if(editKey)st.days[k].later=true;return st.days[k]}
+function dayTile(){var k=editKey||todayKey();for(var i=0;i<HDAYS.length;i++)if(HDAYS[i].key===k)return document.querySelector('.day[data-i="'+i+'"]');return null}
+function openToday(key){editKey=key&&key!==todayKey()?key:null;var el=$('t-date');
+  if(editKey){var p=editKey.split('-'),d=new Date(+p[0],+p[1]-1,+p[2]);el.textContent=FULLDAY[d.getDay()]+' '+d.getDate()+' '+FULLMON[d.getMonth()];el.hidden=false}else el.hidden=true;
+  $('t-done').textContent=editKey?'Done':'Done for today';$('lg-done').textContent=editKey?'Done':'Done for today';
+  $('lg-title').textContent=editKey?'What did you feel that day?':'What do you feel today?';$('lg-date').textContent=editKey?el.textContent:'';go('log')}
+
+/* ───────── state ───────── */
+function blank(){return{claimed:{},own:[],userLinks:[],cut:[],days:{},conditions:[],onboarded:false,visit:{},shares:[],hidePat:{}}}
+var st=blank();
+var persist=true;            /* demo / sample routes never overwrite the person's own map */
+var view='all',focusId=null,linking=false,askLink=false,uid=1,todayMode=false;
+function save(){if(!persist)return;try{localStorage.setItem(KEY,JSON.stringify({claimed:st.claimed,own:st.own,userLinks:st.userLinks,cut:st.cut,days:st.days,conditions:st.conditions||[],onboarded:!!st.onboarded,visit:st.visit||{},shares:st.shares||[],hidePat:st.hidePat||{},uid:uid}))}catch(e){}}
+function load(){try{var r=localStorage.getItem(KEY);if(!r)return;var d=JSON.parse(r);st.claimed=d.claimed||{};st.own=d.own||[];st.userLinks=d.userLinks||[];st.cut=d.cut||[];st.days=d.days||{};st.conditions=d.conditions||[];st.onboarded=!!d.onboarded;st.visit=d.visit||{};st.shares=d.shares||[];st.hidePat=d.hidePat||{};uid=d.uid||1}catch(e){}}
+function sample(ids){persist=false;st=blank();ids.forEach(function(i){st.claimed[i]=true})}
+
+function plain(s){return String(s).replace(/­/g,'')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function items(){return SEED.map(function(a){return{id:a[0],name:a[1],k:a[2],cl:a[3]||0,own:false}}).concat(st.own.map(function(o){return{id:o.id,name:o.name,k:o.k,cl:9,own:true}}))}
+function item(id){var all=items();for(var i=0;i<all.length;i++)if(all[i].id===id)return all[i];return null}
+function same(a,b,x,y){return(a===x&&b===y)||(a===y&&b===x)}
+function isCut(a,b){return st.cut.some(function(e){return same(e[0],e[1],a,b)})}
+function isUser(a,b){return st.userLinks.some(function(e){return same(e[0],e[1],a,b)})}
+function isBuilt(a,b){return BUILTIN.some(function(e){return same(e[0],e[1],a,b)})}
+function linked(a,b){return isUser(a,b)||(isBuilt(a,b)&&!isCut(a,b))}
+function nb(id){var out=[];items().forEach(function(o){if(o.id!==id&&linked(id,o.id))out.push(o.id)});return out}
+function mineList(){return items().filter(function(i){return st.claimed[i.id]})}
+function toggleLink(a,b){
+  if(linked(a,b)){if(isUser(a,b))st.userLinks=st.userLinks.filter(function(e){return!same(e[0],e[1],a,b)});else st.cut.push([a,b])}
+  else{if(isCut(a,b))st.cut=st.cut.filter(function(e){return!same(e[0],e[1],a,b)});else st.userLinks.push([a,b])}
+  save()}
+var touched=false;['pointerdown','keydown'].forEach(function(t){document.addEventListener(t,function(){touched=true},{capture:true,once:true})});
+function buzz(p){if(!touched)return;try{if(navigator.vibrate)navigator.vibrate(p||8)}catch(e){}}
+
+/* ───────── elements ───────── */
+function $(id){return document.getElementById(id)}
+var app=$('app'),grid=$('grid'),svg=$('threads'),scroll=$('scroll'),sheet=$('sheet'),scrim=$('scrim'),pop=$('pop');
+var Q=[].slice.call(document.querySelectorAll('#qs .q')),dot=$('dot');
+var cellEls={};
+var addEl=document.createElement('button');addEl.className='cell add';addEl.innerHTML='+ Add yours';addEl.setAttribute('aria-label','Add your own symptom');
+addEl.addEventListener('click',function(e){e.stopPropagation();if(!linking)openAdd()});
+grid.appendChild(addEl);
+
+function cellFor(it){
+  var b=cellEls[it.id];
+  if(!b){b=document.createElement('button');b.className='cell';b.setAttribute('data-id',it.id);b.innerHTML='<span class="gd"></span><span class="lb"></span>';
+    b.addEventListener('click',function(e){e.stopPropagation();onCell(b.getAttribute('data-id'),b)});
+    b.addEventListener('animationend',function(){b.classList.remove('jig')});
+    cellEls[it.id]=b;grid.insertBefore(b,addEl)}
+  b.querySelector('.lb').textContent=plain(it.name);
+  return b;
+}
+
+/* ───────── geometry ───────── */
+var G={};
+function measure(){
+  var W=window.innerWidth,H=window.innerHeight,cw=Math.min(W,520),cx=(W-cw)/2,pad=cw<360?20:30,top=H<700?40:56,gw=cw-2*pad,gx=cx+pad;
+  G={W:W,H:H,cw:cw,cx:cx,pad:pad,top:top,gw:gw,gx:gx};
+  $('dyn').textContent='.cl{left:'+cx+'px;width:'+cw+'px;padding:calc('+top+'px + env(safe-area-inset-top,0px)) '+pad+'px calc(22px + env(safe-area-inset-bottom,0px))}'+
+    '#s-map .cl{padding-bottom:0}'+
+    '.scroll{margin:0 -'+pad+'px;padding:4px '+pad+'px 0}'+
+    '.sheet{left:'+cx+'px;width:'+cw+'px}'+'.tback{left:'+gx+'px;top:calc('+(top-8)+'px + env(safe-area-inset-top,0px))}'+'.tdate{right:'+(W-gx-gw)+'px;--ttop:'+(top-8)+'px}'+'.cl2{left:'+gx+'px;width:'+gw+'px}'+'.zsq{min-height:'+gw+'px}'+
+    '.pop{right:'+(W-(cx+cw-pad))+'px;top:'+(top+40)+'px}';
+}
+function setQ(el,x,y,w,h,extra){el.style.left=x+'px';el.style.top=y+'px';el.style.width=w+'px';el.style.height=h+'px';el.style.transform=extra||''}
+function placeQuads(screen){
+  var W=G.W,H=G.H;
+  if(screen==='splash'){var lx=W/2-82,ly=H/2-82;[[0,0],[86,0],[0,86],[86,86]].forEach(function(o,i){setQ(Q[i],lx+o[0],ly+o[1],78,78);Q[i].classList.remove('hide','nolet')});dot.style.left=(W/2-29)+'px';dot.style.top=(H/2-29)+'px';dot.classList.remove('gone')}
+  else if(screen==='intro'){var y0=G.top+190,av=Math.max(320,H-y0);
+    /* [x, y, size, rotation, label anchor] — big, uneven, some bleeding off the screen */
+    var L=[[0.55*W,y0+0.11*av,0.40*W,-12,''],[0.52*W,y0+0.62*av,0.58*W,-9,'lt'],[-0.10*W,y0+0.01*av,0.55*W,0,'lr'],[0.08*W,y0+0.49*av,0.36*W,7,'']];
+    L.forEach(function(o,i){setQ(Q[i],o[0],o[1],o[2],o[2],o[3]?'rotate('+o[3]+'deg)':'');Q[i].classList.remove('hide','tiny','lt','lr');if(o[4])Q[i].classList.add(o[4]);Q[i].classList.add('nolet','labeled')});dot.classList.add('gone')}
+  else if(screen==='history-arrive'){dot.classList.add('gone');var t=document.querySelector('.day.today');if(!t){Q.forEach(function(q){q.classList.add('hide')});return}var r=t.getBoundingClientRect(),qw=(r.width-1.5)/2,qh=(r.height-1.5)/2;
+    [[0,0],[qw+1.5,0],[0,qh+1.5],[qw+1.5,qh+1.5]].forEach(function(o,i){Q[i].classList.remove('labeled','lt','lr');Q[i].classList.add('nolet','tiny');setQ(Q[i],r.left+o[0],r.top+o[1],qw,qh,'');setTimeout(function(){Q[i].classList.add('hide')},1050)});
+    setTimeout(function(){t.classList.add('jig');buzz(6)},950)}
+  else{dot.classList.add('gone');Q.forEach(function(q){q.classList.remove('labeled')});
+    GROUPS.forEach(function(g,i){var first=null;items().forEach(function(it){if(!first&&it.k===g)first=it});var el=first&&cellEls[first.id];
+      if(el&&screen==='map-arrive'){var r=el.getBoundingClientRect();setQ(Q[i],r.left,r.top,r.width,r.height,'');Q[i].classList.add('nolet');setTimeout(function(){Q[i].classList.add('hide')},1000)}
+      else Q[i].classList.add('hide')})}
+}
+
+/* ───────── grid layout ───────── */
+function layout(){
+  var W=grid.clientWidth||G.gw,COLS=3,g=7,s=(W-(COLS-1)*g)/COLS,all=items(),row=0,col=0,slot={};
+  function put(id){slot[id]=[col*(s+g),row*(s+g)];col++;if(col===COLS){col=0;row++}}
+  var inView=function(i){return view==='all'||st.claimed[i.id]};
+  var cluster={};
+  if(focusId&&item(focusId)){
+    var cl=[focusId].concat(nb(focusId).filter(function(id){var o=item(id);return o&&inView(o)}));
+    cl.forEach(function(id){cluster[id]=1;put(id)});
+    if(col!==0){col=0;row++}
+  }
+  if(view==='all'){
+    GROUPS.forEach(function(gk){if(col!==0){col=0;row++}all.filter(function(i){return i.k===gk&&!cluster[i.id]}).forEach(function(i){put(i.id)})});
+    put('+add');
+  }else{
+    GROUPS.forEach(function(gk){all.filter(function(i){return i.k===gk&&st.claimed[i.id]&&!cluster[i.id]}).forEach(function(i){put(i.id)})});
+  }
+  var rows=row+(col>0?1:0);grid.style.height=Math.max(s,rows*(s+g)-g)+'px';
+  var shadow=0;
+  all.forEach(function(it){var b=cellFor(it),p=slot[it.id],vis=!!p;
+    if(!p){var c=shadow%COLS,r=Math.floor(shadow/COLS);p=[c*(s+g),r*(s+g)];shadow++}
+    b.style.width=s+'px';b.style.height=s+'px';b.style.transform='translate('+p[0].toFixed(1)+'px,'+p[1].toFixed(1)+'px)'+(vis?'':' scale(.4)');
+    b.classList.toggle('hidden',!vis);b.tabIndex=vis?0:-1;b.setAttribute('data-v',vis?'1':'0');b.setAttribute('data-col',Math.round(p[0]/(s+g)));b.setAttribute('data-row',Math.round(p[1]/(s+g)))});
+  Object.keys(cellEls).forEach(function(id){if(!item(id)){cellEls[id].parentNode.removeChild(cellEls[id]);delete cellEls[id]}});
+  var a=slot['+add'];
+  if(a){addEl.style.width=s+'px';addEl.style.height=s+'px';addEl.style.transform='translate('+a[0].toFixed(1)+'px,'+a[1].toFixed(1)+'px)';addEl.classList.remove('hidden');addEl.tabIndex=0;addEl.setAttribute('data-v','1');addEl.setAttribute('data-col',Math.round(a[0]/(s+g)));addEl.setAttribute('data-row',Math.round(a[1]/(s+g)))}
+  else{addEl.classList.add('hidden');addEl.tabIndex=-1;addEl.setAttribute('data-v','0')}
+}
+
+/* ───────── paint: classes, labels, count ───────── */
+function paint(){
+  var mine=mineList(),rel=focusId?nb(focusId):[];
+  items().forEach(function(it){var b=cellFor(it),m=!!st.claimed[it.id],cls=['cell','k-'+it.k];
+    if(m)cls.push('mine');if(b.classList.contains('jig'))cls.push('jig');if(b.classList.contains('hidden'))cls.push('hidden');
+    var isF=it.id===focusId,isR=rel.indexOf(it.id)>=0;
+    if(focusId&&!linking){if(isF)cls.push('focus');else if(isR){if(!m)cls.push('often')}else cls.push('dim')}
+    if(linking){if(isF)cls.push('focus');else if(isR)cls.push('lk')}
+    if(todayMode){if(tday().ids[it.id])cls.push('td');else if(m)cls.push('nottd')}
+    b.className=cls.join(' ');
+    var lm=nb(it.id).filter(function(x){return st.claimed[x]}).length;
+    b.setAttribute('aria-pressed',m?'true':'false');
+    b.setAttribute('aria-label',plain(it.name)+(todayMode?(tday().ids[it.id]?', today':', not today'):(m?', yours, linked to '+lm+' of yours':', not yours')));
+  });
+  addEl.classList.toggle('dim',!!(focusId||linking));
+  var n=mine.length;
+  var tn=Object.keys(tday().ids).filter(function(id){return item(id)}).length;renderCtx();
+  $('m-title').textContent=todayMode?'Today':'Your hEDS';
+  $('count').textContent=todayMode?(tn?(tn===1?'1 noted. That’s enough.':tn+' noted. Stop anytime.'):'Tap what you feel. One is enough.'):(n?(n===1?'You live with 1 of these':'You live with '+n+' of these'):'Tap the things you live with');
+  $('s-map').classList.toggle('today',todayMode);$('pad').style.height=todayMode?'120px':'40px';
+  addEl.style.visibility=todayMode?'hidden':'';
+  $('v-all').setAttribute('aria-pressed',String(view==='all'));$('v-mine').setAttribute('aria-pressed',String(view==='mine'));
+}
+
+/* ───────── threads, redrawn every frame so they follow moving squares ───────── */
+var pool=[],NS='http://www.w3.org/2000/svg';
+function centre(el,gb){var r=el.getBoundingClientRect();return[r.left-gb.left+r.width/2,r.top-gb.top+r.height*.3]}
+function threads(){
+  if(false){
+    var gb=grid.getBoundingClientRect(),pairs=[];
+    if(focusId&&cellEls[focusId]){nb(focusId).forEach(function(id){var o=cellEls[id];if(o&&o.getAttribute('data-v')==='1')pairs.push([focusId,id,!!st.claimed[id],isUser(focusId,id),false])})}
+    else{var seen={};mineList().forEach(function(a){nb(a.id).forEach(function(b){if(!st.claimed[b])return;var key=[a.id,b].sort().join('|');if(seen[key])return;seen[key]=1;var A=cellEls[a.id],B=cellEls[b];if(A&&B&&A.getAttribute('data-v')==='1'&&B.getAttribute('data-v')==='1')pairs.push([a.id,b,true,isUser(a.id,b),view==='all'])})})}
+    while(pool.length<pairs.length){var p=document.createElementNS(NS,'path');p.setAttribute('fill','none');p.setAttribute('stroke','#000');p.setAttribute('stroke-linecap','round');svg.appendChild(p);pool.push(p)}
+    pool.forEach(function(p,k){if(k>=pairs.length){p.setAttribute('d','');return}var e=pairs[k],A=centre(cellEls[e[0]],gb),B=centre(cellEls[e[1]],gb),dx=B[0]-A[0],dy=B[1]-A[1],d=Math.sqrt(dx*dx+dy*dy)||1,bb=Math.max(16,Math.min(44,d*.3)),sg=dx>=0?1:-1,mx=(A[0]+B[0])/2+sg*dy/d*bb,my=(A[1]+B[1])/2-sg*dx/d*bb;
+      p.setAttribute('d','M'+A[0].toFixed(1)+' '+A[1].toFixed(1)+'Q'+mx.toFixed(1)+' '+my.toFixed(1)+' '+B[0].toFixed(1)+' '+B[1].toFixed(1));
+      p.setAttribute('stroke-width',e[3]?'3':'1.6');p.setAttribute('stroke-opacity',e[4]?'0.22':(e[3]?'0.85':'0.6'));if(e[2])p.removeAttribute('stroke-dasharray');else p.setAttribute('stroke-dasharray','4 4')});
+  }
+  requestAnimationFrame(threads);
+}
+
+/* ───────── tapping squares ───────── */
+function jig(el){el.classList.remove('jig');void el.offsetWidth;el.classList.add('jig')}
+function onCell(id,b){
+  closePop();
+  if(todayMode){var T=tday();if(T.ids[id])delete T.ids[id];else{T.ids[id]=true;st.claimed[id]=true;buzz(8)}save();paint();jig(b);return}
+  if(linking){if(id===focusId)return;if(!st.claimed[id]&&!linked(focusId,id))st.claimed[id]=true;toggleLink(focusId,id);buzz(6);paint();renderSheet();return}
+  if(!st.claimed[id]){st.claimed[id]=true;save();buzz(8);focusId=id;gather();jig(b);return}
+  if(focusId===id){closeCard();return}
+  focusId=id;gather();
+}
+function gather(){layout();paint();renderSheet();scroll.scrollTo?scroll.scrollTo({top:0,behavior:'smooth'}):(scroll.scrollTop=0)}
+function closeCard(){var had=!!focusId;focusId=null;linking=false;askLink=false;sheet.className='sheet';scrim.classList.remove('on');if(had)layout();paint()}
+grid.addEventListener('click',function(e){if((e.target===grid||e.target===svg)&&!linking)closeCard()});
+scroll.addEventListener('click',function(e){if((e.target===scroll||e.target.id==='pad')&&!linking)closeCard()});
+function reveal(b){if(!b)return;setTimeout(function(){var sb=scroll.getBoundingClientRect(),br=b.getBoundingClientRect(),sh=sheet.classList.contains('on')?sheet.getBoundingClientRect().height:0,limit=window.innerHeight-sh-12;
+  if(br.bottom>limit)scroll.scrollTop+=br.bottom-limit+8;else if(br.top<sb.top)scroll.scrollTop+=br.top-sb.top-8},120)}
+
+function setView(v){if(v!==view)scroll.scrollTop=0;/* the other list starts at its top, not where the last one was scrolled to */
+  view=v;if(v==='mine'&&focusId&&!st.claimed[focusId])closeCard();layout();paint()}
+$('v-all').onclick=function(){setView('all')};$('v-mine').onclick=function(){setView('mine')};
+
+/* ───────── symptom card ───────── */
+var FOOT='<div class="foot">General information, not medical advice. <a href="https://www.ehlers-danlos.com" target="_blank" rel="noopener">The Ehlers-Danlos Society</a></div>';
+function renderSheet(){
+  var it=focusId&&item(focusId);if(!it){sheet.className='sheet';return}
+  scrim.classList.remove('on');
+  if(linking){sheet.className='sheet on bar';
+    sheet.innerHTML='<div class="barrow"><p>'+(askLink?'<b style="font-weight:500">Added. </b>':'')+'Tap what goes with '+esc(plain(it.name).toLowerCase())+' for you'+'</p><button class="pill" id="lk-done">Done</button></div>';
+    $('lk-done').onclick=function(){linking=false;askLink=false;gather()};return}
+  var r=nb(it.id).map(item).filter(Boolean),have=r.filter(function(i){return st.claimed[i.id]}).length;
+  var h='<div class="grp"><i style="background:var(--'+it.k+')"></i>'+(it.own?'Your own · ':'')+GN[it.k]+'</div><div class="nm">'+esc(plain(it.name))+'</div>';
+  if(!it.own)h+='<p class="why">'+NOTE[it.k]+'</p>';
+  if(r.length)h+='<p class="wlab">'+(have?'You have '+have+' of these too':'You don’t have any of these. That’s fine.')+'</p><div class="chips">'+r.map(function(i){return '<button class="k-'+i.k+(st.claimed[i.id]?' have':'')+(isUser(it.id,i.id)?' yours':'')+'" data-go="'+i.id+'">'+esc(plain(i.name))+'</button>'}).join('')+'</div>';
+  else h+='<p class="with">Nothing connected yet. You can add what goes with it for you.</p>';
+  h+='<div class="acts"><button class="pill" id="c-link">What goes with it for me?</button>';
+  if(it.own)h+='<button class="tx" id="c-rename">Rename</button><button class="tx" id="c-color">Change colour</button><button class="tx" id="c-del">Remove</button>';
+  else h+='<button class="tx" id="c-not">This isn’t mine</button>';
+  h+='</div><div id="c-extra"></div>'+FOOT;
+  sheet.className='sheet on card';sheet.innerHTML=h;sheet.scrollTop=0;
+  [].forEach.call(sheet.querySelectorAll('[data-go]'),function(b){b.onclick=function(){var id=b.getAttribute('data-go');if(view==='mine'&&!st.claimed[id])view='all';focusId=id;gather()}});
+  $('c-link').onclick=function(){linking=true;paint();renderSheet()};
+  if($('c-not'))$('c-not').onclick=function(){delete st.claimed[it.id];save();closeCard();layout();paint()};
+  if($('c-del'))$('c-del').onclick=function(){st.own=st.own.filter(function(o){return o.id!==it.id});delete st.claimed[it.id];st.userLinks=st.userLinks.filter(function(e){return e[0]!==it.id&&e[1]!==it.id});save();closeCard();layout();paint()};
+  if($('c-rename'))$('c-rename').onclick=function(){$('c-extra').innerHTML='<div style="margin-top:12px"><input type="text" id="rn" maxlength="28" aria-label="New name"><div class="row2"><button class="tx" id="rn-x">Cancel</button><button class="pill" id="rn-ok">Save</button></div></div>';var i=$('rn');i.value=it.name;i.focus();i.select();
+    i.onkeydown=function(e){if(e.key==='Enter')$('rn-ok').click()};$('rn-x').onclick=function(){renderSheet()};$('rn-ok').onclick=function(){var v=i.value.trim();if(!v){i.focus();return}st.own.forEach(function(o){if(o.id===it.id)o.name=v.charAt(0).toUpperCase()+v.slice(1)});save();layout();paint();renderSheet()}};
+  if($('c-color'))$('c-color').onclick=function(){$('c-extra').innerHTML=swatches(it.k,'cc');[].forEach.call(sheet.querySelectorAll('[data-cc]'),function(b){b.onclick=function(){var nk=b.getAttribute('data-cc');st.own.forEach(function(o){if(o.id===it.id)o.k=nk});save();layout();paint();renderSheet();reveal(cellEls[it.id])}})};
+}
+function swatches(sel,attr){return '<div class="sw">'+GROUPS.map(function(k){return '<button data-'+attr+'="'+k+'" aria-label="'+GN[k]+'" title="'+GN[k]+'" aria-pressed="'+(k===sel)+'" style="background:var(--'+k+')"></button>'}).join('')+'</div><p class="swn" aria-live="polite">'+GN[sel]+'</p>'}
+
+/* ───────── add your own ───────── */
+var addK='body';
+function openAdd(){
+  focusId=null;linking=false;paint();scrim.classList.add('on');
+  sheet.className='sheet on';
+  sheet.innerHTML='<div class="nm" style="margin-top:0">Something that’s yours</div><p style="color:#555;font-size:14px">If it’s not on the map, it still counts. Name it in your own words.</p><input type="text" id="add-in" maxlength="28" placeholder="Clicking jaw" autocomplete="off" aria-label="Name"><p class="err" id="add-err" aria-live="assertive"></p>'+swatches(addK,'ak')+'<div class="row2"><button class="tx" id="add-x">Cancel</button><button class="pill" id="add-ok">Add it</button></div>';
+  var i=$('add-in');setTimeout(function(){try{i.focus()}catch(e){}},150);
+  [].forEach.call(sheet.querySelectorAll('[data-ak]'),function(b){b.onclick=function(){addK=b.getAttribute('data-ak');[].forEach.call(sheet.querySelectorAll('[data-ak]'),function(x){x.setAttribute('aria-pressed',String(x===b))});var n=sheet.querySelector('.swn');if(n)n.textContent=GN[addK]}});
+  i.oninput=function(){$('add-err').textContent=''};
+  i.onkeydown=function(e){if(e.key==='Enter')$('add-ok').click()};
+  $('add-x').onclick=closeCard;
+  $('add-ok').onclick=function(){var v=i.value.trim();if(!v){$('add-err').textContent='Give it a name first. One word is enough.';i.focus();return}
+    var id='u'+(uid++);st.own.push({id:id,name:v.charAt(0).toUpperCase()+v.slice(1),k:addK});st.claimed[id]=true;save();
+    try{i.blur()}catch(e){}
+    scrim.classList.remove('on');layout();var b=cellEls[id];buzz(8);
+    focusId=id;linking=true;askLink=true;layout();paint();jig(b);renderSheet();scroll.scrollTop=0};
+}
+scrim.addEventListener('click',closeCard);
+
+/* ───────── menu: share, start over ───────── */
+function closePop(){pop.classList.remove('on');$('menu-btn').setAttribute('aria-expanded','false')}
+$('menu-btn').onclick=function(e){e.stopPropagation();var on=!pop.classList.contains('on');pop.classList.toggle('on',on);this.setAttribute('aria-expanded',String(on))};
+document.addEventListener('click',function(e){if(!pop.contains(e.target)&&e.target!==$('menu-btn'))closePop()});
+$('m-reset').onclick=function(){closePop();focusId=null;linking=false;paint();scrim.classList.add('on');sheet.className='sheet on';
+  sheet.innerHTML='<div class="nm" style="margin-top:0">Start over?</div><p>This deletes everything Lived has saved on this phone:</p><ul class="rslist"><li>every day in your history</li><li>your notes, photos and voice recordings</li><li>the symptoms and links you marked as yours</li></ul><p>You’ll begin again from the first screen. This can’t be undone.</p><div class="row2"><button class="tx" id="rs-x">Keep everything</button><button class="pill" id="rs-ok">Delete and start over</button></div>';
+  $('rs-x').onclick=closeCard;$('rs-ok').onclick=function(){persist=true;st=blank();save();try{MDB&&MDB.close();MDB=null;indexedDB.deleteDatabase('lived-media')}catch(e){}MEM={};closeCard();view='all';layout();paint();scroll.scrollTop=0;go('intro')}};
+$('m-share').onclick=function(){closePop();go('share')};
+$('p-close').onclick=function(){go('map')};
+
+function drawPoster(){
+  var list=mineList(),P=$('poster'),ps=$('p-threads');
+  [].slice.call(P.querySelectorAll('.pcell')).forEach(function(e){P.removeChild(e)});ps.innerHTML='';
+  $('p-sub').textContent=list.length?(list.length===1?'1 thing I live with':list.length+' things I live with'):'Nothing here yet. Add the things you live with on your map first.';
+  var W=P.clientWidth||G.gw,g=8,cols=3,s=(W-(cols-1)*g)/cols,pos={};
+  list.forEach(function(it,k){var x=(k%cols)*(s+g),y=Math.floor(k/cols)*(s+g);pos[it.id]=[x+s/2,y+s/2];
+    var d=document.createElement('div');d.className='pcell k-'+it.k;d.style.cssText='left:'+x+'px;top:'+y+'px;width:'+s+'px;height:'+s+'px';d.textContent=plain(it.name);P.appendChild(d)});
+  var rows=Math.ceil(list.length/cols);P.style.height=Math.max(0,rows*(s+g)-g)+'px';
+  var seen={};if(false)list.forEach(function(a){nb(a.id).forEach(function(b){if(!pos[b])return;var key=[a.id,b].sort().join('|');if(seen[key])return;seen[key]=1;var A=pos[a.id],B=pos[b],dx=B[0]-A[0],dy=B[1]-A[1],dd=Math.sqrt(dx*dx+dy*dy)||1,bb=Math.min(30,dd*.16);
+    var p=document.createElementNS(NS,'path');p.setAttribute('d','M'+A[0]+' '+A[1]+'Q'+((A[0]+B[0])/2-dy/dd*bb)+' '+((A[1]+B[1])/2+dx/dd*bb)+' '+B[0]+' '+B[1]);p.setAttribute('fill','none');p.setAttribute('stroke','#000');p.setAttribute('stroke-width',isUser(a.id,b)?'3':'1.8');p.setAttribute('stroke-opacity','.75');p.setAttribute('stroke-linecap','round');ps.appendChild(p)})});
+}
+
+/* ───────── keyboard ───────── */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){if(pop.classList.contains('on'))closePop();else if(sheet.classList.contains('on'))closeCard();return}
+  var t=document.activeElement;if(!t||!t.classList||!t.classList.contains('cell'))return;
+  var dirs={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]},d=dirs[e.key];if(!d)return;e.preventDefault();
+  var vis=[].slice.call(grid.querySelectorAll('.cell')).filter(function(c){return c.getAttribute('data-v')==='1'}),c=+t.getAttribute('data-col'),r=+t.getAttribute('data-row'),best=null,bd=1e9;
+  vis.forEach(function(o){if(o===t)return;var dc=+o.getAttribute('data-col')-c,dr=+o.getAttribute('data-row')-r;
+    if(d[0]){if(dr!==0||Math.sign(dc)!==d[0])return;var dist=Math.abs(dc)}else{if(Math.sign(dr)!==d[1])return;dist=Math.abs(dr)*10+Math.abs(dc)}
+    if(dist<bd){bd=dist;best=o}});
+  if(best){best.focus();reveal(best)}
+});
+
+/* ───────── screens ───────── */
+var cur=null,splashT=null;
+function go(name){
+  cur=name;clearTimeout(splashT);
+  [].forEach.call(document.querySelectorAll('.screen'),function(el){el.classList.toggle('on',el.id==='s-'+name)});
+  app.classList.toggle('splash-in',name==='splash');
+  if(name==='splash'){placeQuads('splash');splashT=setTimeout(function(){if(cur==='splash')go('intro')},3600)}
+  else if(name==='intro')placeQuads('intro');
+  else if(name==='ob1'||name==='ob2'){placeQuads('ob');renderOb()}
+  else if(name==='confirm'){placeQuads('ob');renderConfirm()}
+  else if(name==='log'){placeQuads('ob');renderLog(true)}
+  else if(/^(check|rest|visit|sum|ask|symn|ready|vshare|after|pat)$/.test(name))placeQuads('ob');
+  if(name==='today'&&$('tnote').parentNode!==$('s-today'))$('s-today').appendChild($('tnote'));
+  else if(name==='map'){var arrive=!Q[0].classList.contains('hide');layout();paint();placeQuads(arrive?'map-arrive':'map')}
+  else if(name==='share'){placeQuads('map');setTimeout(drawPoster,30)}
+  else if(name==='today'){Q.forEach(function(q){q.classList.add('hide')});dot.classList.add('gone');buildField()}
+  else if(name==='history'){var arrive=!Q[0].classList.contains('hide');renderHistory();placeQuads(arrive?'history-arrive':'map')}
+  if(name!=='map'){sheet.className='sheet';scrim.classList.remove('on')}
+}
+$('skip').onclick=function(){go('intro')};
+function returning(){return Object.keys(st.claimed).length>0||Object.keys(st.days).some(function(k){return st.days[k].saved})}
+$('start').onclick=function(){go(st.onboarded?'history':'ob1')};
+/* first run: two skippable steps, then your (empty) weeks */
+var COND=[['POTS','heart'],['MCAS','body'],['Fibromyalgia','pain'],['ME/CFS','mind'],['IBS','body'],['Migraine','mind'],['Anxiety or depression','heart'],['ADHD or autism','mind'],['Something else','none'],['I’m not sure','none']];
+function renderOb(){
+  var c=$('ob-cond');if(!c.childNodes.length)COND.forEach(function(cn){var n=cn[0],b=document.createElement('button');b.className='k-'+cn[1];b.textContent=n;b.setAttribute('aria-pressed','false');
+    b.onclick=function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));var L=st.conditions||(st.conditions=[]);if(on){if(L.indexOf(n)<0)L.push(n)}else st.conditions=L.filter(function(x){return x!==n});save()};c.appendChild(b)});
+  [].forEach.call(c.childNodes,function(b){b.setAttribute('aria-pressed',String((st.conditions||[]).indexOf(b.textContent)>=0))});
+  var g=$('ob-sym');if(!g.childNodes.length)items().forEach(function(it){if(it.own)return;var b=document.createElement('button');b.className='k-'+it.k;b.innerHTML='<span class="gd"></span>';b.appendChild(document.createTextNode(plain(it.name)));b.setAttribute('data-id',it.id);
+    b.onclick=function(){if(st.claimed[it.id])delete st.claimed[it.id];else st.claimed[it.id]=true;save();b.setAttribute('aria-pressed',String(!!st.claimed[it.id]))};g.appendChild(b)});
+  [].forEach.call(g.childNodes,function(b){b.setAttribute('aria-pressed',String(!!st.claimed[b.getAttribute('data-id')]))})}
+[].forEach.call(document.querySelectorAll('[data-ob]'),function(b){b.onclick=function(){var n=b.getAttribute('data-ob');if(n==='3'){st.onboarded=true;save();go('history')}else go('ob'+n)}});
+$('w-fill').onclick=function(){openCheck(null)};
+$('t-back').onclick=function(){go('history');editKey=null};
+/* ── Add to today: the four colours, each opens to its symptoms (yours first); a picked symptom offers a note ── */
+/* the four colours unfold: tap a colour and its symptoms open around it; each colour fills as you pick */
+var US={top:0,py:110,view:null,cats:[],nodes:[],raf:0,last:0,you:null};
+function usEl(t,a,p){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);(p||$('us-svg')).appendChild(e);return e}
+var USMC=null;function usTextW(t){if(!USMC){USMC=document.createElement('canvas').getContext('2d');USMC.font='14px '+getComputedStyle(document.body).fontFamily}return USMC.measureText(t).width*1.02}
+function usWrap(s,max){var out=[],line='';s.split(' ').forEach(function(x){var t=line?line+' '+x:x;if(t.length>max&&line){out.push(line);line=x}else line=t});if(line)out.push(line);return out}
+function usLines(t,arr,lh,y0){arr.forEach(function(s,i){var sp=usEl('tspan',{x:0,y:y0+i*lh},t);sp.textContent=s})}
+function usRc(r,w,h){w=Math.max(0,w);h=Math.max(0,h);r.setAttribute('x',(-w).toFixed(1));r.setAttribute('y',(-h).toFixed(1));r.setAttribute('width',(2*w).toFixed(1));r.setAttribute('height',(2*h).toFixed(1));var rr=Math.min(11,w*.14,h*.14).toFixed(1);r.setAttribute('rx',rr);r.setAttribute('ry',rr)}/* the four colour boxes: tall like the boxes on the confirm screen */
+function usSq(r,h){var s=Math.max(0,h);r.setAttribute('x',(-s).toFixed(1));r.setAttribute('y',(-s).toFixed(1));r.setAttribute('width',(2*s).toFixed(1));r.setAttribute('height',(2*s).toFixed(1));var rr=Math.min(10,s*.14).toFixed(1);r.setAttribute('rx',rr);r.setAttribute('ry',rr)}
+/* the symptoms most common in hEDS, per colour, used until your own history says otherwise */
+/* scatter n squares over the whole area: each new square goes where it is farthest from the others (never overlapping), seeded so the layout is the same every time */
+/* truly scattered: each square goes to the free spot farthest from the others; if they don't all fit, try again a little smaller. Never overlapping, same layout every time */
+function usScatter(n,h0,H,seed,hm){hm=hm||34;US.ok=false;
+  for(var h=h0;h>=hm;h-=2){var x=seed*9301+49297,r=function(){x=(x*1103515245+12345)>>>0;return x/4294967296},pts=[],G=10,okAll=true;
+    for(var i=0;i<n;i++){var best=null,bd=-1;
+      for(var k=0;k<900;k++){var cx=h+3+r()*(360-2*h-6),cy=h+3+r()*(H-2*h-6),md=1e9,ok=true;
+        for(var j=0;j<pts.length;j++){var dx=Math.abs(cx-pts[j][0]),dy=Math.abs(cy-pts[j][1]);if(dx<2*h+G&&dy<2*h+G){ok=false;break}md=Math.min(md,Math.max(dx,dy))}
+        if(ok&&md>bd){bd=md;best=[cx,cy]}}
+      if(!best){okAll=false;break}pts.push(best)}
+    if(okAll){US.sh=h;US.ok=true;return pts}}
+  US.sh=hm;return pts}
+function usSizeNode(nd,h){nd.h=h;usSq(nd.rect,h);if(nd.add)return;var L=nd.text.childNodes.length,lh=h>=42?18:16;nd.text.style.fontSize=(h>=42?15:14)+'px';
+  [].forEach.call(nd.text.childNodes,function(sp,i2){sp.setAttribute('y',(h-10-(L-1-i2)*lh).toFixed(1))});var fs=h>=42?15:14;try{while(fs>11&&nd.text.getBBox().width>2*h-12){fs--;nd.text.style.fontSize=fs+'px'}}catch(e){}nd.mark.setAttribute('x',(h-11).toFixed(1));nd.mark.setAttribute('y',(-h+5).toFixed(1))}
+function usJit(id){var h=0;for(var i=0;i<id.length;i++)h=(h*31+id.charCodeAt(i))>>>0;function r(){h=(h*1103515245+12345)>>>0;return (h/4294967296)*2-1}return[0,0,0]}/* no shift, no tilt: straight and calm *//* a small fixed shift and tilt per symptom */
+var US_RING=(function(){var c=[];for(var y=-3;y<=3;y++)for(var x=-2;x<=2;x++)if(x||y)c.push([x,y]);
+  /* nearest the middle first, filled evenly on all sides */
+  c.sort(function(a,b){return (a[0]*a[0]+a[1]*a[1])-(b[0]*b[0]+b[1]*b[1])||Math.atan2(a[0],-a[1])-Math.atan2(b[0],-b[1])});return c})();
+var COMMON={mind:['ex','fog','slp','hd','unr','wk','mig','wrd'],heart:['dz','rh','lh','heat','cold','pal','nf','br'],pain:['jp','mp','sub','bk','stf','nj','kn','sh'],body:['nau','blo','ref','bru','con','bla','itc','flu']};
+var US_C=200,US_X=180,US_POS={mind:[-90,-90],heart:[90,-90],pain:[-90,90],body:[90,90]};
+function usSize(H){var svg=$('us-svg');svg.setAttribute('viewBox','0 0 360 '+H);var w=svg.getBoundingClientRect().width||330;svg.style.height=(H*w/360).toFixed(1)+'px'}
+function usFill(c){return 1}/* the colour squares are always full colour */
+function renderLog(fresh){
+  if(!fresh){usRefresh();return}
+  var svg=$('us-svg'),T=tday(),sc=recScore(),Q=editKey?GP:GN;svg.innerHTML='';TF.sel={};for(var k0 in T.ids)TF.sel[k0]=true;
+  US.view=null;US.cats=[];US.nodes=[];cancelAnimationFrame(US.raf);US.raf=0;US.last=0;
+  var you={c:{h:0},t:{h:0}};you.g=usEl('g',{transform:'translate('+US_X+' '+US_C+')'});
+  you.rect=usEl('rect',{'class':'shape',style:'fill:#F1F2F4;stroke:#fff;stroke-width:6'},you.g);
+  you.t1=usEl('text',{x:0,y:4,'text-anchor':'middle',style:'fill:#000;font-size:13px'},you.g);you.t1.textContent=editKey?'That day':'Today';
+  you.t2=usEl('text',{x:0,y:19,'text-anchor':'middle',style:'fill:#555;font-size:10px'},you.g);US.you=you;
+  GROUPS.forEach(function(k,ci){var p=US_POS[k],its=items().filter(function(it){return it.k===k&&(it.id!=='crash'||T.ids[it.id])}).sort(function(a,b){return (sc[b.id]||0)-(sc[a.id]||0)});
+    /* only the most common: what's picked today, then what you log most, then the symptoms most common in hEDS */
+    var keep=its.filter(function(it){return T.ids[it.id]});its.forEach(function(it){if(keep.length<12&&(sc[it.id]||0)>0&&keep.indexOf(it)<0)keep.push(it)});
+    (COMMON[k]||[]).forEach(function(id){var it=its.filter(function(x){return x.id===id})[0];if(it&&keep.length<12&&keep.indexOf(it)<0)keep.push(it)});
+    its.forEach(function(it){if(keep.length<12&&keep.indexOf(it)<0)keep.push(it)});/* the 12 most common; the rest via + Add yours */
+    var c={k:k,ci:ci,c:FULL[k],on:(k==='heart'||k==='pain')?'#fff':'#000',px:p[0],py:p[1],q:Q[k],items:keep};/* only what fits on one screen; the rest via + Something of yours */
+    c.g=usEl('g',{'class':'btn',tabindex:0,role:'button'});c.cur={x:US_X,y:US_C,h:0,o:1,f:usFill(c)};c.t={x:US_X,y:US_C,h:0,o:1,f:c.cur.f};
+    var cp=usEl('clipPath',{id:'uscp'+ci});c.clip=usEl('rect',{},cp);
+    c.rect=usEl('rect',{'class':'shape',style:'fill:#F1F2F4'},c.g);c.fill=usEl('rect',{style:'fill:'+c.c,'clip-path':'url(#uscp'+ci+')'},c.g);
+    c.text=usEl('text',{style:'fill:#000;font-size:18.4px;letter-spacing:-0.01em'},c.g);var L=usWrap(c.q,14);usLines(c.text,L,22,0);c.nl=L.length;
+    c.sub=usEl('text',{style:'fill:#000;font-size:12px'},c.g);
+    c.tick=usEl('path',{d:'M-9 1l6 6 12-13','fill':'none','stroke-width':'3.2','stroke-linecap':'round','stroke-linejoin':'round',style:'stroke:'+c.on+';opacity:0'},c.g);
+    c.g.addEventListener('click',function(){US.view===null?usOpen(ci):US.view===ci&&usClose()});US.cats.push(c)});
+  svg.appendChild(you.g);/* Today sits on top, where the four colours meet */
+  US.cats.forEach(function(c){c.items.forEach(function(it,j){
+    var nd={c:c,id:it.id,j:j,cur:{x:US_X+c.px,y:US_C+c.py,s:0},t:{x:US_X+c.px,y:US_C+c.py,s:0},delay:0};
+    nd.g=usEl('g',{'class':'btn',role:'button',tabindex:-1,'aria-label':plain(it.name)});nd.rect=usEl('rect',{'class':'shape'},nd.g);nd.rect.style.transition='fill .3s ease';
+    nd.mark=usEl('rect',{width:6,height:6,rx:1.5,style:'opacity:0'},nd.g);
+    nd.text=usEl('text',{'text-anchor':'middle',style:'font-size:15px;letter-spacing:-0.01em;opacity:0'},nd.g);var L=usWrap(plain(it.name),10);
+    var sps=L.map(function(s2){var sp=usEl('tspan',{x:0,y:0},nd.text);sp.textContent=s2;return sp});
+    /* each square is sized to its words: short names make small squares, long ones bigger, and the text always fits inside */
+    var h=44;nd.h=h;usSq(nd.rect,h);nd.text.setAttribute('text-anchor','middle');
+    sps.forEach(function(sp,i2){sp.setAttribute('x','0');sp.setAttribute('y',(5-(L.length-1)*9+i2*18).toFixed(1))});
+    nd.mark.setAttribute('x',(h-11).toFixed(1));nd.mark.setAttribute('y',(-h+5).toFixed(1));
+    nd.g.addEventListener('click',function(){if(US.view!==c.ci)return;var T=tday();if(T.ids[it.id]){delete T.ids[it.id];delete TF.sel[it.id];if(US.lastTap===it.id)US.lastTap=null}else{T.ids[it.id]=true;TF.sel[it.id]=true;US.lastTap=it.id;buzz(6)}save();c.t.f=usFill(c);usRefresh();usGo()});
+    US.nodes.push(nd)});
+    /* always a way to add your own, in this colour */
+    var ad={c:c,id:'+'+c.k,add:true,j:c.items.length,cur:{x:US_X+c.px,y:US_C+c.py,s:0},t:{x:US_X+c.px,y:US_C+c.py,s:0},delay:0};
+    ad.g=usEl('g',{'class':'btn',role:'button',tabindex:-1,'aria-label':'Add your own'});ad.rect=usEl('rect',{'class':'shape',style:'fill:#fff;stroke:#000;stroke-width:1.5;stroke-dasharray:4 3'},ad.g);usSq(ad.rect,44);ad.h=44;
+    ad.mark=usEl('rect',{width:0,height:0},ad.g);ad.text=usEl('text',{'text-anchor':'middle',style:'font-size:11px;opacity:0'},ad.g);
+    ['+ your own'].forEach(function(s2){var sp=usEl('tspan',{x:0,y:5},ad.text);sp.textContent=s2});ad.text.style.fontSize='15px';ad.text.style.fontSize='13px';
+    ad.g.addEventListener('click',function(){if(US.view===c.ci)usAddOwn(c)});US.nodes.push(ad)});
+  usTargets();usRefresh();usDraw();setTimeout(usGo,150);$('lg-title').textContent=editKey?'What did you feel that day?':'What do you feel today?'}
+/* closed: the four colours as one 2×2 block.
+   open: the colour shrinks to a small Done square at the top left, and its symptoms unfold out of it into a 3-column grid */
+function usTargets(){var now=performance.now(),v=US.view;$('lg-done').textContent=v===null?(editKey?'Done':'Done for today'):'Done';$('lg-title').textContent=v===null?(editKey?'What did you feel that day?':'What do you feel today?'):(editKey?TAPP:TAPN)[US.cats[v].k];var wr=$('us-wrap').getBoundingClientRect();US.H=wr.width?Math.max(300,Math.round(360*(wr.height-8)/wr.width)):480;US_C=Math.round(US.H/2);US.cr=1.14;/* same box shape as the confirm screen */US.you.t.h=0;/* only the four colours: no square in the middle */
+  /* big boxes first: if they don't all fit, show fewer (the rest stay reachable through + your own) */
+  if(v!==null){var N=US.cats[v].items.length;US.fit=N;for(var m=N;m>=6;m--){US.ok=false;for(var sd=0;sd<10&&!US.ok;sd++)US.spots=usScatter(m+1,54,US.H,v+1+sd*17,46);if(US.ok){US.fit=m;break}}US.nodes.forEach(function(nd){if(nd.c.ci===v)usSizeNode(nd,US.sh)})}
+  US.cats.forEach(function(c,ci){var f=usFill(c);c.t=v===null?{x:US_X+(c.px<0?-91.5:91.5),y:c.py<0?88.5*US.cr:3*88.5*US.cr+6,h:88.5,o:1,f:f}:v===ci?{x:US_X,y:US.H/2,h:0,o:0,f:f}:{x:US_X+c.px,y:US_C+c.py,h:0,o:0,f:f}});
+  /* open: the symptoms spread in two soft rings around the colour, your usual ones on the inner ring */
+  US.nodes.forEach(function(nd){var c=nd.c;if(v===c.ci){var n=c.items.length+1,inner=n>=15?7:6,a,rx,ry;
+      /* square rings: the colour in the middle, the 8 squares around it, then the next ring (a packed 5×5 block) */
+      /* fill the whole screen: 4 columns, rows spread over the full height, most common first */
+      if(!nd.add&&nd.j>=US.fit){nd.t={x:US_X,y:US.H/2,s:0};nd.delay=now;return}var P=US.spots[nd.add?US.fit:nd.j]||[US_X,US.H/2];nd.t={x:P[0],y:P[1],s:1,r:0};nd.delay=now+90+nd.j*26}
+    else if(v===null){nd.t={x:US_X+c.px,y:US_C+c.py,s:0};if(nd.c.ci===US.lastOpen){nd.delay=now}else{nd.t={x:US_X+c.px,y:US_C+c.py,s:0};nd.delay=now}}else{nd.t={x:US_X+c.px,y:US_C+c.py,s:0};nd.delay=now}});
+  /* nudge squares apart so none touch (they have different sizes) */
+  var H=US.H;if(false){var ns=US.nodes.filter(function(nd){return nd.c.ci===v}),G2=8,ctr={t:{x:US_X,y:US.H/2},h:40,fixed:true},all=ns.concat([ctr]);
+    for(var it2=0;it2<200;it2++){var moved=false;
+      for(var i=0;i<all.length;i++)for(var j=i+1;j<all.length;j++){var A=all[i],B=all[j],ha=(A.h||28),hb=(B.h||28),dx=B.t.x-A.t.x,dy=B.t.y-A.t.y,ox=ha+hb+G2-Math.abs(dx),oy=ha+hb+G2-Math.abs(dy);
+        if(ox>0&&oy>0){moved=true;var sx=dx>=0?1:-1,sy=dy>=0?1:-1,wa=A.fixed?0:(B.fixed?1:.5),wb=B.fixed?0:(A.fixed?1:.5);
+          if(ox<oy){A.t.x-=sx*ox*wa;B.t.x+=sx*ox*wb}else{A.t.y-=sy*oy*wa;B.t.y+=sy*oy*wb}}}
+      ns.forEach(function(nd){var h=nd.h||28;nd.t.x=Math.max(h+2,Math.min(360-h-2,nd.t.x));nd.t.y=Math.max(h+2,Math.min(US.H-h-2,nd.t.y))});if(!moved)break}
+  }
+  usSize(US.H);
+  $('lg-title').textContent=v===null?(editKey?'What did you feel that day?':'What do you feel today?'):(editKey?TAPP:TAPN)[US.cats[v].k];
+  if(v!==null)$('us-wrap').scrollTop=0}
+function usRefresh(){var T=tday(),v=US.view,tot=Object.keys(T.ids).filter(function(id){return item(id)}).length;if(!US.you)return;
+  US.you.t2.textContent=tot?tot+' logged':'';
+  US.cats.forEach(function(c,ci){var cnt=c.items.filter(function(it){return T.ids[it.id]}).length;c.sub.textContent=v===ci?'':(cnt?cnt+' logged':'');
+    c.g.setAttribute('aria-label',v===ci?'Done, close '+c.q:c.q+(cnt?', '+cnt+' logged':'')+'. Open');var vis=v===null||v===ci;c.g.style.pointerEvents=vis?'auto':'none';c.g.setAttribute('tabindex',vis?0:-1);c.g.setAttribute('aria-hidden',String(!vis))});
+  US.nodes.forEach(function(nd){var c=nd.c,on=!!T.ids[nd.id],op=v===c.ci;if(nd.add){nd.g.style.pointerEvents=op?'auto':'none';nd.g.setAttribute('tabindex',op?0:-1);nd.g.setAttribute('aria-hidden',String(!op));return}nd.rect.style.fill=on?c.c:'#F1F2F4';nd.text.style.fill=on?c.on:'#000';nd.mark.style.fill=on?c.on:'#000';nd.mark.style.opacity=hasNote(nd.id)?.75:0;
+    nd.g.style.pointerEvents=op?'auto':'none';nd.g.setAttribute('tabindex',op?0:-1);nd.g.setAttribute('aria-hidden',String(!op));nd.g.setAttribute('aria-pressed',String(on))});
+  $('us-hint').textContent=v===null?'Tap a colour to open it.':'';
+  /* a picked symptom in the open colour gets a visible note button */
+  var nt=$('us-notes');nt.innerHTML='';if(v!==null){var c=US.cats[v];c.items.filter(function(it){return T.ids[it.id]&&it.id===US.lastTap})/* one note button: the symptom tapped last */.forEach(function(it){var b=document.createElement('button');b.className='pill';b.style.background=c.c;b.style.color=c.on;/* the note button takes the symptom's colour, so it isn't mistaken for Done */
+    b.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12l1-3.5L9.5 2 12 4.5 5.5 11z"/></svg><span></span>';
+    b.querySelector('span').textContent=(hasNote(it.id)?'Your note · ':'Add note · ')+plain(it.name);
+    b.onclick=function(){var nd=US.nodes.filter(function(x){return x.id===it.id})[0];$('s-log').appendChild($('tnote'));openNote({id:it.id,k:c.k,name:it.name,el:nd?nd.rect:b,tx:0,ty:0})};nt.appendChild(b)})}$('us-hint').style.display=nt.children.length?'none':''}/* the note page grows out of the symptom's own square */
+function usTick(now){var dt=Math.min(50,now-(US.last||now));US.last=now;var k=1-Math.exp(-dt/170),moving=false;
+  function e(cu,tg){var d=tg-cu;return Math.abs(d)<.05?tg:cu+d*k}
+  var y=US.you;y.c.h=e(y.c.h,y.t.h);if(y.c.h!==y.t.h)moving=true;
+  US.cats.forEach(function(c){['x','y','h','f'].forEach(function(p){c.cur[p]=e(c.cur[p],c.t[p]);if(c.cur[p]!==c.t[p])moving=true});var o=c.cur.o+(c.t.o-c.cur.o)*k;c.cur.o=Math.abs(c.t.o-o)<.01?c.t.o:o;if(c.cur.o!==c.t.o)moving=true});
+  US.nodes.forEach(function(nd){if(now<nd.delay){moving=true;return}nd.cur.x=e(nd.cur.x,nd.t.x);nd.cur.y=e(nd.cur.y,nd.t.y);if(nd.cur.x!==nd.t.x||nd.cur.y!==nd.t.y)moving=true;
+    var s=nd.cur.s+(nd.t.s-nd.cur.s)*k;nd.cur.s=Math.abs(nd.t.s-s)<.002?nd.t.s:s;if(nd.cur.s!==nd.t.s)moving=true});
+  usDraw();US.raf=moving&&cur==='log'?requestAnimationFrame(usTick):0;if(!US.raf)US.last=0}
+function usDraw(){var y=US.you,v=US.view;usSq(y.rect,y.c.h);var yo=Math.max(0,Math.min(1,(y.c.h-14)/8));y.t1.setAttribute('y',y.t2.textContent?-1:4);y.t1.style.opacity=yo;y.t2.style.opacity=yo;
+  US.cats.forEach(function(c){c.g.setAttribute('transform','translate('+c.cur.x.toFixed(2)+' '+c.cur.y.toFixed(2)+')');usRc(c.rect,c.cur.h,c.cur.h*(US.cr||1));usRc(c.clip,c.cur.h,c.cur.h*(US.cr||1));c.g.style.opacity=c.cur.o.toFixed(3);
+    var H=2*Math.max(0,c.cur.h),hy0=Math.max(0,c.cur.h)*(US.cr||1),fh=2*hy0*c.cur.f;c.fill.setAttribute('x',(-c.cur.h).toFixed(1));c.fill.setAttribute('width',H.toFixed(1));c.fill.setAttribute('y',(hy0-fh).toFixed(1));c.fill.setAttribute('height',fh.toFixed(1));
+    var out=v===null,hx=c.cur.h,hy=hx*(US.cr||1),top=true,tx=-hx+13;c.text.setAttribute('text-anchor','start');c.sub.setAttribute('text-anchor','start');/* text top-left, like the confirm boxes */
+    c.text.setAttribute('transform','translate('+tx.toFixed(1)+' '+(-hy+30).toFixed(1)+')');c.sub.setAttribute('transform','translate('+tx.toFixed(1)+' '+(hy-13).toFixed(1)+')');
+    var w=c.on==='#fff',hi=function(f){return w&&c.cur.f>f?'#fff':'#000'};c.text.style.fill=top?hi(.86):hi(.12+c.nl*.09);c.sub.style.fill=top?hi(.14):hi(.9);
+    var to=Math.max(0,Math.min(1,(c.cur.h-46)/16));c.text.style.opacity=out?to:0;
+    c.sub.style.opacity=out?to:0;c.tick.style.opacity=0;/* no tick */});
+  US.nodes.forEach(function(nd){nd.g.setAttribute('transform','translate('+nd.cur.x.toFixed(2)+' '+nd.cur.y.toFixed(2)+') rotate('+((nd.t.r||0)*Math.min(1,nd.cur.s)).toFixed(2)+') scale('+Math.max(0,nd.cur.s).toFixed(4)+')');nd.text.style.opacity=v===nd.c.ci?Math.max(0,Math.min(1,(nd.cur.s-.6)/.4)).toFixed(3):0})}
+function usGo(){if(RM){US.you.c.h=US.you.t.h;US.cats.forEach(function(c){c.cur=Object.assign({},c.t)});US.nodes.forEach(function(nd){nd.cur=Object.assign({},nd.t)});usDraw()}else if(!US.raf){US.last=0;US.raf=requestAnimationFrame(usTick)}}
+function usAddOwn(c){scrim.classList.add('on');sheet.className='sheet on';
+  sheet.innerHTML='<div class="nm" style="margin-top:0">Something that’s yours</div><p style="color:#555;font-size:14px">If it’s not here, it still counts. Name it in your own words.</p><input type="text" id="ua-in" maxlength="28" autocomplete="off" aria-label="Name"><p class="err" id="ua-err" aria-live="assertive"></p><p class="swn">'+esc(c.q)+'</p><div class="row2"><button class="tx" id="ua-x">Cancel</button><button class="pill" id="ua-ok">Add it</button></div>';
+  var i=$('ua-in');setTimeout(function(){try{i.focus()}catch(e){}},150);
+  function shut(){sheet.className='sheet';scrim.classList.remove('on')}
+  $('ua-x').onclick=shut;i.onkeydown=function(e){if(e.key==='Enter')$('ua-ok').click()};
+  $('ua-ok').onclick=function(){var v=i.value.trim();if(!v){$('ua-err').textContent='Give it a name first. One word is enough.';i.focus();return}
+    var low=v.toLowerCase(),hit=items().filter(function(x){return plain(x.name).toLowerCase()===low})[0],id;
+    if(hit){id=hit.id}else{id='u'+(uid++);st.own.push({id:id,name:v.charAt(0).toUpperCase()+v.slice(1),k:c.k})}tday().ids[id]=true;save();try{i.blur()}catch(e){}shut();
+    var ci=hit?GROUPS.indexOf(hit.k):c.ci;renderLog(true);US.view=ci;US.lastOpen=ci;usTargets();usRefresh();US.cats.forEach(function(x){x.cur=Object.assign({},x.t)});usGo()}}
+function usOpen(ci){US.view=ci;US.lastOpen=ci;usTargets();usRefresh();usGo()}
+function usClose(){US.view=null;usTargets();usRefresh();usGo();setTimeout(function(){if(US.view===null){US.nodes.forEach(function(nd){nd.cur.x=US_X+nd.c.px;nd.cur.y=US_C+nd.c.py;nd.t.x=nd.cur.x;nd.t.y=nd.cur.y})}},900)}
+$('us-svg').addEventListener('keydown',function(e){var g=e.target.closest&&e.target.closest('g.btn');if((e.key==='Enter'||e.key===' ')&&g){e.preventDefault();g.dispatchEvent(new MouseEvent('click',{bubbles:true}))}else if(e.key==='Escape'&&US.view!==null)usClose()});
+$('lg-back').onclick=function(){if(US.view!==null){usClose();return}go('check')};/* with a colour open, back folds it closed */
+$('lg-done').onclick=function(){if(US.view!==null){usClose();return}doneToday()};/* with a colour open, Done folds it back to the four squares */
+
+/* Done: first show what you logged and how heavy the app thinks the day was; you confirm (or nudge it), then it folds into the day's square */
+var LEVELS=['That sounds like a lot to carry today.','That sounds like a lot to carry today.','That sounds like a lot to carry today.'],HEAVY={sub:1,dis:1,nf:1,crash:1,mig:1,chp:1,br:1,blv:1,pal:1},cfLevel=1;
+function estimate(ids){/* more symptoms, heavier ones, and more of the four questions touched = a heavier day */
+  var sc=0,gs={};ids.forEach(function(id){var it=item(id);if(!it)return;sc+=HEAVY[id]?2:1;gs[it.k]=1});sc+=Math.max(0,Object.keys(gs).length-1);
+  return sc<=3?0:sc<=7?1:2}
+function resetBehind(){var h=$('s-history'),t=$('s-today');behindOn=false;h.style.opacity='';h.style.transition='';t.style.background='';t.style.transition='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''})}
+function doneToday(){if(TF.leaving)return;resetBehind();TF.fold=null;
+  var T=tday(),ids=Object.keys(T.ids).filter(function(id){return item(id)});
+  if(!ids.length){T.saved=true;save();go('history');editKey=null;return}
+  cfLevel=T.feel!=null?[0,0,1,2][T.feel]:(T.weight!=null?T.weight:estimate(ids));saveDay()}/* no rating screen: the day saves straight away with the app's own estimate */
+function renderConfirm(){var T=tday(),ids=Object.keys(T.ids).filter(function(id){return item(id)}),g=$('cf-sym');
+  /* the day you're about to save, as its four question boxes (like opening a day from your history) */
+  var gs=groupsOf(ids),Q=editKey?GP:GN;g.innerHTML='';
+  GROUPS.forEach(function(k,i){var d=document.createElement('div');d.className='k-'+k+(gs[i].length?' has':'');d.setAttribute('data-k',k);
+    d.innerHTML='<ul></ul>';d.setAttribute('aria-label',Q[k]);var ul=d.querySelector('ul');/* only what was logged: no titles, empty boxes stay empty */
+    gs[i].forEach(function(id){var li=document.createElement('li');li.textContent=plain(item(id).name);ul.appendChild(li)});g.appendChild(d)});
+  $('cf-title').textContent=editKey?'That sounds like a lot to carry that day.':'That sounds like a lot to carry today.';
+  $('cf-yes').textContent=editKey?'Done':'Done for today';setLevel(cfLevel)}
+/* the app's guess is already chosen; one tap changes it */
+/* three answers as plain words; the app's guess is already chosen, one tap picks another */
+function setLevel(l){cfLevel=Math.max(0,Math.min(2,l));[].forEach.call(document.querySelectorAll('.cfopts button'),function(b){b.setAttribute('aria-checked',String(+b.getAttribute('data-l')===cfLevel))})}
+[].forEach.call(document.querySelectorAll('.cfopts button'),function(b){b.onclick=function(){setLevel(+b.getAttribute('data-l'))}});
+$('cf-back').onclick=function(){go('log')};
+$('cf-yes').onclick=function(){saveDay()};
+function saveDay(){var T=tday();T.weight=cfLevel;delete T.take;T.saved=true;save();
+  var gs=groupsOf(Object.keys(T.ids).filter(function(id){return item(id)}));
+  var src=cur==='log'?US.cats.filter(function(c){return gs[GROUPS.indexOf(c.k)].length}).map(function(c){return{r:c.rect.getBoundingClientRect(),k:c.k}}):[].slice.call($('cf-sym').querySelectorAll('.has')).map(function(el){return{r:el.getBoundingClientRect(),k:el.getAttribute('data-k')}});
+  var sq=src.filter(function(p){return p.r.bottom>0&&p.r.top<G.H});
+  if(RM||!sq.length){go('history');editKey=null;return}
+  var fl=sq.map(function(p){var d=document.createElement('div');d.className='fly';d.style.background=FULL[p.k];d.style.left=p.r.left+'px';d.style.top=p.r.top+'px';d.style.width=p.r.width+'px';d.style.height=p.r.height+'px';app.appendChild(d);return{d:d,k:p.k}});
+  go('history');var t=dayTile();editKey=null;var qs=t?t.querySelectorAll('i'):[];void app.offsetWidth;
+  fl.forEach(function(f,n){var q=qs[GROUPS.indexOf(f.k)];if(!q){f.d.style.opacity=0;return}var r=q.getBoundingClientRect();f.d.style.transitionDelay=(n*30)+'ms';f.d.classList.add('go');f.d.style.left=r.left+'px';f.d.style.top=r.top+'px';f.d.style.width=r.width+'px';f.d.style.height=r.height+'px'});
+  setTimeout(function(){fl.forEach(function(f){f.d.classList.add('gone')});setTimeout(function(){fl.forEach(function(f){f.d.remove()})},300)},900+fl.length*30)};
+$('t-done').onclick=doneToday;
+window.go=go;/* lets screens.html open each screen for the overview */
+/* ───────── the new flow: a simple question first, before a visit, your patterns ───────── */
+function kdate(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2],12)}
+function longDay(k){var d=kdate(k);return FULLDAY[d.getDay()]+' '+d.getDate()+' '+FULLMON[d.getMonth()]}
+function lc(s){return /^[A-Z][a-z]/.test(s)?s.charAt(0).toLowerCase()+s.slice(1):s}
+function swHtml(a){return (a||[]).map(function(k){return '<span class="ksq" style="background:'+FULL[k]+'"></span>'}).join('')}
+/* one answer style for every simple question: round = pick one, square = pick any */
+function optsInit(el,multi,onPick){[].forEach.call(el.querySelectorAll('button'),function(b){b.setAttribute('role',multi?'checkbox':'radio');if(!b.hasAttribute('aria-checked'))b.setAttribute('aria-checked','false');
+  b.onclick=function(){if(multi)b.setAttribute('aria-checked',String(b.getAttribute('aria-checked')!=='true'));else [].forEach.call(el.querySelectorAll('button'),function(x){x.setAttribute('aria-checked',String(x===b))});if(onPick)onPick(b)}})}
+function optsVal(el){return [].slice.call(el.querySelectorAll('button[aria-checked="true"]')).map(function(b){return b.getAttribute('data-v')})}
+function optsSet(el,vals){[].forEach.call(el.querySelectorAll('button'),function(b){b.setAttribute('aria-checked',String(vals.indexOf(b.getAttribute('data-v'))>=0))})}
+function heavyDay(d){var r=st.days[d.key];if(r&&r.feel!=null)return r.feel>=2;if(r&&r.saved&&r.weight!=null)return r.weight>=1;return d.ids.length>0&&estimate(d.ids)>=1}
+function pastDays(n){buildDays();return HDAYS.filter(function(d){return !d.future}).slice(-n)}
+
+/* History's ··· menu: Your patterns and Before a visit live here, so the screen keeps one main button */
+var hpop=$('hpop');function closeHPop(){hpop.classList.remove('on');$('h-menu').setAttribute('aria-expanded','false')}
+$('h-menu').onclick=function(e){e.stopPropagation();var on=!hpop.classList.contains('on');
+  if(on){var r=this.getBoundingClientRect(),sr=$('s-history').getBoundingClientRect();hpop.style.top=(r.bottom-sr.top+4)+'px';hpop.style.right=(sr.right-r.right)+'px'}
+  hpop.classList.toggle('on',on);this.setAttribute('aria-expanded',String(on))};
+document.addEventListener('click',function(e){if(!hpop.contains(e.target)&&!$('h-menu').contains(e.target))closeHPop()});
+
+/* 1 · How are you today? one tap answers it; Very hard saves the day and stops there */
+function openCheck(key){editKey=key&&key!==todayKey()?key:null;var T=tday();
+  $('ck-title').textContent=editKey?'How was that day?':'How are you today?';$('ck-back-d').textContent=editKey?longDay(editKey):'';
+  optsSet($('ck-opts'),T.feel!=null?[String(T.feel)]:[]);go('check')}
+optsInit($('ck-opts'),false,function(b){var v=+b.getAttribute('data-v'),T=tday();T.feel=v;
+  if(v===3){T.weight=2;T.saved=true;save();setTimeout(function(){go('rest')},250);return}
+  save();setTimeout(function(){openToday(editKey)},250)});
+$('ck-back').onclick=function(){editKey=null;go('history')};
+$('rs-close').onclick=function(){editKey=null;go('history')};
+$('rs-add').onclick=function(){openToday(editKey)};
+
+/* 2 · your patterns: at most three, each with the days behind it; the person can reject any */
+var CTXN={sleep:'a night of poor sleep',rain:'a rainy day',feet:'a day on your feet',hot:'a hot day',stress:'a stressful day'};
+function findPatterns(){var D=pastDays(42),L=D.filter(function(d){return d.ids.length}),out=[];if(L.length<7)return out;
+  var pc={},best=null;L.forEach(function(d){var a=d.ids;for(var i=0;i<a.length;i++)for(var j=i+1;j<a.length;j++){var k=[a[i],a[j]].sort().join('+');(pc[k]=pc[k]||[]).push(d)}});
+  Object.keys(pc).forEach(function(k){if(!best||pc[k].length>pc[best].length)best=k});
+  if(best&&pc[best].length>=4){var ab=best.split('+'),A=item(ab[0]),B=item(ab[1]);out.push({id:'pair:'+best,sw:[A.k,B.k],t:plain(A.name)+' and '+lc(plain(B.name))+' often come together: on '+pc[best].length+' of your '+L.length+' days.',ev:pc[best]})}
+  var base=L.filter(heavyDay).length/L.length,bc=null;
+  Object.keys(CTXN).forEach(function(c){var hit=[],tot=0;D.forEach(function(d,i){if(d.ctx.indexOf(c)<0)return;var nx=D.slice(i+1,i+3).filter(function(x){return x.ids.length});if(!nx.length)return;tot++;var hv=nx.filter(heavyDay);if(hv.length)hit.push(hv[0])});
+    var r=tot?hit.length/tot:0;if(tot>=3&&hit.length>=3&&r>=base+.15&&(!bc||r>bc.r))bc={c:c,r:r,hit:hit,tot:tot}});
+  if(bc)out.push({id:'after:'+bc.c,sw:[],t:'Hard days often come one or two days after '+CTXN[bc.c]+': '+bc.hit.length+' of '+bc.tot+' times.',ev:bc.hit});
+  var H=L.filter(heavyDay);if(H.length>=3){var sc={},top=null;H.forEach(function(d){d.ids.forEach(function(id){sc[id]=(sc[id]||0)+1})});Object.keys(sc).forEach(function(id){if(!top||sc[id]>sc[top])top=id});
+    if(top&&sc[top]>=Math.ceil(H.length*.6)){var T=item(top);out.push({id:'hard:'+top,sw:[T.k],t:'On hard days, '+lc(plain(T.name))+' is almost always there: '+sc[top]+' of '+H.length+' hard days.',ev:H.filter(function(d){return d.ids.indexOf(top)>=0})})}}
+  return out}
+function renderPat(){var P=findPatterns(),hid=st.hidePat||{},box=$('pa-list'),h='',shown=P.filter(function(p){return !hid[p.id]});
+  if(!P.length)h='<div class="pat"><p class="pt">There isn’t enough yet. Log a few more days and your patterns will show up here.</p></div>';
+  shown.forEach(function(p,i){h+='<div class="pat"><p class="pt">'+swHtml(p.sw)+esc(p.t)+'</p><div class="pacts"><button class="tx" data-ev="'+i+'" aria-expanded="false">How do we know?</button><button class="tx" data-no="'+esc(p.id)+'">Not true for me</button></div><p class="pev" id="pev'+i+'" hidden>'+esc(p.ev.map(function(d){return d.label}).join(', '))+'</p></div>'});
+  var nh=P.length-shown.length;if(nh)h+='<div class="pat"><button class="tx" id="pa-show">Show the '+(nh>1?nh+' patterns':'pattern')+' you hid</button></div>';
+  box.innerHTML=h;
+  [].forEach.call(box.querySelectorAll('[data-ev]'),function(b){b.onclick=function(){var e=$('pev'+b.getAttribute('data-ev')),o=e.hidden;e.hidden=!o;b.setAttribute('aria-expanded',String(o))}});
+  [].forEach.call(box.querySelectorAll('[data-no]'),function(b){b.onclick=function(){(st.hidePat=st.hidePat||{})[b.getAttribute('data-no')]=1;save();renderPat()}});
+  if($('pa-show'))$('pa-show').onclick=function(){st.hidePat={};save();renderPat()}}
+$('h-pat').onclick=function(){closeHPop();renderPat();go('pat')};
+$('pa-back').onclick=function(){go('history')};
+
+/* 3 · before a visit: who and when → the last two weeks → ready → share / after */
+function openVisit(){var V=st.visit||{};optsSet($('vi-who'),V.who?[V.who]:[]);$('vi-date').value=V.date||'';$('vi-hint').textContent='';go('visit')}
+optsInit($('vi-who'),false);
+$('h-visit').onclick=function(){closeHPop();openVisit()};
+$('vi-back').onclick=function(){go('history')};
+$('vi-go').onclick=function(){var w=optsVal($('vi-who'))[0];if(!w){$('vi-hint').textContent='Choose who you are seeing first.';return}
+  st.visit=Object.assign(st.visit||{},{who:w,date:$('vi-date').value,inc:{}});save();renderSum();go('sum')};
+var SUMI=[],SUMG=[];
+var GTITLE={mind:'Energy',heart:'How you felt',pain:'Where it hurt',body:'How your body reacted'};
+var TICK='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9.5l3.5 3.5 7.5-8"/></svg>',PLUS='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 3.5v11M3.5 9h11"/></svg>';
+function sumData(){var D=pastDays(14),L=D.filter(function(d){return d.ids.length||(st.days[d.key]&&st.days[d.key].feel!=null)}),P=pastDays(28).slice(0,14);
+  SUMI=[];SUMG=[];if(!L.length)return{D:D,L:L,H:[]};
+  var H=L.filter(heavyDay);
+  GROUPS.forEach(function(k){var sc={},dd=0;L.forEach(function(d){var any=false;d.ids.forEach(function(id){var it=item(id);if(it&&it.k===k){sc[id]=(sc[id]||0)+1;any=true}});if(any)dd++});
+    var ids=Object.keys(sc).sort(function(x,y){return sc[y]-sc[x]});if(ids.length)SUMG.push({k:k,days:dd,top:ids.slice(0,4).map(function(id){return{id:id,name:plain(item(id).name),n:sc[id]}}),more:ids.length-4})});
+  var all={};L.forEach(function(d){d.ids.forEach(function(id){all[id]=(all[id]||0)+1})});var pc={};P.forEach(function(d){d.ids.forEach(function(id){pc[id]=(pc[id]||0)+1})});
+  var nw=Object.keys(all).filter(function(id){return all[id]>=3&&!pc[id]}).sort(function(x,y){return all[y]-all[x]})[0];
+  if(nw)SUMI.push({id:'new',t:'New since the two weeks before: '+lc(plain(item(nw).name))+'.'});
+  var pt=findPatterns().filter(function(q){return !(st.hidePat||{})[q.id]})[0];if(pt)SUMI.push({id:'pat',t:pt.t});
+  return{D:D,L:L,H:H}}
+var OPENK=null;
+function cardsHtml(inc,toggles){if(!SUMG.some(function(g){return g.k===OPENK}))OPENK=SUMG.length?SUMG[0].k:null;
+  return SUMG.map(function(g){var on=inc[g.k]!==false,op=g.k===OPENK,fg=g.fg||((g.k==='heart'||g.k==='pain')?'#fff':'#000');
+  return '<div class="kc'+(on?'':' out')+(op?' open':'')+'" style="background:'+(g.bg||FULL[g.k])+';color:'+fg+'">'+
+    '<button class="kh" data-o="'+g.k+'" aria-expanded="'+op+'"><h3>'+(g.title||GTITLE[g.k])+'</h3>'+(g.days!=null?'<span class="kn">'+g.days+(g.days===1?' day':' days')+'</span>':'')+'</button>'+
+    '<div class="kb"><div>'+(g.html||'<div class="kp">'+g.top.map(function(t){return '<button data-id="'+t.id+'">'+esc(t.name)+' · '+t.n+'</button>'}).join('')+(g.more>0?'<span>+'+g.more+' more</span>':'')+'</div>')+'</div></div>'+
+    '</div>'}).join('')}
+function drawCards(box,inc,toggles){box.innerHTML=cardsHtml(inc,toggles);box.classList.toggle('ro',!toggles);
+  [].forEach.call(box.querySelectorAll('.kh'),function(b){b.onclick=function(){var k=b.getAttribute('data-o');if(k===OPENK)return;OPENK=k;
+    [].forEach.call(box.querySelectorAll('.kc'),function(c){var o=c.querySelector('.kh').getAttribute('data-o')===k;c.classList.toggle('open',o);c.querySelector('.kh').setAttribute('aria-expanded',String(o))})}});
+  [].forEach.call(box.querySelectorAll('.kp button'),function(b){b.onclick=function(){openSymNotes(b.getAttribute('data-id'))}})}
+function renderSum(){var V=st.visit||{},S=sumData(),D=S.D,a=D[0].date,z=D[D.length-1].date;
+  $('su-sub').textContent=a.getDate()+' '+MON[a.getMonth()]+' – '+z.getDate()+' '+MON[z.getMonth()]+'. Only you can see this.';
+  $('su-stat').textContent=S.L.length?S.H.length+' hard '+(S.H.length===1?'day':'days')+' out of '+S.L.length+' logged.':'Nothing logged in these two weeks yet.';
+  var inc=V.inc||{};OPENK=null;drawCards($('su-items'),inc,true);st.visit=Object.assign(st.visit||{},{inc:inc});askLabel()}
+function askLabel(){var V=st.visit||{},n=(V.qs||[]).length+(V.goal?1:0);$('su-ask').textContent=n?'What I want from this visit ('+n+')':'What I want from this visit'}
+function akField(v){var i=document.createElement('input');i.className='field';i.type='text';i.autocomplete='off';i.setAttribute('aria-labelledby','ak-q1');i.placeholder='Write a question';i.value=v||'';$('ak-list').appendChild(i);return i}
+$('su-ask').onclick=function(){var V=st.visit||{},q=V.qs||[];$('ak-list').innerHTML='';(q.length?q:['']).forEach(akField);$('ak-goal').value=V.goal||'';go('ask')};
+$('ak-add').onclick=function(){akField('').focus()};
+$('ak-back').onclick=function(){go('sum')};
+$('ak-save').onclick=function(){var q=[].map.call($('ak-list').querySelectorAll('input'),function(i){return i.value.trim()}).filter(Boolean);st.visit=Object.assign(st.visit||{},{qs:q,goal:$('ak-goal').value.trim()});save();askLabel();go('sum')};
+$('su-back').onclick=function(){go('visit')};
+var SNFROM='sum';
+function openSymNotes(id){var it=item(id);if(!it)return;SNFROM=cur;var fg=(it.k==='heart'||it.k==='pain')?'#fff':'#000';
+  var D=pastDays(14).filter(function(d){return d.ids.indexOf(id)>=0}).reverse();
+  $('sn-title').textContent=plain(it.name);
+  $('sn-sub').textContent=D.length>1?'On '+D.length+' of your last 14 days. Swipe to see each one.':'On 1 of your last 14 days.';$('sn-car').classList.toggle('one',D.length<2);
+  $('sn-dash').innerHTML=D.map(function(d,i){return '<i'+(i?'':' class="on"')+'></i>'}).join('');
+  $('sn-car').innerHTML=D.map(function(d){var r=st.days[d.key]||{},t=r.notes&&r.notes[id],m=(r.media&&r.media[id])||[],ph=0,vo=0,dt=kdate(d.key);
+    m.forEach(function(x){if(/audio/.test(String((x&&x.t)||'')))vo++;else ph++});
+    var mm=[];if(ph)mm.push(ph+(ph===1?' photo or video':' photos or videos'));if(vo)mm.push(vo+(vo===1?' voice recording':' voice recordings'));
+    var w=d.ids.filter(function(x){return x!==id&&item(x)}).map(function(x){return plain(item(x).name)});
+    return '<div class="snc" style="background:'+FULL[it.k]+';color:'+fg+'" role="group" aria-label="'+longDay(d.key)+'">'+
+      '<p class="sl">'+FULLDAY[dt.getDay()]+(heavyDay(d)?' · a hard day':'')+'</p><h2>'+dt.getDate()+' '+FULLMON[dt.getMonth()]+'</h2>'+
+      (w.length?'<p class="scw">Came with</p><div class="scp">'+w.slice(0,6).map(function(n){return '<span>'+esc(n)+'</span>'}).join('')+(w.length>6?'<span>+'+(w.length-6)+' more</span>':'')+'</div>':'<p class="scw">Nothing else that day</p>')+
+      (t&&String(t).trim()?'<p class="snote">'+esc(t)+'</p>':'<p class="snote none">No note that day.</p>')+
+      (mm.length?'<p class="smed">'+mm.join(' · ')+'</p>':'')+'<div class="smedia" data-key="'+d.key+'"></div></div>'}).join('');
+  /* the day's photo or video fills the card; a voice note gets a play button */
+  [].forEach.call($('sn-car').querySelectorAll('.smedia'),function(box){var r=st.days[box.getAttribute('data-key')]||{},m=(r.media&&r.media[id])||[];
+    var vis=m.filter(function(x){return !/audio/.test(String(x.t||''))})[0],au=m.filter(function(x){return /audio/.test(String(x.t||''))})[0],pick=vis||au;if(!pick)return;
+    mget(pick.k).then(function(b){if(!b)return;var u=URL.createObjectURL(b);URLS.push(u);
+      if(vis){var el=document.createElement(/video/.test(String(pick.t))?'video':'img');el.src=u;if(el.tagName==='VIDEO'){el.muted=true;el.playsInline=true;el.controls=true}else el.alt='Photo from that day';box.appendChild(el)}
+      else{var bt=document.createElement('button');bt.className='splay';bt.setAttribute('aria-label','Play the voice note');bt.innerHTML='<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M7 4.5v13l11-6.5z" fill="currentColor"/></svg>';var a=new Audio(u);bt.onclick=function(){a.paused?a.play():a.pause()};box.appendChild(bt)}})})
+  go('symn');var car=$('sn-car'),pl=parseFloat(getComputedStyle(car.parentNode).paddingLeft)||30;car.style.margin='18px -'+pl+'px 0';car.style.padding='0 '+pl+'px 0';car.style.scrollPaddingLeft=pl+'px';car.scrollLeft=0;
+  car.onscroll=function(){var c=car.children[0];if(!c)return;var i=Math.round(car.scrollLeft/(c.offsetWidth+10));[].forEach.call($('sn-dash').children,function(x,j){x.classList.toggle('on',j===i)})}}
+$('sn-back').onclick=function(){go(SNFROM)};
+$('su-go').onclick=function(){save();renderReady();go('ready')};
+function renderReady(){var V=st.visit||{},inc=V.inc||{},S=sumData(),D=S.D;
+  $('re-back-d').textContent=(V.who||'')+(V.date?' · '+longDay(V.date):'');
+  $('re-title').textContent='Since '+D[0].date.getDate()+' '+FULLMON[D[0].date.getMonth()];
+  $('re-stat').textContent=S.L.length?S.H.length+' hard '+(S.H.length===1?'day':'days')+' out of '+S.L.length+' logged.':'';
+  var keep=SUMG,q=V.qs||[],kq='';SUMG=SUMG.filter(function(g){return inc[g.k]!==false});
+  if(q.length)kq+='<p class="kql">I want to ask</p>'+q.map(function(x){return '<p class="kqq">'+esc(x)+'</p>'}).join('');
+  if(V.goal)kq+='<p class="kql">I hope for</p><p class="kqq">'+esc(V.goal)+'</p>';
+  if(kq)SUMG=SUMG.concat([{k:'ask',title:'What I want',bg:'#F1F2F4',fg:'#000',html:'<div class="kwant">'+kq+'</div>'}]);
+  OPENK=null;drawCards($('re-cards'),inc,false);SUMG=keep;
+  var h='';
+  $('re-list').innerHTML=h}
+$('re-back').onclick=function(){go('sum')};
+$('re-share').onclick=function(){optsSet($('vs-who'),['doc']);optsSet($('vs-how'),['pdf']);$('vs-hint').textContent='';renderVS();go('vshare')};
+$('re-after').onclick=function(){go('after')};
+optsInit($('vs-who'),false);optsInit($('vs-how'),false);
+function renderVS(){var S=(st.shares||[]).filter(function(x){return !x.until||x.until>=todayKey()}),el=$('vs-list');
+  if(!S.length){el.innerHTML='<p>No one yet.</p>';return}
+  el.innerHTML=S.map(function(x,i){return '<div class="vsrow"><span>'+(x.who==='doc'?'Doctor or therapist':'Family or partner')+' · '+(x.how==='pdf'?'PDF':'link until '+longDay(x.until))+'</span><button class="tx" data-w="'+i+'">Withdraw</button></div>'}).join('');
+  [].forEach.call(el.querySelectorAll('[data-w]'),function(b){b.onclick=function(){var x=S[+b.getAttribute('data-w')];st.shares=(st.shares||[]).filter(function(y){return y!==x});save();renderVS();$('vs-hint').textContent='Withdrawn. They can no longer see it.'}})}
+$('vs-back').onclick=function(){go('ready')};
+$('vs-go').onclick=function(){var w=optsVal($('vs-who'))[0],h=optsVal($('vs-how'))[0];if(!w||!h){$('vs-hint').textContent='Choose who it is for and how.';return}
+  var u=null;if(h==='link'){var d=new Date();d.setDate(d.getDate()+7);u=keyOf(d)}
+  (st.shares=st.shares||[]).push({who:w,how:h,until:u,on:todayKey()});save();renderVS();
+  $('vs-hint').textContent=(w==='doc'?'Shared, with medical words.':'Shared, in plain words.')+' This prototype doesn’t send anything.'};
+$('af-back').onclick=function(){go('ready')};
+$('af-done').onclick=function(){go('history')};
+$('af-note').onclick=function(){editKey=null;$('s-after').appendChild($('tnote'));openNote({id:'visit',k:'mind',name:'What they said',el:$('af-note'),tx:0,ty:0})};
+
+var mapFrom=null;/* where the map was opened from: null = history, or {day} = a day's detail */
+function openMap(fromDay,id){todayMode=false;linking=false;askLink=false;view='all';focusId=null;mapFrom=fromDay?{day:fromDay}:null;go('map');if(id&&item(id)){focusId=id;gather()}}
+$('h-map').onclick=function(){openMap(null)};
+$('m-back').onclick=function(){todayMode=false;closeCard();var f=mapFrom;mapFrom=null;go('history');
+  if(f&&f.day){setTimeout(function(){var t=document.querySelector('.day[data-i="'+f.day.i+'"]');if(t)openDay(HDAYS[f.day.i]||f.day,t)},60)}};
+$('t-save').onclick=function(){tday().saved=true;save();todayMode=false;go('history')};
+
+function route(){
+  var h=(location.hash||'').slice(1);
+  focusId=null;linking=false;askLink=false;sheet.className='sheet';scrim.classList.remove('on');
+  persist=true;st=blank();load();view='all';todayMode=false;
+  if(h==='demo'){sample(DEMO);go('map')}
+  else if(h==='mine'){if(!mineList().length)sample(DEMO);view='mine';go('map')}
+  else if(h.indexOf('symptom-')===0){var id=h.slice(8);sample(DEMO);if(!item(id))id='dz';st.claimed[id]=true;go('map');focusId=id;gather()}
+  else if(h==='add'){go('map');openAdd()}
+  else if(h==='share'){if(!mineList().length)sample(DEMO);go('share')}
+  else if(h==='map')go('map');
+  else if(h==='history')go('history');
+  else if(h==='today')go('today');
+  else if(h==='intro')go('intro');
+  else if(h==='welcome'){go('ob1')}
+  else go('splash');
+}
+
+
+/* ───────── today: one field ───────── */
+/* The field is fixed: each colour is one solid block in its corner, and the smaller clusters inside it stay together.
+   Nothing swaps places; the camera moves. Drag or flick to look around. Each pick glides the camera to the next colour.
+   Pinch (or ctrl/trackpad zoom) to zoom: out to see all four colours small, in to go closer. Zoom far enough into a square,
+   or hold a square, and it fills the screen as a page for your notes on that symptom. Pinch in or tap − to come back. */
+var TF={sel:{},pre:{},ox:0,oy:0,z:1,vx:0,vy:0,els:{},list:[],raf:0,t0:0,exit:0,down:false,goal:null,zgoal:null,lt:0,note:null,shown:false,pinch:null};
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var TINT={mind:'#F3FAD3',heart:'#F6B9BC',pain:'#C5CEF2',body:'#E6E0FA'},FULL={mind:'#D7EE6B',heart:'#E0141E',pain:'#3F5BD3',body:'#AB98EE'};
+var ZMIN=.36,ZOPEN=1.7;
+function mixHex(a,b,t){function c(h,i){return parseInt(h.substr(1+2*i,2),16)}var o='#';for(var i=0;i<3;i++){var v=Math.round(c(a,i)+(c(b,i)-c(a,i))*t);o+=(v<16?'0':'')+v.toString(16)}return o}
+function recScore(){/* how often each symptom showed up in your last 8 weeks, plus the ones you said are yours */
+  buildDays();var f={};HDAYS.forEach(function(d){if(!d.today)d.ids.forEach(function(id){f[id]=(f[id]||0)+1})});
+  var sc={};items().forEach(function(it){sc[it.id]=(f[it.id]||0)+(st.claimed[it.id]?2:0)});return sc}
+function notesOf(){var T=tday();if(!T.notes)T.notes={};return T.notes}
+function buildField(still){
+  var fe=$('tfield'),gw=$('tglows'),T=tday(),N=notesOf(),sc=recScore();if(!still){TF.sel={};TF.pre={};for(var pk in T.ids)TF.sel[pk]=true}/* what's already saved for this day shows as picked */var g=5,s=Math.round(Math.min(124,(G.W-3*g)/3.3)),u=s+g,COLS=4;
+  TF.s=s;TF.u=u;TF.cx=G.W/2;TF.cy=G.top+30+(G.H-G.top-30-100)/2;TF.zcover=Math.max(G.W,G.H)/s*1.25;
+  gw.innerHTML='';fe.innerHTML='';TF.els={};TF.list=[];var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  GROUPS.forEach(function(k,gi){var sx=gi%2?1:-1,sy=gi>1?1:-1;
+    /* clusters in order; inside a cluster, what you usually have comes first (closest to the middle) */
+    var list=items().filter(function(it){return it.k===k}).sort(function(p,q){return p.cl-q.cl||(sc[q.id]||0)-(sc[p.id]||0)});
+    list.forEach(function(it,i){var a=i%COLS,r=Math.floor(i/COLS),x=sx>0?a*u+g/2:-(a+1)*u+g/2,y=sy>0?r*u+g/2:-(r+1)*u+g/2;
+      var b=document.createElement('button');b.className='tsq k-'+k+(TF.sel[it.id]?' on':'')+(hasNote(it.id)?' has-note':'');b.innerHTML='<i class="rip"></i><span class="gd"></span><span class="nm"></span><span class="lb"></span>';b.querySelector('.lb').textContent=it.name;b.setAttribute('data-id',it.id);
+      b.style.setProperty('--t','var(--off)');
+      var rp=b.querySelector('.rip');rp.style.left=rp.style.top='50%';rp.style.width=rp.style.height=(s*2.9)+'px';
+      b.style.left='0px';b.style.top='0px';b.style.width=s+'px';b.style.height=s+'px';b.setAttribute('aria-pressed',String(!!TF.sel[it.id]));
+      var o={id:it.id,gi:gi,k:k,name:it.name,el:b,tx:x,ty:y,dist:Math.hypot(a,r),ph:Math.random()*6.28,delay:Math.hypot(a,r)*90+gi*20};
+      b.addEventListener('click',function(e){if(TF.moved||TF.note){e.preventDefault();return}var rr=b.getBoundingClientRect();
+        if(e.clientX||e.clientY){rp.style.left=((e.clientX-rr.left)/rr.width*100)+'%';rp.style.top=((e.clientY-rr.top)/rr.height*100)+'%'}else rp.style.left=rp.style.top='50%';
+        var added=!TF.sel[o.id];if(added){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true;buzz(6)}else{delete TF.sel[o.id];if(!TF.pre[o.id])delete T.ids[o.id]}save();shadeField();
+        /* each pick moves the camera on to the next colour: energy → heart → pain → body → back to all four */
+        /* the screen stays still after a pick: you move it yourself (Lea's test: moving on its own caused wrong taps and dizziness) */});
+      b.addEventListener('focus',function(){if(b.matches(':focus-visible'))focusOn(o)});
+      b.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.shiftKey||e.key==='n'){e.preventDefault();openNote(o)}});
+      fe.appendChild(b);TF.els[it.id]=b;TF.list.push(o);minX=Math.min(minX,x);maxX=Math.max(maxX,x+s);minY=Math.min(minY,y);maxY=Math.max(maxY,y+s)})});
+  TF.b=[minX,maxX,minY,maxY];TF.fit=Math.min(1,(G.W-24)/(maxX-minX),(G.H-170)/(maxY-minY));TF.leaving=false;TF.exit=0;TF.vx=TF.vy=0;TF.goal=null;TF.zgoal=null;TF.t0=still||RM?-1e9:performance.now();
+  if(!still){TF.z=1;TF.note=null;TF.shown=false;$('tnote').classList.remove('on');$('s-today').classList.remove('noting');var c0=groupView(0);panTo(c0[0],c0[1])}else panTo(TF.ox,TF.oy);
+  shadeField();cancelAnimationFrame(TF.raf);TF.lt=performance.now();TF.raf=requestAnimationFrame(frame)}
+function groupView(gi){/* where the camera sits to show one colour; 4 = all four together */
+  if(gi>3)return clampPan(0,0);var sx=gi%2?1:-1,sy=gi>1?1:-1;return clampPan(-sx*TF.u*1.75,-sy*TF.u*1.6)}
+function goGroup(gi){var c=groupView(gi);TF.vx=TF.vy=0;if(RM)panTo(c[0],c[1]);else TF.goal=c}
+function focusOn(o){var c=clampPan(-(o.tx+TF.s/2),-(o.ty+TF.s/2));TF.vx=TF.vy=0;if(RM)panTo(c[0],c[1]);else TF.goal=c}
+function shadeField(){var N=notesOf();TF.list.forEach(function(o){var on=!!TF.sel[o.id];o.el.classList.toggle('on',on);o.el.classList.toggle('has-note',hasNote(o.id));o.el.setAttribute('aria-pressed',String(on))})}
+function nearest(){var best=null,bd=1e9;TF.list.forEach(function(o){var mx=TF.cx+TF.z*(o.tx+TF.s/2+TF.ox),my=TF.cy+TF.z*(o.ty+TF.s/2+TF.oy),d=Math.hypot(mx-TF.cx,my-TF.cy);if(d<bd){bd=d;best=o}});return best}
+/* zoom all the way into one square: it fills the screen and becomes a page for your notes */
+function openNote(o){if(!o||TF.note)return;TF.note=o;TF.shown=false;TF.moved=true;clearTimeout(TF.nt);
+  TF.goal=null;TF.zgoal=null;TF.vx=TF.vy=0;$('s-today').classList.add('noting');
+  var n=$('tnote');$('tn-name').textContent=plain(o.name);$('tn-text').value=notesOf()[o.id]||'';renderMedia();savedState();
+  /* the page starts as the square itself (same place, same colour) and grows to fill the screen */
+  n.style.transition='none';n.className='tnote on hush k-'+o.k;n.style.clipPath=squareClip(o);n.style.backgroundColor=squareColour(o);void n.offsetWidth;n.style.transition='';
+  n.style.clipPath='inset(0px 0px 0px 0px round 0px)';n.style.backgroundColor=FULL[o.k];
+  setTimeout(function(){if(TF.note!==o)return;n.classList.remove('hush');TF.shown=true;
+    if(TF.z!==1){TF.z=1;var c=clampPan(-(o.tx+TF.s/2),-(o.ty+TF.s/2));setCam(c[0],c[1])}/* behind the page, quietly put the field back to normal size */
+    try{$('tn-text').focus({preventScroll:true})}catch(e){}},RM?0:430)}
+function squareClip(o){var r=o.el.getBoundingClientRect(),p=$('s-today').getBoundingClientRect(),rad=Math.min(10,r.width*.12);
+  return 'inset('+(r.top-p.top).toFixed(1)+'px '+(p.right-r.right).toFixed(1)+'px '+(p.bottom-r.bottom).toFixed(1)+'px '+(r.left-p.left).toFixed(1)+'px round '+rad.toFixed(1)+'px)'}
+function squareColour(o){return TF.sel[o.id]?FULL[o.k]:getComputedStyle(o.el).backgroundColor}
+function showNote(){}
+function savedState(){var o=TF.note,e=$('tn-saved');if(!o||!e)return;var has=hasNote(o.id);e.classList.remove('busy');e.classList.toggle('on',has)}
+function keepNote(){var o=TF.note;if(!o)return;var t=$('tn-text').value.trim(),N=notesOf(),T=tday();
+  if(t)N[o.id]=t;else delete N[o.id];if(hasNote(o.id)){TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true}save();
+  var e=$('tn-saved');if(e&&hasNote(o.id)){e.classList.add('on','busy');clearTimeout(TF.svT);TF.svT=setTimeout(savedState,450)}else savedState()}
+function closeNote(){var o=TF.note;if(!o)return;stopRec();keepNote();try{$('tn-text').blur()}catch(e){}
+  var n=$('tnote');TF.note=null;TF.shown=false;shadeField();
+  /* the page shrinks back into its square, landing in the square's new colour (full if it now has something) */
+  if(cur==='today'){var c=clampPan(-(o.tx+TF.s/2),-(o.ty+TF.s/2));if(Math.abs(c[0]-TF.ox)+Math.abs(c[1]-TF.oy)>1)setCam(c[0],c[1])}
+  n.classList.add('hush');n.style.clipPath=squareClip(o);n.style.backgroundColor=squareColour(o);
+  setTimeout(function(){n.classList.remove('on','hush');n.style.clipPath='';n.style.backgroundColor='';$('s-today').classList.remove('noting');renderMedia()},RM?0:520);
+  if(cur==='log')renderLog(false);
+  setTimeout(function(){TF.moved=false},0)}
+$('tn-close').onclick=closeNote;function fitText(){}$('tn-text').addEventListener('input',function(){keepNote();fitText()});
+$('tnote').addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();closeNote()}});
+/* ───────── videos, photos and voice notes on a symptom's page: kept on this device (IndexedDB) ───────── */
+var MDB=null,MEM={},URLS=[];
+function mdb(){return new Promise(function(res){if(MDB)return res(MDB);try{var r=indexedDB.open('lived-media',1);r.onupgradeneeded=function(){r.result.createObjectStore('m')};r.onsuccess=function(){MDB=r.result;res(MDB)};r.onerror=function(){res(null)}}catch(e){res(null)}})}
+function mput(k,blob){MEM[k]=blob;return mdb().then(function(db){if(!db||!persist)return;return new Promise(function(res){try{var t=db.transaction('m','readwrite');t.objectStore('m').put(blob,k);t.oncomplete=res;t.onerror=res}catch(e){res()}})})}
+function mget(k){if(MEM[k])return Promise.resolve(MEM[k]);return mdb().then(function(db){if(!db)return null;return new Promise(function(res){try{var q=db.transaction('m').objectStore('m').get(k);q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}}catch(e){res(null)}})})}
+function mdel(k){delete MEM[k];return mdb().then(function(db){if(!db)return;try{db.transaction('m','readwrite').objectStore('m').delete(k)}catch(e){}})}
+function mediaOf(){var T=tday();if(!T.media)T.media={};return T.media}
+function hasNote(id){var M=mediaOf(),t=notesOf()[id];return !!((t&&String(t).trim())||(M[id]&&M[id].length))}
+function addMedia(blob,o){o=o||TF.note;if(!o||!blob||!blob.size)return;var M=mediaOf(),k=(editKey||todayKey())+'|'+o.id+'|'+Date.now()+'|'+Math.random().toString(36).slice(2,6);
+  (M[o.id]=M[o.id]||[]).push({k:k,t:blob.type||''});
+  mput(k,blob).then(function(){if(TF.note===o){keepNote();renderMedia()}else{var T=tday();TF.sel[o.id]=true;T.ids[o.id]=true;st.claimed[o.id]=true;save();shadeField()}})}
+function renderMedia(){var o=TF.note,box=$('tn-media');URLS.forEach(function(u){try{URL.revokeObjectURL(u)}catch(e){}});URLS=[];box.innerHTML='';if(!o)return;
+  (mediaOf()[o.id]||[]).forEach(function(m){var w=document.createElement('div');w.className='tm';box.appendChild(w);
+    mget(m.k).then(function(b){if(!b){w.remove();return}var u=URL.createObjectURL(b);URLS.push(u);var t=m.t||b.type||'',el;
+      if(t.indexOf('image')===0){el=document.createElement('img');el.alt='Your photo'}
+      else if(t.indexOf('audio')===0){el=document.createElement('audio');el.controls=true;w.classList.add('audio')}
+      else{el=document.createElement('video');el.controls=true;el.playsInline=true;el.setAttribute('playsinline','')}
+      el.src=u;w.appendChild(el);var x=document.createElement('button');x.className='x';x.setAttribute('aria-label','Remove');x.textContent='×';
+      x.onclick=function(){var L=mediaOf()[o.id]||[];mediaOf()[o.id]=L.filter(function(q){return q.k!==m.k});mdel(m.k);keepNote();renderMedia()};w.appendChild(x)})})}
+$('tn-vid').onclick=function(){$('tn-vfile').value='';$('tn-vfile').click()};
+$('tn-vfile').onchange=function(){[].forEach.call(this.files||[],function(f){addMedia(f)})};
+$('tn-afile').onchange=function(){[].forEach.call(this.files||[],function(f){addMedia(f)})};
+var REC=null,recFail=false;
+function micOK(){try{if(recFail||!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder)return false;
+  var fp=document.permissionsPolicy||document.featurePolicy;if(fp&&fp.allowsFeature&&!fp.allowsFeature('microphone'))return false;return true}catch(e){return false}}
+function recLabel(t){$('tn-rec').querySelector('span').textContent=t}
+function stopRec(){if(REC){try{REC.r.stop()}catch(e){}}}
+$('tn-rec').onclick=function(){
+  if(REC){stopRec();return}
+  if(!micOK()){$('tn-afile').value='';$('tn-afile').click();return}
+  var btn=this;navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    var r=new MediaRecorder(stream),chunks=[],t0=Date.now(),who=TF.note;REC={r:r,s:stream};btn.classList.add('rec');recLabel('0:00');
+    var iv=setInterval(function(){var d=Math.floor((Date.now()-t0)/1000);recLabel(Math.floor(d/60)+':'+pad2(d%60))},500);
+    r.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data)};
+    r.onstop=function(){clearInterval(iv);stream.getTracks().forEach(function(t){t.stop()});REC=null;btn.classList.remove('rec');recLabel('Record voice');
+      if(chunks.length)addMedia(new Blob(chunks,{type:r.mimeType||chunks[0].type||'audio/mp4'}),who)};
+    r.start()}).catch(function(){recFail=true;$('tn-afile').value='';$('tn-afile').click()})};
+function ease(t){return t<=0?0:t>=1?1:1-Math.pow(1-t,3)}
+function frame(now){
+  if(cur!=='today'&&!TF.exit){TF.raf=0;return}
+  var dt=Math.min(50,now-TF.lt)/16.7;TF.lt=now;
+  if(TF.fold){var F=TF.fold,k=Math.min(1,(now-F.t0)/620),e2=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;/* ease in-out */
+    TF.z=F.z0+(F.zt-F.z0)*e2;var sx=F.sx+(F.tx-F.sx)*e2,sy=F.sy+(F.ty-F.sy)*e2;setCam((sx-TF.cx)/TF.z,(sy-TF.cy)/TF.z);TF.foldE=e2;if(k>=1){finishFold();return}}
+  else if(TF.zgoal!=null&&!TF.pinch){var fz=1-Math.pow(.86,dt);TF.z+=(TF.zgoal-TF.z)*fz;if(Math.abs(TF.zgoal-TF.z)<.003*TF.zgoal){TF.z=TF.zgoal;TF.zgoal=null}panTo(TF.ox,TF.oy)}
+  if(TF.goal&&!TF.down&&!TF.pinch){var f=1-Math.pow(.88,dt),gx=TF.goal[0],gy=TF.goal[1];panTo(TF.ox+(gx-TF.ox)*f,TF.oy+(gy-TF.oy)*f);if(Math.abs(gx-TF.ox)+Math.abs(gy-TF.oy)<.3/TF.z&&TF.zgoal==null){panTo(gx,gy);TF.goal=null}}
+  else if(!TF.down&&!TF.pinch&&(Math.abs(TF.vx)+Math.abs(TF.vy)>.05)){panTo(TF.ox+TF.vx*dt/TF.z,TF.oy+TF.vy*dt/TF.z);var dmp=Math.pow(.95,dt);TF.vx*=dmp;TF.vy*=dmp}
+  var W=G.W,z=TF.z,h=TF.s/2;
+  TF.list.forEach(function(o){
+    var e=ease((now-TF.t0-o.delay)/800);if(TF.exit)e=1-ease((now-TF.exit-(6-Math.min(6,o.dist))*35)/420);
+    var mx=TF.cx+z*(o.tx+h+TF.ox),my=TF.cy+z*(o.ty+h+TF.oy),d=Math.hypot((mx-W/2)/(W*.62),(my-TF.cy)/(G.H*.5));
+    var fish=Math.max(.6,1.04-.36*d*d);
+    var dx=RM?0:Math.sin(now/2300+o.ph)*1.5/z,dy=RM?0:Math.cos(now/2700+o.ph*1.3)*1.5/z;
+    var x=o.tx-(o.tx+h)*(1-e),y=o.ty-(o.ty+h)*(1-e);
+    o.el.style.transform='translate3d('+(x+dx).toFixed(2)+'px,'+(y+dy).toFixed(2)+'px,0) scale('+(fish*(.2+.8*e)).toFixed(3)+')';
+    o.el.style.opacity=String(Math.min(1,e*1.6)*(TF.sel[o.id]?1:(1-collapseP()*.85)*(TF.fold?1-TF.foldE:1)))});
+  behind(TF.fold?1:collapseP());
+  TF.raf=requestAnimationFrame(frame)}
+function clampPan(dx,dy){var bb=TF.b,z=TF.z;/* keep the screen covered while you're close; when zoomed out, keep the field centred */
+  var lo=(G.W-TF.cx)/z-bb[1],hi=-TF.cx/z-bb[0];dx=lo>hi?(lo+hi)/2:Math.min(hi,Math.max(lo,dx));
+  var loy=(G.H-60-TF.cy)/z-bb[3],hiy=(G.top+20-TF.cy)/z-bb[2];dy=loy>hiy?(loy+hiy)/2:Math.min(hiy,Math.max(loy,dy));return[dx,dy]}
+function setCam(ox,oy){TF.ox=ox;TF.oy=oy;var t='translate3d('+TF.cx+'px,'+TF.cy+'px,0) scale('+TF.z.toFixed(4)+') translate3d('+ox+'px,'+oy+'px,0)';$('tglows').style.transform=t;$('tfield').style.transform=t}
+function panTo(dx,dy){var c=TF.note?[dx,dy]:clampPan(dx,dy);if(c[0]!==dx)TF.vx=0;if(c[1]!==dy)TF.vy=0;TF.ox=c[0];TF.oy=c[1];
+  var t='translate3d('+TF.cx+'px,'+TF.cy+'px,0) scale('+TF.z.toFixed(4)+') translate3d('+TF.ox+'px,'+TF.oy+'px,0)';$('tglows').style.transform=t;$('tfield').style.transform=t}
+function zoomAt(mx,my,z1){/* zoom around a point on screen, so what's under your fingers stays under them */
+  z1=Math.max(ZEND,Math.min(2.6,z1));var qx=(mx-TF.cx)/TF.z-TF.ox,qy=(my-TF.cy)/TF.z-TF.oy;TF.z=z1;TF.zgoal=null;TF.goal=null;panTo((mx-TF.cx)/z1-qx,(my-TF.cy)/z1-qy)}
+/* zoom out past the overview and today folds into your history: let go past the point and it's done; before it, it slides back */
+var ZEND=.16;function collapseP(){var f=TF.fit||ZMIN;return TF.z>=f?0:Math.min(1,(f-TF.z)/(f-ZEND))}
+/* while you pinch out, your weeks fade in behind today; past halfway, letting go folds today straight into its square */
+var behindOn=false;
+function behind(p){var h=$('s-history'),t=$('s-today');if(cur!=='today')return;
+  if(p>0&&!behindOn){behindOn=true;renderHistory();h.style.transition='none';t.style.transition='none'}
+  if(!behindOn)return;
+  if(p<=0&&!TF.fold){behindOn=false;h.style.opacity='';h.style.transition='';t.style.background='';t.style.transition='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});return}
+  h.style.opacity=String(p);t.style.background='rgba(255,255,255,'+(1-p).toFixed(3)+')';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=String(1-p)})}
+function startFold(){if(TF.fold||TF.leaving)return;TF.leaving=true;tday().saved=true;save();behind(1);
+  var tile=dayTile(),r=tile?tile.getBoundingClientRect():{left:G.W/2,top:G.H/3,width:10,height:10};
+  /* the middle of the four colours travels to the middle of today's square, and shrinks to its size */
+  var fw=(TF.b[1]-TF.b[0]);TF.fold={t0:performance.now(),z0:TF.z,zt:Math.max(.02,r.width*1.6/fw),sx:TF.cx+TF.z*TF.ox,sy:TF.cy+TF.z*TF.oy,tx:r.left+r.width/2,ty:r.top+r.height/2};TF.foldE=0}
+function finishFold(){TF.fold=null;var h=$('s-history'),t=$('s-today');behindOn=false;editKey=null;
+  go('history');h.style.opacity='';t.style.background='';[].forEach.call(t.querySelectorAll('.tback,.tbar'),function(x){x.style.opacity=''});
+  t.style.opacity='0';setTimeout(function(){h.style.opacity='';h.style.transition='';t.style.transition='';t.style.opacity=''},50)}
+function settleZoom(){if(TF.note||TF.leaving)return;var f=TF.fit||ZMIN;
+  if(TF.z<f){if(collapseP()>.45){TF.z=f;panTo(TF.ox,TF.oy);doneToday();return}TF.zgoal=f;return}
+  if(TF.z>ZOPEN)openNote(nearest());else if(TF.z>1.25)TF.zgoal=1.25}
+(function(){var v=$('s-today'),P={},sx,sy,ox,oy,lx,ly,lt,hold=null,wt=null,wsum=0;
+  function cnt(){return Object.keys(P).length}
+  function pin(){var k=Object.keys(P),a=P[k[0]],b=P[k[1]];return{d:Math.hypot(a.x-b.x,a.y-b.y),x:(a.x+b.x)/2,y:(a.y+b.y)/2}}
+  v.addEventListener('pointerdown',function(e){
+    if(e.target.closest('.tbar,.tback,.tn-close'))return;
+    P[e.pointerId]={x:e.clientX,y:e.clientY};
+    if(cnt()===2){clearTimeout(hold);TF.down=false;TF.moved=true;var p=pin();TF.pinch={d0:Math.max(20,p.d),z0:TF.z};TF.goal=null;TF.zgoal=null;TF.vx=TF.vy=0;return}
+    if(cnt()>2||TF.note)return;
+    TF.down=true;TF.goal=null;TF.moved=false;TF.vx=TF.vy=0;sx=lx=e.clientX;sy=ly=e.clientY;lt=performance.now();ox=TF.ox;oy=TF.oy;
+    var sq=e.target.closest('.tsq');clearTimeout(hold);
+    if(sq)hold=setTimeout(function(){if(TF.down&&!TF.moved){TF.down=false;var id=sq.getAttribute('data-id');openNote(TF.list.filter(function(o){return o.id===id})[0])}},480)});
+  window.addEventListener('pointermove',function(e){if(!P[e.pointerId])return;P[e.pointerId]={x:e.clientX,y:e.clientY};
+    if(TF.pinch&&cnt()>=2){var p=pin(),r=p.d/TF.pinch.d0;
+      if(TF.note){if(r<.72){TF.pinch=null;closeNote()}return}
+      zoomAt(p.x,p.y,TF.pinch.z0*r);return}
+    if(!TF.down)return;var dx=e.clientX-sx,dy=e.clientY-sy;if(!TF.moved&&Math.abs(dx)+Math.abs(dy)>7){TF.moved=true;clearTimeout(hold)}
+    if(TF.moved){var t=performance.now(),dt=Math.max(8,t-lt),k=.6;TF.vx=TF.vx*(1-k)+(e.clientX-lx)/dt*16*k;TF.vy=TF.vy*(1-k)+(e.clientY-ly)/dt*16*k;lx=e.clientX;ly=e.clientY;lt=t;panTo(ox+dx/TF.z,oy+dy/TF.z)}});
+  function up(e){if(!P[e.pointerId])return;delete P[e.pointerId];clearTimeout(hold);
+    if(TF.pinch){if(cnt()<2){TF.pinch=null;settleZoom();setTimeout(function(){if(!TF.note)TF.moved=false},0)}return}
+    if(!TF.down)return;TF.down=false;if(RM||performance.now()-lt>90)TF.vx=TF.vy=0;setTimeout(function(){if(!TF.note)TF.moved=false},0)}
+  window.addEventListener('pointerup',up);window.addEventListener('pointercancel',function(e){up(e);TF.vx=TF.vy=0});
+  /* trackpad pinch / ctrl+wheel zooms; plain wheel moves the camera */
+  v.addEventListener('wheel',function(e){if(e.target.closest('textarea'))return;e.preventDefault();
+    if(TF.note){if(e.ctrlKey&&e.deltaY>0){wsum+=e.deltaY;if(wsum>40){wsum=0;closeNote()}}return}
+    if(e.ctrlKey){zoomAt(e.clientX,e.clientY,TF.z*Math.exp(-e.deltaY*.01));clearTimeout(wt);wt=setTimeout(settleZoom,220)}
+    else{TF.goal=null;panTo(TF.ox-e.deltaX/TF.z,TF.oy-e.deltaY/TF.z)}},{passive:false});
+  /* Safari trackpad pinch */
+  var gz=1;v.addEventListener('gesturestart',function(e){e.preventDefault();gz=TF.z});
+  v.addEventListener('gesturechange',function(e){e.preventDefault();if(TF.note){if(e.scale<.75)closeNote();return}zoomAt(e.clientX||TF.cx,e.clientY||TF.cy,gz*e.scale)});
+  v.addEventListener('gestureend',function(e){e.preventDefault();settleZoom()})})();
+
+/* ───────── context chips for today ───────── */
+function renderCtx(){var row=$('ctxrow'),T=tday();
+  row.innerHTML='<span>Anything around it?</span>'+CTX.map(function(c){return '<button class="cx" data-cx="'+c[0]+'" aria-pressed="'+(!!T.ctx[c[0]])+'">'+c[1]+'</button>'}).join('');
+  [].forEach.call(row.querySelectorAll('[data-cx]'),function(b){b.onclick=function(){var k=b.getAttribute('data-cx');if(T.ctx[k])delete T.ctx[k];else{T.ctx[k]=true;buzz(6)}save();b.setAttribute('aria-pressed',String(!!T.ctx[k]))}})}
+
+/* ───────── history: your last 8 weeks, built from saved days ───────── */
+var DAYN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function sampleDay(k){/* example days so the history isn't empty in the prototype; never saved.
+  Made-up but realistic: rain brings joint pain, poor sleep brings fog and headaches, heat and long days on your feet bring dizziness,
+  and a period every ~28 days brings cramps and bloating. */
+  var h=0;for(var i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;var seed=h%2147483646+1;function rnd(){seed=seed*16807%2147483647;return seed/2147483647}
+  rnd();rnd();var p=k.split('-'),day=Math.floor(Date.UTC(+p[0],+p[1]-1,+p[2])/864e5),cyc=((day%28)+28)%28;
+  var bad=rnd()<.3,rain=rnd()<.3,feet=rnd()<.22,hot=rnd()<.1,stress=rnd()<.15,period=cyc<4;
+  var ids={},ctx={};function on(id,pr){if(rnd()*1.8<pr)ids[id]=1}/* scaled down so the example weeks feel lived-in, not crowded */
+  if(rnd()<.42&&!period){if(rain)ctx.rain=1;return{ids:{},ctx:ctx,sample:true}}/* plenty of quiet days */
+  on('ex',bad?.7:.18);on('fog',bad?.55:.1);on('hd',bad||stress?.4:.06);on('unr',bad?.5:0);on('crash',feet?.45:.04);on('mig',stress?.18:.03);if(ids.mig){on('lgt',.7);on('nau',.5)}
+  on('dz',.05+(hot?.55:0)+(feet?.3:0)+(bad?.15:0));if(ids.dz){on('rh',.55);on('lh',.35);on('nf',.12)}on('heat',hot?.7:0);on('swt',hot?.5:0);on('swf',feet||hot?.35:0);on('cold',rain?.25:.04);
+  on('jp',rain?.6:.12);on('kn',rain?.5:.06);on('hip',rain?.3:.04);on('an',feet?.45:.04);on('mp',feet?.4:.08);on('bk',feet?.3:.06);on('stf',rain?.4:.06);on('sub',.05);on('nj',stress?.3:.04);
+  on('pp',period?.8:0);on('pel',period?.5:.02);on('blo',period?.5:.07);on('nau',ids.dz?.35:.04);on('ref',.05);on('itc',hot?.3:.03);on('flu',hot?.3:.02);on('bru',.05);on('bla',.04);
+  if(bad)ctx.sleep=1;if(rain)ctx.rain=1;if(feet)ctx.feet=1;if(hot)ctx.hot=1;if(stress)ctx.stress=1;if(period)ctx.period=1;
+  return{ids:ids,ctx:ctx,sample:true}}
+var HDAYS=[],hl=null;
+/* a new user starts with an empty history; add ?demo to the address to show example weeks (for tests and presentations) */
+var DEMO_WEEKS=/[?&]demo\b/.test(location.search);
+function buildDays(){
+  var now=new Date();now.setHours(12,0,0,0);var wd=(now.getDay()+6)%7,start=new Date(now);start.setDate(now.getDate()-wd-56);
+  HDAYS=[];for(var i=0;i<63;i++){var d=new Date(start);d.setDate(start.getDate()+i);var k=keyOf(d),isToday=k===todayKey(),future=d>now&&!isToday;
+    var real=st.days[k],rec=real&&(Object.keys(real.ids||{}).length||real.saved)?real:(isToday||future||!DEMO_WEEKS?{ids:{},ctx:{}}:sampleDay(k));
+    var ids=Object.keys(rec.ids||{}).filter(function(id){return item(id)});
+    HDAYS.push({i:i,key:k,date:d,today:isToday,future:future,sample:!!rec.sample,later:!!(real&&real.later),ids:ids,ctx:Object.keys(rec.ctx||{}),label:DAYN[(d.getDay()+6)%7]+' '+d.getDate()+' '+MON[d.getMonth()]})}}
+function groupsOf(ids){return GROUPS.map(function(g){return ids.filter(function(id){var it=item(id);return it&&it.k===g})})}
+function renderHistory(){
+  buildDays();var hg=$('hgrid');hg.innerHTML='';
+  ['M','T','W','T','F','S','S'].forEach(function(l){var w=document.createElement('span');w.className='hwd';w.setAttribute('aria-hidden','true');w.textContent=l;hg.appendChild(w)});
+  /* month names under the week where each month starts (and under the first week) */
+  var mh='<span></span>';for(var c=0;c<9;c++){var wk=HDAYS.slice(c*7,c*7+7),lab='';wk.forEach(function(x){if(x.date.getDate()===1)lab=MON[x.date.getMonth()]});if(c===0&&!lab)lab=MON[wk[0].date.getMonth()];mh+='<span>'+lab+'</span>'}
+  $('hmon').innerHTML=mh;
+  HDAYS.forEach(function(d){var b=document.createElement('button');b.className='day';b.setAttribute('data-i',d.i);
+    if(d.future){b.className+=' future';b.tabIndex=-1;b.setAttribute('aria-hidden','true')}
+    var gs=groupsOf(d.ids);b.innerHTML=gs.map(function(g,k){return '<i style="'+(g.length?'background:var(--'+GROUPS[k]+')':'')+'"></i>'}).join('');
+    if(d.later&&d.ids.length)b.className+=' later';
+    if(d.today){b.className+=' today';if(!d.ids.length)b.className+=' empty-today'}
+    if(hl){if(hl.sel===d.i)b.className+=' sel';else if(hl.set[d.i])b.className+=' sim'}
+    b.setAttribute('aria-label',d.label+(d.today?', today':'')+': '+(d.ids.length?d.ids.map(function(id){return plain(item(id).name)}).join(', '):'nothing noted'));
+    b.onclick=function(e){e.stopPropagation();if(hl&&hl.sel===d.i){hl=null;renderHistory();return}if(d.today&&!d.ids.length){$('w-fill').click();return}openDay(d,b)};
+    hg.appendChild(b)});
+  hg.classList.toggle('hl',!!hl);
+  var T=HDAYS.filter(function(d){return d.today})[0];$('w-fill').textContent=T&&T.ids.length?'Add to today':'How are you today?';
+  $('hcard').innerHTML='';
+}
+function similar(d){
+  /* similar = the same colours lit up, so it matches what you see in the grid */
+  var A=d.ids,set={},n=0;function mask(ids){return groupsOf(ids).map(function(g){return g.length?1:0}).join('')}var m=mask(A);
+  HDAYS.forEach(function(o){if(o===d||o.future||(o.today&&!o.ids.length))return;if(mask(o.ids)===m){set[o.i]=1;n++}});
+  var grp=HDAYS.filter(function(o){return set[o.i]||o===d}),past=HDAYS.filter(function(o){return!o.future}),best=[];
+  CTX.forEach(function(c){var k=grp.filter(function(o){return o.ctx.indexOf(c[0])>=0}).length,base=past.filter(function(o){return o.ctx.indexOf(c[0])>=0}).length/past.length;
+    if(grp.length>1&&k/grp.length>base+.15&&k>=2)best.push([k,CTXV[c[0]],Math.round(base*10)])});
+  best.sort(function(a,b){return b[0]-a[0]});
+  var t=!n?'No other day looks quite like this one yet.':'You’ve had '+(n+1)+(A.length?' days like this one.':' calm days like this one.')+(best.length?' '+best.slice(0,2).map(function(b,i){return (i?'and ':'')+b[0]+' of them '+b[1]+' (usually '+b[2]+' in 10)'}).join(', ')+'.':'');
+  return{set:set,n:n,text:t}}
+
+/* tap a day: it grows out of the grid into a big screen of its own.
+   Top: the date. Then the day's four squares; tap one to open what you had in that group. Then what it has in common with other days. */
+var zoomFrom=null,zoomDay=null,FULLDAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],FULLMON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function dayDetail(d,id){var rec=st.days[d.key]||{},n=rec.notes&&rec.notes[id];return n?'<p class="znote">'+esc(n)+'</p>':''}
+function openDay(d,tile){
+  zoomDay=d;zoomFrom=tile;var z=$('zoom'),sq=$('zsq'),dt=d.date;
+  $('z-date').innerHTML=FULLDAY[dt.getDay()]+'<br>'+dt.getDate()+' '+FULLMON[dt.getMonth()]+' '+dt.getFullYear();
+  var gs=groupsOf(d.ids);
+  sq.className='zsq';
+  sq.innerHTML=gs.map(function(g,k){var key=GROUPS[k];
+    return '<div class="zq p'+k+' k-'+key+(g.length?' has':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-expanded="false"><span class="zt">'+(d.today?GN:GP)[key]+'</span><div class="zdet">'+
+      (g.length?g.map(function(id){return '<button class="zs" data-id="'+id+'">'+esc(plain(item(id).name))+'</button>'+dayDetail(d,id)}).join(''):'<p class="zs zn">'+(d.today?NONE_NOW:NONE_PAST)[key]+'</p>')+'</div></div>'}).join('');
+  [].forEach.call(sq.querySelectorAll('button.zs'),function(b){b.onclick=function(e){e.stopPropagation();var id=b.getAttribute('data-id');closeDay(true);openMap(d,id)}});
+  [].forEach.call(sq.querySelectorAll('.zq'),function(q){q.onkeydown=function(e){if((e.key==='Enter'||e.key===' ')&&e.target===q){e.preventDefault();q.click()}};q.onclick=function(){var open=!q.classList.contains('open');
+    [].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open');o.setAttribute('aria-expanded','false')});
+    sq.classList.toggle('opened',open);if(open){q.classList.add('open');q.setAttribute('aria-expanded','true')}buzz(4)}});
+  var sim=similar(d);$('zinfo').innerHTML='<p class="zi">'+esc(sim.text)+'</p>';
+  var btn=$('z-sim'),empty=!d.ids.length&&!d.today&&!d.future&&!d.sample;btn.style.display=sim.n&&!empty?'':'none';
+  var ab=$('z-add');ab.hidden=!empty;ab.onclick=function(){closeDay(true);openCheck(d.key)};
+  if(empty)$('zinfo').innerHTML='';
+  btn.onclick=function(){hl={sel:d.i,set:sim.set,text:d.label+': '+sim.text};closeDay()};
+  z.classList.add('on');z.setAttribute('aria-hidden','false');$('zcol').scrollTop=0;
+  var r=sq.getBoundingClientRect(),t=tile.getBoundingClientRect();
+  sq.style.transition='none';sq.style.transform='translate('+(t.left-r.left)+'px,'+(t.top-r.top)+'px) scale('+(t.width/r.width)+','+(t.height/r.height)+')';
+  void sq.offsetWidth;sq.style.transition='';sq.style.transform='none';z.classList.add('open');buzz(6);
+  $('z-x').onclick=closeDay;
+  setTimeout(function(){try{$('z-x').focus({preventScroll:true})}catch(e){}},450);
+}
+function closeDay(instant){
+  var z=$('zoom'),sq=$('zsq');if(!z.classList.contains('on'))return;
+  if(hl)renderHistory();
+  sq.classList.remove('opened');[].forEach.call(sq.querySelectorAll('.zq'),function(o){o.classList.remove('open')});
+  var tile=document.querySelector('.day[data-i="'+(zoomDay&&zoomDay.i)+'"]')||zoomFrom;
+  if(tile&&!instant){sq.style.transform='none';var r=sq.getBoundingClientRect(),t=tile.getBoundingClientRect();
+    sq.style.transform='translate('+(t.left-r.left)+'px,'+(t.top-r.top)+'px) scale('+(t.width/r.width)+','+(t.height/r.height)+')'}
+  z.classList.remove('open');
+  setTimeout(function(){z.classList.remove('on');z.setAttribute('aria-hidden','true');sq.style.transition='none';sq.style.transform='none';void sq.offsetWidth;sq.style.transition='';try{tile&&tile.focus({preventScroll:true})}catch(e){}},instant?0:560);
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('zoom').classList.contains('on'))closeDay()});
+$('h-col').addEventListener('click',function(e){if(hl&&!e.target.closest('button')){hl=null;renderHistory()}});
+
+/* ───────── boot ───────── */
+var rt;
+function onResize(){document.documentElement.classList.add('still');measure();if(cur==='today')buildField(true);if(cur==='map'){layout();placeQuads('map')}else if(cur)placeQuads(cur==='share'?'map':cur);if(cur==='share')drawPoster();clearTimeout(rt);rt=setTimeout(function(){document.documentElement.classList.remove('still')},150)}
+window.addEventListener('resize',onResize);if(window.visualViewport)window.visualViewport.addEventListener('resize',onResize);
+window.addEventListener('hashchange',route);
+measure();
+items().forEach(cellFor);
+route();
+requestAnimationFrame(threads);
+})();
+</script>
